@@ -1,0 +1,13 @@
+[package]
+name = "numeric"
+version = "0.1.0"
+authors = ["Gustav Larsson <gustav.m.larsson@gmail.com>"]
+description = "N-dimensional matrix class for Rust"
+repository = "https://github.com/gustavla/numeric"
+readme = "README.md"
+keywords = ["numeric", "tensor", "matrix", "vector", "scientific"]
+license = "MIT"
+
+[dependencies]
+libc = "0.1.8"
+blas-sys = "0.1.0"
