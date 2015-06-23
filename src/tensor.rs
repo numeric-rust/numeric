@@ -5,33 +5,68 @@ use std::cmp::{PartialEq, Eq};
 use blas_sys;
 use std::fmt;
 
+/// An implementation of an N-dimensional matrix.
+///
+/// A quick example:
+///
+/// ```
+/// let t = Tensor::new(vec![1.0, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
+/// println!("{}", t);
+/// ```
+///
+/// Will output:
+///
+/// ```
+/// [[  1.00   3.00]
+///  [  2.00   2.00]]
+/// ```
 pub struct Tensor {
+    /// The underlying data matrix, stored in row-major order.
     data: Vec<f64>,
+
+    /// The shape of the tensor.
     shape: Vec<usize>,
 }
 
-// For advanced slicing
+/// Used for advanced slicing of a `Tensor`.
+///
 #[derive(Copy, Clone)]
 pub enum AxisIndex {
+    /// Indexes from start to end for this axis.
     Full,
+    /// Indexes from start to end for all axes in the middle. A maximum of one can be used.
     Ellipsis,
+    /// Creates a new axis of length 1 at this location.
     NewAxis,
+    /// Picks one elements of an axis. This will remove that axis from the tensor.
     Index(isize),
+    /// Specifies a half-open range. Slice(2, 5) will pick out indices 2, 3 and 4.
     Slice(isize, isize),
+
+    /// Specifies the start (inclusive) and to the end.
     SliceFrom(isize),
+
+    /// Specifies the end (exclusive) from the start.
     SliceTo(isize),
 }
 
 impl Tensor {
+    /// Creates a new tensor with no elements of shape `(0,)`
     pub fn empty() -> Tensor {
         Tensor{data: Vec::new(), shape: vec![0]}
     }
 
+    /// Creates a new tensor from a `Vec` object. It will take ownership of the vector.
     pub fn new(data: Vec<f64>) -> Tensor {
         let len = data.len();
         Tensor{data: data, shape: vec![len]}
     }
 
+    /// Creates a new tensor with integer values starting at 0 and counting up:
+    /// 
+    /// ```
+    /// Tensor::range(5) // [  0.00   1.00   2.00   3.00   4.00]
+    /// ```
     pub fn range(size: usize) -> Tensor {
         let mut data = Vec::with_capacity(size);
         for i in 0..size {
@@ -40,6 +75,7 @@ impl Tensor {
         Tensor{data: data, shape: vec![size]}
     }
 
+    /// Creates a new tensor of a given shape filled with the specified value.
     pub fn filled(shape: &[usize], v: f64) -> Tensor {
         let size = shape_product(shape);
         let sh = shape.to_vec();
@@ -51,15 +87,43 @@ impl Tensor {
         Tensor{data: data, shape: sh}
     }
 
+    /// Creates a zero-filled tensor of the specified shape.
     pub fn zeros(shape: &[usize]) -> Tensor {
         Tensor::filled(shape, 0.0)
     }
 
-    pub fn ravel(self) -> Tensor {
+    /// Creates a one-filled tensor of the specified shape.
+    pub fn ones(shape: &[usize]) -> Tensor {
+        Tensor::filled(shape, 1.0)
+    }
+
+    /// Creates an identify 2-D tensor (matrix). That is, all elements are zero except the diagonal
+    /// which is filled with ones.
+    pub fn eye(size: usize) -> Tensor {
+        let mut t = Tensor::zeros(&[size, size]);
+        for k in 0..size {
+            t.set(k, k, 1.0);
+        }
+        t
+    }
+
+    /// Returns the shape of the tensor.
+    pub fn shape(&self) -> &Vec<usize> {
+        &self.shape
+    }
+
+    /// Returns a reference of the underlying data vector.
+    pub fn data(&self) -> &Vec<f64> {
+        &self.data
+    }
+
+    /// Flattens the tensor to one-dimensional. Takes ownership and returns a new tensor.
+    pub fn flatten(self) -> Tensor {
         let s = self.size();
         Tensor{data: self.data, shape: vec![s]}
     }
 
+    /// Returns the strides of tensor for each axis.
     pub fn strides(&self) -> Vec<usize> {
         let mut ss = vec![1; self.shape.len()];
         for k in 1..ss.len() {
@@ -67,6 +131,16 @@ impl Tensor {
             ss[i] = ss[i + 1] * self.shape[i + 1];
         }
         ss
+    }
+
+    /// Returns number of elements in the tensor.
+    pub fn size(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Returns the number of axes. This is the same as the length of the shape array.
+    pub fn ndim(&self) -> usize {
+        self.shape.len()
     }
 
     fn resolve_axis(&self, axis: usize, index: isize) -> usize {
@@ -134,6 +208,16 @@ impl Tensor {
         (slices, newaxes)
     }
 
+    /// Takes slices (subsets) of tensors and returns a tensor as a new object. Uses the
+    /// `AxisIndex` enum to specify indexing for each axis.
+    ///
+    /// ```
+    /// let t = Tensor::ones(&[2, 3, 4]);
+    ///
+    /// t.slice([AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)] // shape [2, 3, 2]
+    /// t.slice([AxisIndex::Index(-1)]) // shape [3, 4]
+    /// t.slice([AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]) // shape [2, 2]
+    /// ```
     pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor {
         let (slices, newaxes) = self.expand_slices(slices_raw);
 
@@ -214,26 +298,6 @@ impl Tensor {
         t.reshaped(&shape[..])
     }
 
-    pub fn ones(shape: &[usize]) -> Tensor {
-        Tensor::filled(shape, 1.0)
-    }
-
-    pub fn eye(size: usize) -> Tensor {
-        let mut t = Tensor::zeros(&[size, size]);
-        for k in 0..size {
-            t.set(k, k, 1.0);
-        }
-        t
-    }
-
-    pub fn shape(&self) -> &Vec<usize> {
-        &self.shape
-    }
-
-    pub fn data(&self) -> &Vec<f64> {
-        &self.data
-    }
-
     // Converts a shape that allows -1 to one with actual sizes
     fn convert_shape(&self, shape: &[isize]) -> Vec<usize> {
         let mut missing_index: Option<usize> = None;
@@ -285,14 +349,8 @@ impl Tensor {
         self.data[i * self.shape[1] + j] = v;
     }
 
-    pub fn size(&self) -> usize {
-        self.data.len()
-    }
-
-    pub fn ndim(&self) -> usize {
-        self.shape.len()
-    }
-
+    /// Takes the product of two tensors. If the tensors are both matrices (2D), then a matrix
+    /// multiplication is taken. If the tensors are both vectors (1D), the scalar product is taken.
     pub fn dot(t1: &Tensor, t2: &Tensor) -> Tensor {
         if t1.ndim() == 2 && t2.ndim() == 1 {
             assert_eq!(t1.shape[1], t2.shape[0]);
@@ -388,7 +446,7 @@ fn shape_product(shape: &[usize]) -> usize {
     shape.iter().fold(1, |acc, &v| acc * v)
 }
 
-// Ravelled indexing (this will index it as one-dimensional)
+// Flattened indexing (this will index it as one-dimensional)
 impl Index<usize> for Tensor {
     type Output = f64;
     fn index<'a>(&'a self, _index: usize) -> &'a f64 {
