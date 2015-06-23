@@ -51,12 +51,12 @@ pub enum AxisIndex {
     SliceTo(isize),
 }
 
-mod f64_add;
-mod f64_sub;
-mod f64_mul;
-mod f64_div;
-mod f64_display;
-mod f64_dot;
+mod add_floats;
+mod sub_floats;
+mod mul_floats;
+mod div_floats;
+mod display_floats;
+mod dot_floats;
 
 mod eq;
 mod indexing;

@@ -13,33 +13,35 @@ Some of the completed and planned features:
 * [x] Matrix multiplication and scalar product
 * [x] Indexing
 * [x] Slicing
+* [x] Generic (all operations defined for `f32` and `f64`)
+* [ ] Integer types
+* [ ] Bool type
 * [ ] Strided slices
 * [ ] Updating slices
-* [ ] Different types (currently `f64` only)
 * [ ] Broadcasted axes
 * [ ] Matrix solver / inverse
 
 ## Example
 
 ```rust
-use numeric::tensor::Tensor;
+use numeric::tensor::DoubleTensor;
 
 fn main() {
-    let a = Tensor::range(6).reshaped(&[2, 3]);
-    let b = Tensor::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
-    let c = Tensor::new(vec![7.0, 3.0, 2.0]);
+    let a = DoubleTensor::range(6).reshaped(&[2, 3]);
+    let b = DoubleTensor::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
+    let c = DoubleTensor::new(vec![7.0, 3.0, 2.0]);
 
     let d = &a + &b;                // a copy is made
     println!("d = \n{}", d);
 
-    let e = Tensor::dot(&a, &c);    // matrix multiplication (returns a new tensor)
+    let e = DoubleTensor::dot(&a, &c);    // matrix multiplication (returns a new tensor)
     println!("e = \n{}", e);
 
     let f = a + &b;                 // a is moved (no memory is allocated)
     println!("f = \n{}", f);
 
     // Higher-dimensional
-    println!("g = \n{}", Tensor::ones(&[2, 3, 4, 5]));
+    println!("g = \n{}", DoubleTensor::ones(&[2, 3, 4, 5]));
 }
 ```
 
