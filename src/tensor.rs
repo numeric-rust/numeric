@@ -1,5 +1,5 @@
 use std::vec::Vec;
-use std::ops::{Add ,Sub, Mul, Div};
+use std::ops::{Add ,Sub, Mul, Div, Index, IndexMut};
 use libc::{c_int, c_char};
 use std::cmp::{PartialEq, Eq};
 use blas_sys;
@@ -10,17 +10,29 @@ pub struct Tensor {
     shape: Vec<usize>,
 }
 
+// For advanced slicing
+#[derive(Copy, Clone)]
+pub enum AxisIndex {
+    Full,
+    Ellipsis,
+    NewAxis,
+    Index(isize),
+    Slice(isize, isize),
+    SliceFrom(isize),
+    SliceTo(isize),
+}
+
 impl Tensor {
-    pub fn new() -> Tensor {
+    pub fn empty() -> Tensor {
         Tensor{data: Vec::new(), shape: vec![0]}
     }
 
-    pub fn new_data(data: Vec<f64>) -> Tensor {
+    pub fn new(data: Vec<f64>) -> Tensor {
         let len = data.len();
         Tensor{data: data, shape: vec![len]}
     }
 
-    pub fn new_range(size: usize) -> Tensor {
+    pub fn range(size: usize) -> Tensor {
         let mut data = Vec::with_capacity(size);
         for i in 0..size {
             data.push(i as f64);
@@ -28,7 +40,7 @@ impl Tensor {
         Tensor{data: data, shape: vec![size]}
     }
 
-    pub fn new_filled(shape: &[usize], v: f64) -> Tensor {
+    pub fn filled(shape: &[usize], v: f64) -> Tensor {
         let size = shape_product(shape);
         let sh = shape.to_vec();
 
@@ -39,20 +51,187 @@ impl Tensor {
         Tensor{data: data, shape: sh}
     }
 
+    pub fn zeros(shape: &[usize]) -> Tensor {
+        Tensor::filled(shape, 0.0)
+    }
+
+    pub fn ravel(self) -> Tensor {
+        let s = self.size();
+        Tensor{data: self.data, shape: vec![s]}
+    }
+
+    pub fn strides(&self) -> Vec<usize> {
+        let mut ss = vec![1; self.shape.len()];
+        for k in 1..ss.len() {
+            let i = ss.len() - 1 - k;
+            ss[i] = ss[i + 1] * self.shape[i + 1];
+        }
+        ss
+    }
+
+    fn resolve_axis(&self, axis: usize, index: isize) -> usize {
+        if index < 0 {
+            (self.shape[axis] as isize + index) as usize
+        } else {
+            index as usize
+        }
+    }
+
+    fn expand_slices(&self, slices_raw: &[AxisIndex]) -> (Vec<AxisIndex>, Vec<usize>) {
+        // The returned axis will not contain any AxisIndex::Ellipsis
+        let mut slices: Vec<AxisIndex> = Vec::with_capacity(self.shape.len());
+        let mut newaxes: Vec<usize> = Vec::with_capacity(self.shape.len());
+
+        // Count how many non NewAxis and non Ellipsis
+        let mut nondotted = 0;
+        for s in slices_raw {
+            match *s {
+                AxisIndex::NewAxis | AxisIndex::Ellipsis => {
+                    nondotted += 0;
+                },
+                _ => {
+                    nondotted += 1;
+                }
+            }
+        }
+
+        // Add an extra index to newaxes that represent insertion before the first axis
+        newaxes.push(0);
+        let mut ellipsis_found = false;
+        for s in slices_raw {
+            match *s {
+                AxisIndex::Ellipsis => {
+                    assert!(!ellipsis_found, "At most one AxisIndex::Ellipsis may be used");
+                    assert!(self.shape.len() >= nondotted);
+
+                    for _ in 0..(self.shape.len() - nondotted) {
+                        slices.push(AxisIndex::Full);
+                        newaxes.push(0);
+                    }
+                    ellipsis_found = true;
+                    //newaxes.push(0);
+                },
+                AxisIndex::NewAxis => {
+                    // Ignore these at this point
+                    let n = newaxes.len();
+                    newaxes[n - 1] += 1;
+                },
+                _ => {
+                    newaxes.push(0);
+                    slices.push(*s);
+                }
+            }
+        }
+        while slices.len() < self.shape.len() {
+            slices.push(AxisIndex::Full);
+        }
+        while newaxes.len() < self.shape.len() + 1 {
+            newaxes.push(0)
+        }
+        assert!(slices.len() == self.shape.len(), "Too many indices specified");
+        debug_assert!(newaxes.len() == self.shape.len() + 1, "newaxis wrong length");
+
+        (slices, newaxes)
+    }
+
+    pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor {
+        let (slices, newaxes) = self.expand_slices(slices_raw);
+
+        let n = slices.len();
+        let mut ranges: Vec<(usize, usize)> = Vec::with_capacity(n);
+        let mut dims: Vec<usize> = Vec::with_capacity(n);
+        let mut indices: Vec<usize> = Vec::with_capacity(n);
+        let mut shape: Vec<isize> = Vec::with_capacity(n);
+        let mut axis = 0;
+        for _ in 0..newaxes[0] {
+            shape.push(1);
+        }
+        for s in slices {
+            let (st, en, keepdim) = match s {
+                AxisIndex::Index(i) => {
+                    (self.resolve_axis(axis, i), self.resolve_axis(axis, i + 1), false)
+                },
+                AxisIndex::Full => {
+                    (0, self.shape[axis], true)
+                },
+                AxisIndex::Slice(start, end) => {
+                    (self.resolve_axis(axis, start), self.resolve_axis(axis, end), true)
+                },
+                AxisIndex::SliceTo(end) => {
+                    (0, self.resolve_axis(axis, end), true)
+                },
+                AxisIndex::SliceFrom(start) => {
+                    (self.resolve_axis(axis, start), self.shape[axis], true)
+                },
+                AxisIndex::Ellipsis | AxisIndex::NewAxis => {
+                    // Should have been removed by expand_slices at this point
+                    unreachable!();
+                },
+            };
+
+            ranges.push((st, en));
+            indices.push(st);
+            dims.push(en - st);
+            if keepdim {
+                shape.push((en - st) as isize);
+            }
+            for _ in 0..newaxes[axis + 1] {
+                shape.push(1);
+            }
+            axis += 1;
+        }
+
+        let mut t = Tensor::zeros(&dims);
+        let strides = self.strides();
+
+        let mut index = 0;
+        for si in 0..strides.len() {
+            index += strides[si] * indices[si];
+        }
+
+        let mut base_i = 0;
+        for _ in 0..t.data.len() {
+            let mut c = strides.len() - 1;
+
+            t.data[base_i] = self.data[index];
+            index += strides[c];
+            indices[c] += strides[c];
+            while indices[c] >= ranges[c].1 {
+                if c == 0 {
+                    break;
+                }
+                // Reset
+                indices[c] = ranges[c].0;
+                index -= dims[c] * strides[c];
+                index += strides[c - 1];
+                indices[c - 1] += 1;
+                c -= 1;
+            }
+
+            base_i += 1;
+        }
+
+        t.reshaped(&shape[..])
+    }
+
+    pub fn ones(shape: &[usize]) -> Tensor {
+        Tensor::filled(shape, 1.0)
+    }
+
+    pub fn eye(size: usize) -> Tensor {
+        let mut t = Tensor::zeros(&[size, size]);
+        for k in 0..size {
+            t.set(k, k, 1.0);
+        }
+        t
+    }
+
     pub fn shape(&self) -> &Vec<usize> {
         &self.shape
     }
 
     pub fn data(&self) -> &Vec<f64> {
         &self.data
-    }
-
-    pub fn zeros(shape: &[usize]) -> Tensor {
-        Tensor::new_filled(shape, 0.0)
-    }
-
-    pub fn ones(shape: &[usize]) -> Tensor {
-        Tensor::new_filled(shape, 1.0)
     }
 
     // Converts a shape that allows -1 to one with actual sizes
@@ -105,16 +284,6 @@ impl Tensor {
     fn set(&mut self, i: usize, j: usize, v: f64) {
         self.data[i * self.shape[1] + j] = v;
     }
-
-    /*
-    fn get1(&self, i: usize) -> f64 {
-        self.data[i]
-    }
-
-    fn set1(&mut self, i: usize, v: f64) {
-        self.data[i] = v;
-    }
-    */
 
     pub fn size(&self) -> usize {
         self.data.len()
@@ -208,7 +377,7 @@ impl Tensor {
                                         &1);
                 }
             }
-            Tensor::new_data(vec![v])
+            Tensor::new(vec![v])
         } else {
             panic!("Dot product is not supported for the matrix dimensions provided");
         }
@@ -219,19 +388,83 @@ fn shape_product(shape: &[usize]) -> usize {
     shape.iter().fold(1, |acc, &v| acc * v)
 }
 
+// Ravelled indexing (this will index it as one-dimensional)
+impl Index<usize> for Tensor {
+    type Output = f64;
+    fn index<'a>(&'a self, _index: usize) -> &'a f64 {
+        &self.data[_index as usize]
+    }
+}
+
+impl IndexMut<usize> for Tensor {
+    fn index_mut<'a>(&'a mut self, _index: usize) -> &'a mut f64 {
+        &mut self.data[_index as usize]
+    }
+}
+
+// 1-D indexing
+impl Index<(usize,)> for Tensor {
+    type Output = f64;
+    fn index<'a>(&'a self, _index: (usize,)) -> &'a f64 {
+        assert!(self.ndim() == 1);
+        &self.data[_index.0]
+    }
+}
+
+impl IndexMut<(usize,)> for Tensor {
+    fn index_mut<'a>(&'a mut self, _index: (usize,)) -> &'a mut f64 {
+        assert!(self.ndim() == 1);
+        &mut self.data[_index.0]
+    }
+}
+
+// 2-D indexing
+impl Index<(usize, usize)> for Tensor {
+    type Output = f64;
+    fn index<'a>(&'a self, _index: (usize, usize)) -> &'a f64 {
+        assert!(self.ndim() == 2);
+        &self.data[(_index.0 * self.shape[1] + _index.1)]
+    }
+}
+
+impl IndexMut<(usize, usize)> for Tensor {
+    fn index_mut<'a>(&'a mut self, _index: (usize, usize)) -> &'a mut f64 {
+        assert!(self.ndim() == 2);
+        &mut self.data[(_index.0 * self.shape[1] + _index.1)]
+    }
+}
+
+// 3-D indexing
+impl Index<(usize, usize, usize)> for Tensor {
+    type Output = f64;
+    fn index<'a>(&'a self, _index: (usize, usize, usize)) -> &'a f64 {
+        assert!(self.ndim() == 3);
+        &self.data[(_index.0 * self.shape[1] * self.shape[2] +
+                    _index.1 * self.shape[2] +
+                    _index.2)]
+    }
+}
+
+impl IndexMut<(usize, usize, usize)> for Tensor {
+    fn index_mut<'a>(&'a mut self, _index: (usize, usize, usize)) -> &'a mut f64 {
+        assert!(self.ndim() == 3);
+        &mut self.data[(_index.0 * self.shape[1] * self.shape[2] +
+                        _index.1 * self.shape[2] +
+                        _index.2)]
+    }
+}
+
 impl fmt::Display for Tensor {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // The `f` value implements the `Write` trait, which is what the
-        // write! macro is expecting. Note that this formatting ignores the
-        // various flags provided to format strings.
-        //write!(f, "Tensor({:?})", self.shape)
-
         let mv = &self.data[..];
         let mut s = "".to_string();
         if self.ndim() == 1 {
             s.push_str("[");
             for i in 0..self.shape[0] {
-                s = format!("{} {}", s, mv[i]);
+                if i > 0 {
+                    s.push_str(" ");
+                }
+                s = format!("{}{:6.2}", s, mv[i]);
             }
             s.push_str("]");
         } else if self.ndim() == 2 {
@@ -252,6 +485,8 @@ impl fmt::Display for Tensor {
                     s.push_str("]\n");
                 }
             }
+        } else {
+            s = format!("Tensor({:?})", self.shape);
         }
         write!(f, "{}", s)
     }
