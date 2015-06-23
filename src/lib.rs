@@ -4,6 +4,7 @@
 //! Its Tensor object uses OpenBLAS for fast matrix muliplications and other operations.
 extern crate libc;
 extern crate blas_sys;
+extern crate num;
 
 pub mod tensor;
 pub mod tests;
