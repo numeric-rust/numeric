@@ -1,8 +1,8 @@
 
 # Numeric Rust
 
-N-dimensional matrix class for Rust 1.0. It links to OpenBLAS to give fast 
-operations like the matrix multiplication. It utilizes Rust's move semantics 
+N-dimensional matrix class for Rust 1.0. It links to OpenBLAS to make tensor
+operations fast (like matrix multipliations). It utilizes Rust's move semantics
 as much as possible to avoid unnecessary copies.
 
 ## Features
@@ -57,5 +57,5 @@ f =
 [[  7.00   4.00   4.00]
  [  0.00   6.00   0.00]]
 g =
-Tensor([2, 3, 4, 5])    
+DoubleTensor([2, 3, 4, 5])    
 ```
