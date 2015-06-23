@@ -1,3 +1,5 @@
+//! The tensor module defines a N-dimensional matrix object.
+
 use std::vec::Vec;
 use std::ops::{Add ,Sub, Mul, Div, Index, IndexMut};
 use libc::{c_int, c_char};
@@ -6,20 +8,19 @@ use blas_sys;
 use std::fmt;
 
 /// An implementation of an N-dimensional matrix.
-///
-/// A quick example:
-///
-/// ```
-/// let t = Tensor::new(vec![1.0, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
-/// println!("{}", t);
-/// ```
-///
-/// Will output:
-///
-/// ```
-/// [[  1.00   3.00]
-///  [  2.00   2.00]]
-/// ```
+// A quick example:
+//
+// ```
+// let t = Tensor::new(vec![1.0, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
+// println!("{}", t);
+// ```
+//
+// Will output:
+//
+// ```
+// [[  1.00   3.00]
+//  [  2.00   2.00]]
+// ```
 pub struct Tensor {
     /// The underlying data matrix, stored in row-major order.
     data: Vec<f64>,
@@ -42,16 +43,14 @@ pub enum AxisIndex {
     Index(isize),
     /// Specifies a half-open range. Slice(2, 5) will pick out indices 2, 3 and 4.
     Slice(isize, isize),
-
     /// Specifies the start (inclusive) and to the end.
     SliceFrom(isize),
-
     /// Specifies the end (exclusive) from the start.
     SliceTo(isize),
 }
 
 impl Tensor {
-    /// Creates a new tensor with no elements of shape `(0,)`
+    /// Creates a new tensor with no elements.
     pub fn empty() -> Tensor {
         Tensor{data: Vec::new(), shape: vec![0]}
     }
@@ -65,7 +64,9 @@ impl Tensor {
     /// Creates a new tensor with integer values starting at 0 and counting up:
     /// 
     /// ```
-    /// Tensor::range(5) // [  0.00   1.00   2.00   3.00   4.00]
+    /// use numeric::tensor::Tensor;
+    ///
+    /// let t = Tensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
     /// ```
     pub fn range(size: usize) -> Tensor {
         let mut data = Vec::with_capacity(size);
@@ -212,11 +213,13 @@ impl Tensor {
     /// `AxisIndex` enum to specify indexing for each axis.
     ///
     /// ```
+    /// use numeric::tensor::{Tensor, AxisIndex};
+    ///
     /// let t = Tensor::ones(&[2, 3, 4]);
     ///
-    /// t.slice([AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)] // shape [2, 3, 2]
-    /// t.slice([AxisIndex::Index(-1)]) // shape [3, 4]
-    /// t.slice([AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]) // shape [2, 2]
+    /// t.slice(&[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]
+    /// t.slice(&[AxisIndex::Index(-1)]); // shape [3, 4]
+    /// t.slice(&[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]
     /// ```
     pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor {
         let (slices, newaxes) = self.expand_slices(slices_raw);
@@ -233,7 +236,8 @@ impl Tensor {
         for s in slices {
             let (st, en, keepdim) = match s {
                 AxisIndex::Index(i) => {
-                    (self.resolve_axis(axis, i), self.resolve_axis(axis, i + 1), false)
+                    let idx = self.resolve_axis(axis, i);
+                    (idx, idx + 1, false)
                 },
                 AxisIndex::Full => {
                     (0, self.shape[axis], true)
