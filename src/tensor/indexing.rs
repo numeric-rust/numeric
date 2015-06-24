@@ -2,17 +2,48 @@ use tensor::Tensor;
 use num::traits::Num;
 use std::ops::{Index, IndexMut};
 
-// Flattened indexing (this will index it as one-dimensional)
-impl<T> Index<usize> for Tensor<T> {
+// Vector indexing
+impl<'b, T: Copy + Num> Index<&'b [usize]> for Tensor<T> {
     type Output = T;
-    fn index<'a>(&'a self, _index: usize) -> &'a T {
-        &self.data[_index as usize]
+    fn index<'a>(&'a self, ii: &'b [usize]) -> &'a T {
+        let index = self.ravel_index(ii);
+        &self.data[index]
     }
 }
 
-impl<T> IndexMut<usize> for Tensor<T> {
+impl<'b, T: Copy + Num> IndexMut<&'b [usize]> for Tensor<T> {
+    fn index_mut<'a>(&'a mut self, ii: &'b [usize]) -> &'a mut T {
+        let index = self.ravel_index(ii);
+        &mut self.data[index]
+    }
+}
+
+impl<'b, T: Copy + Num> Index<&'b Vec<usize>> for Tensor<T> {
+    type Output = T;
+    fn index<'a>(&'a self, ii: &'b Vec<usize>) -> &'a T {
+        let index = self.ravel_index(&ii[..]);
+        &self.data[index]
+    }
+}
+
+impl<'b, T: Copy + Num> IndexMut<&'b Vec<usize>> for Tensor<T> {
+    fn index_mut<'a>(&'a mut self, ii: &'b Vec<usize>) -> &'a mut T {
+        let index = self.ravel_index(&ii[..]);
+        &mut self.data[index]
+    }
+}
+
+// Flattened indexing (this will index it as one-dimensional)
+impl<T: Copy + Num> Index<usize> for Tensor<T> {
+    type Output = T;
+    fn index<'a>(&'a self, _index: usize) -> &'a T {
+        &self.data[_index]
+    }
+}
+
+impl<T: Copy + Num> IndexMut<usize> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: usize) -> &'a mut T {
-        &mut self.data[_index as usize]
+        &mut self.data[_index]
     }
 }
 

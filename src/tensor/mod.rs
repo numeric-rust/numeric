@@ -69,6 +69,7 @@ mod dot_floats;
 
 mod eq;
 mod indexing;
+mod concat;
 
 impl<T: Copy + Num> Tensor<T> {
     /// Creates a new tensor with no elements.
@@ -158,11 +159,13 @@ impl<T: Copy + Num> Tensor<T> {
     }
 
     /// Returns number of elements in the tensor.
+    #[inline]
     pub fn size(&self) -> usize {
         self.data.len()
     }
 
     /// Returns the number of axes. This is the same as the length of the shape array.
+    #[inline]
     pub fn ndim(&self) -> usize {
         self.shape.len()
     }
@@ -323,6 +326,60 @@ impl<T: Copy + Num> Tensor<T> {
         }
 
         t.reshaped(&shape[..])
+    }
+
+    /// Swaps two axes. This returns a new Tensor, since the memory needs to be re-arranged.
+    pub fn swapaxes(&self, axis1: usize, axis2: usize) -> Tensor<T> {
+        assert!(axis1 < self.ndim());
+        assert!(axis2 < self.ndim());
+        assert!(axis1 != axis2);
+
+        let strides = self.strides();
+
+        let mut shape = self.shape.clone();
+        let s = shape[axis1];
+        shape[axis1] = shape[axis2];
+        shape[axis2] = s;
+
+        // TODO: This is slow and can be improved
+        let mut t = Tensor::zeros(&shape);
+        for i in 0..self.size() {
+            let mut ii = self.unravel_index(i);
+            let s = ii[axis1];
+            ii[axis1] = ii[axis2];
+            ii[axis2] = s;
+            t[&ii] = self.data[i];
+        }
+        t
+    }
+
+    /// Transposes a matrix (for now, requires it to be 2D).
+    pub fn transpose(&self) -> Tensor<T> {
+        assert!(self.ndim() == 2, "Can only tranpose a matrix (2D Tensor)");
+        return self.swapaxes(0, 1);
+    }
+
+    /// Takes a flatten index (in row-major order) and returns a vector of the per-axis indices.
+    pub fn unravel_index(&self, index: usize) -> Vec<usize> {
+        let strides = self.strides();
+        let mut ii: Vec<usize> = Vec::with_capacity(self.ndim());
+        let mut c = index;
+        for i in 0..self.ndim() {
+            ii.push(c / strides[i]);
+            c %= strides[i];
+        }
+        ii
+    }
+
+    /// Takes an array of per-axis indices and returns a flattened index (in row-major order).
+    pub fn ravel_index(&self, ii: &[usize]) -> usize {
+        assert_eq!(ii.len(), self.ndim());
+        let strides = self.strides();
+        let mut index = 0;
+        for i in 0..self.ndim() {
+            index += strides[i] * ii[i];
+        }
+        index
     }
 
     // Converts a shape that allows -1 to one with actual sizes
