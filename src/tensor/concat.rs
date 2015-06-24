@@ -2,29 +2,29 @@ use tensor::Tensor;
 use num::traits::Num;
 
 impl<T: Copy + Num> Tensor<T> {
-    pub fn concat(&self, rhs: &Tensor<T>, axis: usize) -> Tensor<T> {
-        debug_assert!(axis < self.ndim());
-        debug_assert!(self.ndim() == rhs.ndim());
+    pub fn concat(lhs: &Tensor<T>, rhs: &Tensor<T>, axis: usize) -> Tensor<T> {
+        debug_assert!(axis < lhs.ndim());
+        debug_assert!(lhs.ndim() == rhs.ndim());
 
-        let mut shape = Vec::with_capacity(self.ndim());
-        for i in 0..self.ndim() {
+        let mut shape = Vec::with_capacity(lhs.ndim());
+        for i in 0..lhs.ndim() {
             if i != axis {
-                if self.shape[i] != rhs.shape[i] {
+                if lhs.shape[i] != rhs.shape[i] {
                     panic!("When using concat, all axes must be the same except the joining one");
                 }
-                shape.push(self.shape[i]);
+                shape.push(lhs.shape[i]);
             } else {
-                shape.push(self.shape[i] + rhs.shape[i]);
+                shape.push(lhs.shape[i] + rhs.shape[i]);
             }
         }
 
         let mut t = Tensor::zeros(&shape);
-        for i in 0..self.size() {
-            let ii = self.unravel_index(i);
-            t[&ii] = self.data[i];
+        for i in 0..lhs.size() {
+            let ii = lhs.unravel_index(i);
+            t[&ii] = lhs.data[i];
         }
 
-        let offset = self.shape[axis];
+        let offset = lhs.shape[axis];
         for i in 0..rhs.size() {
             let mut ii = rhs.unravel_index(i);
             ii[axis] += offset;
