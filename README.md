@@ -24,20 +24,20 @@ Some of the completed and planned features:
 ## Example
 
 ```rust
-use numeric::tensor::DoubleTensor;
+use numeric::DoubleTensor;
 
 fn main() {
     let a = DoubleTensor::range(6).reshaped(&[2, 3]);
     let b = DoubleTensor::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
     let c = DoubleTensor::new(vec![7.0, 3.0, 2.0]);
 
-    let d = &a + &b;                // a copy is made
+    let d = &a + &b;                   // a copy is made
     println!("d = \n{}", d);
 
-    let e = DoubleTensor::dot(&a, &c);    // matrix multiplication (returns a new tensor)
+    let e = DoubleTensor::dot(&a, &c); // matrix multiplication (returns a new tensor)
     println!("e = \n{}", e);
 
-    let f = a + &b;                 // a is moved (no memory is allocated)
+    let f = a + &b;                    // a is moved (no memory is allocated)
     println!("f = \n{}", f);
 
     // Higher-dimensional

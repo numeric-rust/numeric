@@ -8,3 +8,7 @@ extern crate num;
 
 pub mod tensor;
 pub mod tests;
+
+/// Many of the things in tensor is lifted into numeric since it is so common.
+pub use tensor::{Tensor, AxisIndex};
+pub use tensor::{SingleTensor, DoubleTensor};

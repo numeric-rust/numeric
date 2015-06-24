@@ -1,4 +1,11 @@
 //! The tensor module defines a N-dimensional matrix for used in scientific computing.
+//!
+//! Many of the things in this module are lifted out of the `tensor` namespace, which means you can
+//! do things like:
+//!
+//! ```
+//! use numeric::Tensor;
+//! ```
 
 use std::vec::Vec;
 use num::traits::Num;
@@ -7,8 +14,8 @@ use num::traits::Num;
 /// A quick example:
 ///
 /// ```
-/// use numeric::tensor::DoubleTensor;
-/// let t = DoubleTensor::new(vec![1.0, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
+/// use numeric::Tensor;
+/// let t = Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
 /// println!("{}", t);
 /// ```
 ///
@@ -27,12 +34,14 @@ pub struct Tensor<T> {
 }
 
 // Common type-specific tensors
+
+/// Type alias for `Tensor<f64>`
 pub type DoubleTensor = Tensor<f64>;
+
+/// Type alias for `Tensor<f32>`
 pub type SingleTensor = Tensor<f32>;
-//pub type BoolTensor = Tensor<bool>;
 
 /// Used for advanced slicing of a `Tensor`.
-///
 #[derive(Copy, Clone)]
 pub enum AxisIndex {
     /// Indexes from start to end for this axis.
@@ -76,7 +85,7 @@ impl<T: Copy + Num> Tensor<T> {
     /// Creates a new tensor with integer values starting at 0 and counting up:
     /// 
     /// ```
-    /// use numeric::tensor::DoubleTensor;
+    /// use numeric::DoubleTensor;
     ///
     /// let t = DoubleTensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
     /// ```
@@ -227,7 +236,7 @@ impl<T: Copy + Num> Tensor<T> {
     /// `AxisIndex` enum to specify indexing for each axis.
     ///
     /// ```
-    /// use numeric::tensor::{DoubleTensor, AxisIndex};
+    /// use numeric::{DoubleTensor, AxisIndex};
     ///
     /// let t = DoubleTensor::ones(&[2, 3, 4]);
     ///
