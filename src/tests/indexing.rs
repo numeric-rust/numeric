@@ -1,0 +1,47 @@
+macro_rules! add_impl {
+    ($t:ty, $m:ident) => (
+        mod $m {
+            #[allow(unused_imports)]
+            use tensor::Tensor;
+            type T = Tensor<$t>;
+
+            #[test]
+            fn indexing() {
+                let t = T::range(6);
+                let v = t[2];
+                assert_eq!(v, 2.0);
+            }
+
+            #[test]
+            fn indexing_mut() {
+                let mut t = T::zeros(&[3]);
+                t[2] = 1.0;
+                assert!(t == T::new(vec![0.0, 0.0, 1.0]));
+            }
+
+            #[test]
+            fn indexing_tuple_1() {
+                let t = T::range(6);
+                let v = t[(2,)];
+                assert_eq!(v, 2.0);
+            }
+
+            #[test]
+            fn indexing_tuple_2() {
+                let t = T::range(6).reshaped(&[2, 3]);
+                let v = t[(1, 2)];
+                assert_eq!(v, 5.0);
+            }
+
+            #[test]
+            fn indexing_tuple_3() {
+                let t = T::range(100).reshaped(&[2, 5, 10]);
+                let v = t[(1, 2, 3)];
+                assert_eq!(v, 73.0);
+            }
+        }
+    )
+}
+
+add_impl!(f32, float32);
+add_impl!(f64, float64);
