@@ -8,7 +8,7 @@
 //! ```
 
 use std::vec::Vec;
-use num::traits::Num;
+use num::traits::{Num, FromPrimitive, ToPrimitive, NumCast};
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -67,6 +67,7 @@ mod div_floats;
 mod display_floats;
 mod dot_floats;
 
+mod summary;
 mod eq;
 mod indexing;
 mod concat;
@@ -433,6 +434,16 @@ impl<T: Copy + Num> Tensor<T> {
     fn set(&mut self, i: usize, j: usize, v: T) {
         self.data[i * self.shape[1] + j] = v;
     }
+
+    /*
+    pub fn convert<D: Copy + Num + NumCast>(&self) -> Tensor<D> {
+        let t = Tensor::zeros(&self.shape);
+        for i in 0..self.size() {
+            t[i] = self[i] as D;
+        }
+        t
+    }
+    */
 }
 
 fn shape_product(shape: &[usize]) -> usize {

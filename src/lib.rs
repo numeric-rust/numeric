@@ -5,9 +5,12 @@
 extern crate libc;
 extern crate blas_sys;
 extern crate num;
+extern crate rand;
 
 pub mod tensor;
-pub mod tests;
+pub mod random;
+
+mod tests;
 
 /// Many of the things in tensor is lifted into numeric since it is so common.
 pub use tensor::{Tensor, AxisIndex};
