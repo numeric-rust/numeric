@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use tensor::Tensor;
 
 macro_rules! add_impl {
