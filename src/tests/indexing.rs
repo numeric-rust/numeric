@@ -1,3 +1,5 @@
+use tensor::Tensor;
+
 macro_rules! add_impl {
     ($t:ty, $m:ident) => (
         mod $m {
@@ -45,3 +47,26 @@ macro_rules! add_impl {
 
 add_impl!(f32, float32);
 add_impl!(f64, float64);
+
+// Ravelling and unravelling indices
+
+#[test]
+fn ravel_index() {
+    let t: Tensor<f64> = Tensor::zeros(&[3, 4, 5, 6]);
+    assert_eq!(t.ravel_index(&[0, 1, 0, 3]), 33);
+    assert_eq!(t.ravel_index(&[0, 1, 4, 3]), 57);
+    assert_eq!(t.ravel_index(&[1, 1, 4, 1]), 175);
+    assert_eq!(t.ravel_index(&[2, 2, 0, 0]), 300);
+}
+
+#[test]
+fn unravel_index() {
+    let t: Tensor<f64> = Tensor::zeros(&[3, 4, 5, 6]);
+    assert_eq!(t.unravel_index(33), vec![0, 1, 0, 3]);
+    assert_eq!(t.unravel_index(57), vec![0, 1, 4, 3]);
+    assert_eq!(t.unravel_index(175), vec![1, 1, 4, 1]);
+    assert_eq!(t.unravel_index(300), vec![2, 2, 0, 0]);
+}
+
+
+

@@ -1,7 +1,7 @@
 use tensor::Tensor;
-use num::traits::Num;
+use Numeric;
 
-impl<T: Copy + Num + PartialOrd> Tensor<T> {
+impl<T: Numeric> Tensor<T> {
     pub fn max(&self) -> T {
         debug_assert!(self.size() > 0, "Can't take max of empty tensor");
         let mut m = self.data[0];

@@ -1,7 +1,7 @@
 use tensor::Tensor;
-use num::traits::Num;
+use TensorType;
 
-impl<T: Copy + Num> Tensor<T> {
+impl<T: TensorType> Tensor<T> {
     pub fn concat(lhs: &Tensor<T>, rhs: &Tensor<T>, axis: usize) -> Tensor<T> {
         debug_assert!(axis < lhs.ndim());
         debug_assert!(lhs.ndim() == rhs.ndim());
@@ -18,7 +18,7 @@ impl<T: Copy + Num> Tensor<T> {
             }
         }
 
-        let mut t = Tensor::zeros(&shape);
+        let mut t = Tensor::empty(&shape);
         for i in 0..lhs.size() {
             let ii = lhs.unravel_index(i);
             t[&ii] = lhs.data[i];

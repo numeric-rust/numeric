@@ -7,7 +7,18 @@ extern crate blas_sys;
 extern crate num;
 extern crate rand;
 
+use num::traits::{Num, NumCast};
+
+/// Numeric is a short-hand for all traits that need to be implemented for `T` in the `Tensor<T>`
+/// struct.
+pub trait TensorType: Copy + PartialOrd {}
+impl<T: Copy + PartialOrd> TensorType for T {}
+
+pub trait Numeric: Copy + Num + NumCast + PartialOrd {}
+impl<T: Copy + Num + NumCast + PartialOrd> Numeric for T {}
+
 pub mod tensor;
+pub mod math;
 pub mod random;
 
 mod tests;

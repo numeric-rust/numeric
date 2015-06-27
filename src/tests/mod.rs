@@ -7,4 +7,6 @@ mod sub;
 mod mul;
 mod div;
 
+mod indexing;
+
 //mod f64;

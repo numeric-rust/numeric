@@ -7,14 +7,14 @@ macro_rules! add_impl {
         impl fmt::Display for Tensor<$t> {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 let mv = &self.data[..];
-                let mut s = "".to_string();
+                let mut s = format!("Tensor [{}]:\n", $name);
                 if self.ndim() == 1 {
                     s.push_str("[");
                     for i in 0..self.shape[0] {
                         if i > 0 {
                             s.push_str(" ");
                         }
-                        s = format!("{}{:6.2}", s, mv[i]);
+                        s = format!("{}{}", s, mv[i]);
                     }
                     s.push_str("]");
                 } else if self.ndim() == 2 {
@@ -27,7 +27,7 @@ macro_rules! add_impl {
                             if j > 0 {
                                 s.push_str(" ");
                             }
-                            s = format!("{}{:6.2}", s, self.get(i, j));
+                            s = format!("{}{}", s, self.get(i, j));
                         }
                         if i == self.shape[0] - 1 {
                             s.push_str("]]");
@@ -36,7 +36,7 @@ macro_rules! add_impl {
                         }
                     }
                 } else {
-                    s = format!("{}Tensor({:?})", $name, self.shape);
+                    s = format!("Tensor({:?}, type={})", self.shape, $name);
                 }
                 write!(f, "{}", s)
             }
@@ -45,5 +45,16 @@ macro_rules! add_impl {
 
 }
 
-add_impl!(f32, "Single");
-add_impl!(f64, "Double");
+add_impl!(f32,   "f32");
+add_impl!(f64,   "f64");
+add_impl!(usize, "usize");
+add_impl!(u8,    "u8");
+add_impl!(u16,   "u16");
+add_impl!(u32,   "u32");
+add_impl!(u64,   "u64");
+add_impl!(isize, "isize");
+add_impl!(i8,    "i8");
+add_impl!(i16,   "i16");
+add_impl!(i32,   "i32");
+add_impl!(i64,   "i64");
+add_impl!(bool,  "bool");

@@ -8,7 +8,8 @@
 //! ```
 
 use std::vec::Vec;
-use num::traits::{Num, FromPrimitive, ToPrimitive, NumCast};
+use {Numeric, TensorType};
+use num::traits::cast;
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -60,45 +61,66 @@ pub enum AxisIndex {
     SliceTo(isize),
 }
 
-mod add_floats;
-mod sub_floats;
-mod mul_floats;
-mod div_floats;
-mod display_floats;
+// For now, these specialized ones are not used
+// It might be slower, but until a benchmarking framework
+// is established, I'll avoid this complication
+//mod add_floats;
+//mod sub_floats;
+//mod mul_floats;
+//mod div_floats;
+
 mod dot_floats;
+
+mod display;
+mod generics;
 
 mod summary;
 mod eq;
 mod indexing;
 mod concat;
+mod convert;
 
-impl<T: Copy + Num> Tensor<T> {
-    /// Creates a new tensor with no elements.
-    pub fn empty() -> Tensor<T> {
-        Tensor{data: Vec::new(), shape: vec![0]}
-    }
+use num::traits::{Num, NumCast};
 
+impl<T: TensorType> Tensor<T> {
     /// Creates a new tensor from a `Vec` object. It will take ownership of the vector.
     pub fn new(data: Vec<T>) -> Tensor<T> {
         let len = data.len();
         Tensor{data: data, shape: vec![len]}
     }
 
-    /// Creates a new tensor with integer values starting at 0 and counting up:
-    /// 
-    /// ```
-    /// use numeric::DoubleTensor;
-    ///
-    /// let t = DoubleTensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
-    /// ```
-    pub fn range(size: usize) -> Tensor<T> {
+    /// Creates a zero-filled tensor of the specified shape.
+    pub fn empty(shape: &[usize]) -> Tensor<T> {
+        //let data = Vector::with_capacity(
+        let size = shape_product(shape);
+        let sh = shape.to_vec();
+
         let mut data = Vec::with_capacity(size);
-        let mut v = T::zero();
-        for _ in 0..size {
-            data.push(v);
-            v = v + T::one();
+        // Fill with potentially random elements.
+        // TODO: Possibly revise this (solution that doesn't need unsafe?)
+        unsafe {
+            data.set_len(size);
         }
-        Tensor{data: data, shape: vec![size]}
+        Tensor{data: data, shape: sh}
+        //Tensor::filled(shape, T::zero())
+    }
+
+    pub fn scalar(value: T) -> Tensor<T> {
+        Tensor{data: vec![value], shape: vec![1]}
+    }
+
+    pub fn is_scalar(&self) -> bool {
+        self.shape.len() == 1 && self.shape[0] == 1
+    }
+
+    pub fn unwrap(self) -> T {
+        assert!(self.is_scalar(), "Tensor must be scalar to use unwrap()");
+        self.data[0]
+    }
+
+    pub fn value(&self) -> T {
+        assert!(self.is_scalar(), "Tensor must be scalar to use unwrap()");
+        self.data[0]
     }
 
     /// Creates a new tensor of a given shape filled with the specified value.
@@ -111,26 +133,6 @@ impl<T: Copy + Num> Tensor<T> {
             data.push(v);
         }
         Tensor{data: data, shape: sh}
-    }
-
-    /// Creates a zero-filled tensor of the specified shape.
-    pub fn zeros(shape: &[usize]) -> Tensor<T> {
-        Tensor::filled(shape, T::zero())
-    }
-
-    /// Creates a one-filled tensor of the specified shape.
-    pub fn ones(shape: &[usize]) -> Tensor<T> {
-        Tensor::filled(shape, T::one())
-    }
-
-    /// Creates an identify 2-D tensor (matrix). That is, all elements are zero except the diagonal
-    /// which is filled with ones.
-    pub fn eye(size: usize) -> Tensor<T> {
-        let mut t = Tensor::zeros(&[size, size]);
-        for k in 0..size {
-            t.set(k, k, T::one());
-        }
-        t
     }
 
     /// Returns the shape of the tensor.
@@ -296,7 +298,7 @@ impl<T: Copy + Num> Tensor<T> {
             axis += 1;
         }
 
-        let mut t = Tensor::zeros(&dims);
+        let mut t = Tensor::empty(&dims);
         let strides = self.strides();
 
         let mut index = 0;
@@ -327,37 +329,6 @@ impl<T: Copy + Num> Tensor<T> {
         }
 
         t.reshaped(&shape[..])
-    }
-
-    /// Swaps two axes. This returns a new Tensor, since the memory needs to be re-arranged.
-    pub fn swapaxes(&self, axis1: usize, axis2: usize) -> Tensor<T> {
-        assert!(axis1 < self.ndim());
-        assert!(axis2 < self.ndim());
-        assert!(axis1 != axis2);
-
-        let strides = self.strides();
-
-        let mut shape = self.shape.clone();
-        let s = shape[axis1];
-        shape[axis1] = shape[axis2];
-        shape[axis2] = s;
-
-        // TODO: This is slow and can be improved
-        let mut t = Tensor::zeros(&shape);
-        for i in 0..self.size() {
-            let mut ii = self.unravel_index(i);
-            let s = ii[axis1];
-            ii[axis1] = ii[axis2];
-            ii[axis2] = s;
-            t[&ii] = self.data[i];
-        }
-        t
-    }
-
-    /// Transposes a matrix (for now, requires it to be 2D).
-    pub fn transpose(&self) -> Tensor<T> {
-        assert!(self.ndim() == 2, "Can only tranpose a matrix (2D Tensor)");
-        return self.swapaxes(0, 1);
     }
 
     /// Takes a flatten index (in row-major order) and returns a vector of the per-axis indices.
@@ -434,23 +405,95 @@ impl<T: Copy + Num> Tensor<T> {
     fn set(&mut self, i: usize, j: usize, v: T) {
         self.data[i * self.shape[1] + j] = v;
     }
+}
 
-    /*
-    pub fn convert<D: Copy + Num + NumCast>(&self) -> Tensor<D> {
-        let t = Tensor::zeros(&self.shape);
-        for i in 0..self.size() {
-            t[i] = self[i] as D;
+impl<T: TensorType + Num + NumCast> Tensor<T> {
+    /// Creates a zero-filled tensor of the specified shape.
+    pub fn zeros(shape: &[usize]) -> Tensor<T> {
+        Tensor::filled(shape, T::zero())
+    }
+
+    /// Creates a one-filled tensor of the specified shape.
+    pub fn ones(shape: &[usize]) -> Tensor<T> {
+        Tensor::filled(shape, T::one())
+    }
+
+    /// Creates an identify 2-D tensor (matrix). That is, all elements are zero except the diagonal
+    /// which is filled with ones.
+    pub fn eye(size: usize) -> Tensor<T> {
+        let mut t = Tensor::zeros(&[size, size]);
+        for k in 0..size {
+            t.set(k, k, T::one());
         }
         t
     }
-    */
+
+    /// Swaps two axes. This returns a new Tensor, since the memory needs to be re-arranged.
+    pub fn swapaxes(&self, axis1: usize, axis2: usize) -> Tensor<T> {
+        assert!(axis1 < self.ndim());
+        assert!(axis2 < self.ndim());
+        assert!(axis1 != axis2);
+
+        let mut shape = self.shape.clone();
+        let s = shape[axis1];
+        shape[axis1] = shape[axis2];
+        shape[axis2] = s;
+
+        // TODO: This is slow and can be improved
+        let mut t = Tensor::zeros(&shape);
+        for i in 0..self.size() {
+            let mut ii = self.unravel_index(i);
+            let s = ii[axis1];
+            ii[axis1] = ii[axis2];
+            ii[axis2] = s;
+            t[&ii] = self.data[i];
+        }
+        t
+    }
+
+    /// Transposes a matrix (for now, requires it to be 2D).
+    pub fn transpose(&self) -> Tensor<T> {
+        assert!(self.ndim() == 2, "Can only transpose a matrix (2D tensor)");
+        return self.swapaxes(0, 1);
+    }
+
+    /// Creates a new vector with integer values starting at 0 and counting up:
+    /// 
+    /// ```
+    /// use numeric::DoubleTensor;
+    ///
+    /// let t = DoubleTensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
+    /// ```
+    pub fn range(size: usize) -> Tensor<T> {
+        let mut data = Vec::with_capacity(size);
+        let mut v = T::zero();
+        for _ in 0..size {
+            data.push(v);
+            v = v + T::one();
+        }
+        Tensor{data: data, shape: vec![size]}
+    }
+
+    /// Creates a new vector between two values at constant increments. The number of elements is
+    /// specified.
+    pub fn linspace(start: T, stop: T, num: usize) -> Tensor<T> {
+        let mut t = Tensor::empty(&[num]);
+        let mut fi: T = T::zero();
+        let d: T = (stop - start) / (cast::<usize, T>(num).unwrap() - T::one());
+        for i in 0..num {
+            t[i] = start + fi * d;
+            fi = fi + T::one();
+        }
+        t
+    }
+
 }
 
 fn shape_product(shape: &[usize]) -> usize {
     shape.iter().fold(1, |acc, &v| acc * v)
 }
 
-impl<T: Copy + Num> Clone for Tensor<T> {
+impl<T: Numeric> Clone for Tensor<T> {
     fn clone(&self) -> Tensor<T> {
         Tensor{data: self.data.clone(), shape: self.shape.clone()}
     }
