@@ -7,7 +7,7 @@ macro_rules! add_impl {
         impl fmt::Display for Tensor<$t> {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 let mv = &self.data[..];
-                let mut ret = format!("Tensor [{}]:\n", $name);
+                let mut ret = "\n".to_string();
                 if self.ndim() <= 2 {
                     // Pre-generate all strings
                     let mut ss: Vec<String> = Vec::with_capacity(self.size());
@@ -21,49 +21,53 @@ macro_rules! add_impl {
                     }
 
                     if self.ndim() == 1 {
-                        //let ss_mv = &ss[..];
-
-                        ret.push_str("[");
                         for i in 0..self.shape[0] {
                             let s = &ss[i];
-                            if i > 0 {
-                                ret.push_str(" ");
-                            }
-                            for _ in 0..(longest - s.len()) {
+                            for _ in 0..(1 + longest - s.len()) {
                                 ret.push_str(" ");
                             }
 
                             ret = format!("{}{}", ret, s);
                         }
-                        ret.push_str("]");
                     } else if self.ndim() == 2 {
                         let s0 = self.strides()[0];
-                        ret.push_str("[[");
+                        //ret.push_str("[[");
                         for i in 0..self.shape[0] {
                             if i > 0 {
-                                ret.push_str(" [");
+                                //ret.push_str(" [");
                             }
                             for j in 0..self.shape[1] {
                                 let s = &ss[i * s0 + j];
-                                if j > 0 {
-                                    ret.push_str(" ");
-                                }
-                                for _ in 0..(longest - s.len()) {
+                                for _ in 0..(1 + longest - s.len()) {
                                     ret.push_str(" ");
                                 }
                                 ret = format!("{}{}", ret, s);
                             }
                             if i == self.shape[0] - 1 {
-                                ret.push_str("]]");
+                                //ret.push_str("]]");
                             } else {
-                                ret.push_str("]\n");
+                                //ret.push_str("]\n");
+                                ret.push_str("\n");
                             }
                         }
                     }
                 } else {
-                    ret = format!("Tensor({:?}, type={})", self.shape, $name);
+                    // For now, higher order are simply omitted
+                    ret.push_str("...");
                 }
-                write!(f, "{}", ret)
+
+                // Format shape
+                // TODO: Is there an implode/join function?
+                let mut shape_str = "".to_string();
+                for i in 0..self.shape.len() {
+                    if i == 0 {
+                        shape_str.push_str(&format!("{}", self.shape[i])[..]);
+                    } else {
+                        shape_str.push_str(&format!("x{}", self.shape[i])[..]);
+                    }
+                }
+
+                write!(f, "{}\n[Tensor<{}> of shape {}]", ret, $name, shape_str)
             }
         }
     )

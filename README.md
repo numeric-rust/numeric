@@ -26,21 +26,23 @@ Some of the completed and planned features:
 use numeric::DoubleTensor;
 
 fn main() {
-    let a = DoubleTensor::range(6).reshaped(&[2, 3]);
-    let b = DoubleTensor::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
-    let c = DoubleTensor::new(vec![7.0, 3.0, 2.0]);
+    type T = Tensor<f64>;
+
+    let a = T::range(6).reshaped(&[2, 3]);
+    let b = T::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
+    let c = T::new(vec![7.0, 3.0, 2.0]);
 
     let d = &a + &b;                   // a copy is made
-    println!("d = \n{}", d);
+    println!("d = {}", d);
 
-    let e = DoubleTensor::dot(&a, &c); // matrix multiplication (returns a new tensor)
-    println!("e = \n{}", e);
+    let e = T::dot(&a, &c); // matrix multiplication (returns a new tensor)
+    println!("e = {}", e);
 
     let f = a + &b;                    // a is moved (no memory is allocated)
-    println!("f = \n{}", f);
+    println!("f = {}", f);
 
     // Higher-dimensional
-    println!("g = \n{}", DoubleTensor::ones(&[2, 3, 4, 5]));
+    println!("g = {}", T::ones(&[2, 3, 4, 5]));
 }
 ```
 
@@ -48,13 +50,17 @@ Output:
 
 ```
 d =
-[[  7.00   4.00   4.00]
- [  0.00   6.00   0.00]]
+ 7 4 4
+ 0 6 0
+[Tensor<f64> of shape 2x3]
 e =
-[  7.00  43.00]
+  7 43
+[Tensor<f64> of shape 2]
 f =
-[[  7.00   4.00   4.00]
- [  0.00   6.00   0.00]]
+ 7 4 4
+ 0 6 0
+[Tensor<f64> of shape 2x3]
 g =
-DoubleTensor([2, 3, 4, 5])    
+...
+[Tensor<f64> of shape 2x3x4x5]
 ```
