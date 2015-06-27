@@ -32,13 +32,13 @@ fn main() {
     let b = T::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
     let c = T::new(vec![7.0, 3.0, 2.0]);
 
-    let d = &a + &b;                   // a copy is made
+    let d = &a + &b;         // a copy is made
     println!("d = {}", d);
 
-    let e = T::dot(&a, &c); // matrix multiplication (returns a new tensor)
+    let e = T::dot(&a, &c);  // matrix multiplication (returns a new tensor)
     println!("e = {}", e);
 
-    let f = a + &b;                    // a is moved (no memory is allocated)
+    let f = a + &b;          // a is moved (no memory is allocated)
     println!("f = {}", f);
 
     // Higher-dimensional
@@ -64,3 +64,7 @@ g =
 ...
 [Tensor<f64> of shape 2x3x4x5]
 ```
+
+## Acknowledgement
+
+Borrowing shamelessly from the great projects Numpy and Torch7.
