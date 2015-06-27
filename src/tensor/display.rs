@@ -7,38 +7,63 @@ macro_rules! add_impl {
         impl fmt::Display for Tensor<$t> {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 let mv = &self.data[..];
-                let mut s = format!("Tensor [{}]:\n", $name);
-                if self.ndim() == 1 {
-                    s.push_str("[");
-                    for i in 0..self.shape[0] {
-                        if i > 0 {
-                            s.push_str(" ");
+                let mut ret = format!("Tensor [{}]:\n", $name);
+                if self.ndim() <= 2 {
+                    // Pre-generate all strings
+                    let mut ss: Vec<String> = Vec::with_capacity(self.size());
+                    let mut longest: usize = 0;
+                    for i in 0..self.size() {
+                        let s = format!("{}", mv[i]);
+                        ss.push(s.to_string());
+                        if s.len() > longest {
+                            longest = s.len();
                         }
-                        s = format!("{}{}", s, mv[i]);
                     }
-                    s.push_str("]");
-                } else if self.ndim() == 2 {
-                    s.push_str("[[");
-                    for i in 0..self.shape[0] {
-                        if i > 0 {
-                            s.push_str(" [");
-                        }
-                        for j in 0..self.shape[1] {
-                            if j > 0 {
-                                s.push_str(" ");
+
+                    if self.ndim() == 1 {
+                        //let ss_mv = &ss[..];
+
+                        ret.push_str("[");
+                        for i in 0..self.shape[0] {
+                            let s = &ss[i];
+                            if i > 0 {
+                                ret.push_str(" ");
                             }
-                            s = format!("{}{}", s, self.get(i, j));
+                            for _ in 0..(longest - s.len()) {
+                                ret.push_str(" ");
+                            }
+
+                            ret = format!("{}{}", ret, s);
                         }
-                        if i == self.shape[0] - 1 {
-                            s.push_str("]]");
-                        } else {
-                            s.push_str("]\n");
+                        ret.push_str("]");
+                    } else if self.ndim() == 2 {
+                        let s0 = self.strides()[0];
+                        ret.push_str("[[");
+                        for i in 0..self.shape[0] {
+                            if i > 0 {
+                                ret.push_str(" [");
+                            }
+                            for j in 0..self.shape[1] {
+                                let s = &ss[i * s0 + j];
+                                if j > 0 {
+                                    ret.push_str(" ");
+                                }
+                                for _ in 0..(longest - s.len()) {
+                                    ret.push_str(" ");
+                                }
+                                ret = format!("{}{}", ret, s);
+                            }
+                            if i == self.shape[0] - 1 {
+                                ret.push_str("]]");
+                            } else {
+                                ret.push_str("]\n");
+                            }
                         }
                     }
                 } else {
-                    s = format!("Tensor({:?}, type={})", self.shape, $name);
+                    ret = format!("Tensor({:?}, type={})", self.shape, $name);
                 }
-                write!(f, "{}", s)
+                write!(f, "{}", ret)
             }
         }
     )
