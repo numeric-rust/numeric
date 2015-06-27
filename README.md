@@ -13,9 +13,8 @@ Some of the completed and planned features:
 * [x] Matrix multiplication and scalar product
 * [x] Indexing
 * [x] Slicing
-* [x] Generic (all operations defined for `f32` and `f64`)
-* [ ] Integer types
-* [ ] Bool type
+* [x] Generic (anything from `Tensor<bool>` to `Tensor<f64>`)
+* [x] Mathematical functions
 * [ ] Strided slices
 * [ ] Updating slices
 * [ ] Broadcasted axes
