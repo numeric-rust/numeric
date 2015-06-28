@@ -8,7 +8,8 @@ macro_rules! add_impl {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 let mv = &self.data[..];
                 let mut ret = "\n".to_string();
-                if self.ndim() <= 2 {
+                // Limit to 1000 elements shown
+                if self.ndim() <= 2 && self.size() <= 1000 {
                     // Pre-generate all strings
                     let mut ss: Vec<String> = Vec::with_capacity(self.size());
                     let mut longest: usize = 0;
