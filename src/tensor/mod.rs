@@ -71,7 +71,7 @@ pub enum AxisIndex {
 //mod mul_floats;
 //mod div_floats;
 
-mod dot_floats;
+mod dot;
 
 mod display;
 mod generics;

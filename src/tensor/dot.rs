@@ -8,28 +8,28 @@ macro_rules! add_impl {
             /// Takes the product of two tensors. If the tensors are both matrices (2D), then a
             /// matrix multiplication is taken. If the tensors are both vectors (1D), the scalar
             /// product is taken.
-            pub fn dot(t1: &Tensor<$t>, t2: &Tensor<$t>) -> Tensor<$t> {
-                if t1.ndim() == 2 && t2.ndim() == 1 {
-                    assert_eq!(t1.shape[1], t2.shape[0]);
-                    let mut t3 = Tensor::zeros(&[t1.shape[0]]);
+            pub fn dot(&self, rhs: &Tensor<$t>) -> Tensor<$t> {
+                if self.ndim() == 2 && rhs.ndim() == 1 {
+                    assert_eq!(self.shape[1], rhs.shape[0]);
+                    let mut t3 = Tensor::empty(&[self.shape[0]]);
                     if cfg!(noblas) {
                         // Naive implementation, BLAS will be much faster
-                        for i in 0..t1.shape[0] {
+                        for i in 0..self.shape[0] {
                             let mut v = 0.0;
-                            for k in 0..t1.shape[1] {
-                                v += t1.get(i, k) * t2.data[k];
+                            for k in 0..self.shape[1] {
+                                v += self.get(i, k) * rhs.data[k];
                             }
                             t3.data[i] = v;
                         }
                     } else {
                         unsafe {
                             blas_sys::$gemv(&('T' as c_char),
-                                            &(t1.shape[1] as c_int),
-                                            &(t1.shape[0] as c_int),
+                                            &(self.shape[1] as c_int),
+                                            &(self.shape[0] as c_int),
                                             &1.0,
-                                            t1.data.as_ptr(),
-                                            &(t1.shape[1] as c_int),
-                                            t2.data.as_ptr(),
+                                            self.data.as_ptr(),
+                                            &(self.shape[1] as c_int),
+                                            rhs.data.as_ptr(),
                                             &1,
                                             &0.0,
                                             t3.data.as_mut_ptr(),
@@ -38,16 +38,16 @@ macro_rules! add_impl {
                         }
                     }
                     t3
-                } else if t1.ndim() == 2 && t2.ndim() == 2 {
-                    assert_eq!(t1.shape[1], t2.shape[0]);
-                    let mut t3 = Tensor::zeros(&[t1.shape[0], t2.shape[1]]);
+                } else if self.ndim() == 2 && rhs.ndim() == 2 {
+                    assert_eq!(self.shape[1], rhs.shape[0]);
+                    let mut t3 = Tensor::empty(&[self.shape[0], rhs.shape[1]]);
                     if cfg!(noblas) {
                         // Naive implementation, BLAS will be much faster
-                        for i in 0..t1.shape[0] {
-                            for j in 0..t2.shape[1] {
+                        for i in 0..self.shape[0] {
+                            for j in 0..rhs.shape[1] {
                                 let mut v = 0.0;
-                                for k in 0..t1.shape[1] {
-                                    v += t1.get(i, k) * t2.get(k, j);
+                                for k in 0..self.shape[1] {
+                                    v += self.get(i, k) * rhs.get(k, j);
                                 }
                                 t3.set(i, j, v);
                             }
@@ -58,36 +58,36 @@ macro_rules! add_impl {
                             //       so we have to re-arrange things a bit
                             blas_sys::$gemm(&('N' as c_char),
                                             &('N' as c_char),
-                                            &(t2.shape[1] as c_int),
-                                            &(t1.shape[0] as c_int),
-                                            &(t2.shape[0] as c_int),
+                                            &(rhs.shape[1] as c_int),
+                                            &(self.shape[0] as c_int),
+                                            &(rhs.shape[0] as c_int),
                                             &1.0,
-                                            t2.data.as_ptr(),
-                                            &(t2.shape[1] as c_int),
-                                            t1.data.as_ptr(),
-                                            &(t2.shape[0] as c_int),
+                                            rhs.data.as_ptr(),
+                                            &(rhs.shape[1] as c_int),
+                                            self.data.as_ptr(),
+                                            &(rhs.shape[0] as c_int),
                                             &0.0,
                                             t3.data.as_mut_ptr(),
-                                            &(t2.shape[1] as c_int)
+                                            &(rhs.shape[1] as c_int)
                                             );
                         }
                     }
                     t3
-                } else if t1.ndim() == 1 && t2.ndim() == 1 { // scalar product
-                    assert_eq!(t1.size(), t2.size());
+                } else if self.ndim() == 1 && rhs.ndim() == 1 { // scalar product
+                    assert_eq!(self.size(), rhs.size());
                     let mut v = 0.0;
                     if cfg!(noblas) {
                         // Naive implementation, BLAS will be much faster
-                        for k in 0..t1.shape[0] {
-                            v += t1.data[k] * t2.data[k];
+                        for k in 0..self.shape[0] {
+                            v += self.data[k] * rhs.data[k];
                         }
                     } else {
-                        let n = t1.size() as c_int;
+                        let n = self.size() as c_int;
                         unsafe {
                             v = blas_sys::$dot(&n,
-                                               t1.data.as_ptr(),
+                                               self.data.as_ptr(),
                                                &1,
-                                               t2.data.as_ptr(),
+                                               rhs.data.as_ptr(),
                                                &1);
                         }
                     }
