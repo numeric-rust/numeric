@@ -25,7 +25,7 @@ Some of the completed and planned features:
 ## Example
 
 ```rust
-use numeric::DoubleTensor;
+use numeric::Tensor;
 
 fn main() {
     type T = Tensor<f64>;
