@@ -2,7 +2,7 @@
 //! after what is available natively in Rust.
 
 use tensor::Tensor;
-use {Numeric, TensorType};
+use Numeric;
 use num::traits::Float;
 
 macro_rules! add_impl0 {
@@ -28,6 +28,7 @@ pub fn log<T: Numeric + Float>(x: &Tensor<T>, base: T) -> Tensor<T> {
     y
 }
 
+/*
 pub fn gt<T: TensorType>(lhs: &Tensor<T>, rhs: &Tensor<T>) -> Tensor<bool> {
     assert_eq!(lhs.shape(), rhs.shape());
     let mut y = Tensor::empty(&lhs.shape());
@@ -36,3 +37,4 @@ pub fn gt<T: TensorType>(lhs: &Tensor<T>, rhs: &Tensor<T>) -> Tensor<bool> {
     }
     y
 }
+*/

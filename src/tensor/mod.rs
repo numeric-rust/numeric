@@ -82,6 +82,8 @@ mod indexing;
 mod concat;
 mod convert;
 
+mod binary;
+
 use num::traits::{Num, NumCast};
 
 impl<T: TensorType> Tensor<T> {

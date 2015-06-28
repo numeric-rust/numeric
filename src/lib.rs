@@ -12,13 +12,13 @@ extern crate rand;
 use num::traits::{Num, NumCast};
 
 /// This is the basic trait that must be satisfied for basic elements used in `Tensor`.
-pub trait TensorType: Copy + PartialOrd {}
-impl<T: Copy + PartialOrd> TensorType for T {}
+pub trait TensorType: Copy {}
+impl<T: Copy> TensorType for T {}
 
 /// `Numeric` extends `TensorType` to all the numeric types supported by `Tensor` 
 /// (e.g. `u8` and `f32`).
-pub trait Numeric: TensorType + Num + NumCast {}
-impl<T: TensorType + Num + NumCast> Numeric for T {}
+pub trait Numeric: TensorType + Num + NumCast + PartialOrd {}
+impl<T: TensorType + Num + NumCast + PartialOrd> Numeric for T {}
 
 pub mod tensor;
 pub mod math;
