@@ -16,10 +16,11 @@ Some of the completed and planned features:
 * [x] Generic (anything from `Tensor<bool>` to `Tensor<f64>`)
 * [x] Mathematical functions
 * [x] Linear solver
+* [x] Basic random number generation
 * [ ] Strided slices
 * [ ] Updating slices
 * [ ] Broadcasted axes
-* [ ] Matrix solver / inverse
+* [ ] Matrix inverse and SVD
 
 ## Example
 
