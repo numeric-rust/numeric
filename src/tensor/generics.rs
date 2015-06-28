@@ -1,5 +1,5 @@
 use tensor::Tensor;
-use std::ops::{Add, Sub, Mul, Div, Rem};
+use std::ops::{Add, Sub, Mul, Div, Rem, BitAnd, BitOr, BitXor};
 
 macro_rules! add_impl {
     ($trait_name:ident, $fname:ident, $($t:ty)*) => ($(
@@ -14,7 +14,7 @@ macro_rules! add_impl {
                     }
                     self
                 } else if self.is_scalar() {
-                    let mut t: Tensor<$t> = Tensor::zeros(&rhs.shape);
+                    let mut t: Tensor<$t> = Tensor::empty(&rhs.shape);
                     let v = self[0];
                     for i in 0..t.size() {
                         t.data[i] = v.$fname(rhs.data[i]);
@@ -42,7 +42,7 @@ macro_rules! add_impl {
                     }
                     self
                 } else if self.is_scalar() {
-                    let mut t: Tensor<$t> = Tensor::zeros(&rhs.shape);
+                    let mut t: Tensor<$t> = Tensor::empty(&rhs.shape);
                     let v = self[0];
                     for i in 0..t.size() {
                         t.data[i] = v.$fname(rhs.data[i]);
@@ -64,14 +64,14 @@ macro_rules! add_impl {
             fn $fname(self, rhs: &Tensor<$t>) -> Tensor<$t> {
                 //println!("$fname &T + &T");
                 if rhs.is_scalar() {
-                    let mut t: Tensor<$t> = self.clone();
+                    let mut t = self.clone();
                     let v = rhs[0];
                     for i in 0..t.size() {
                         t.data[i] = t.data[i].$fname(v);
                     }
                     t
                 } else if self.is_scalar() {
-                    let mut t: Tensor<$t> = Tensor::zeros(&rhs.shape);
+                    let mut t = Tensor::empty(&rhs.shape);
                     let v = self[0];
                     for i in 0..t.size() {
                         t.data[i] = v.$fname(rhs.data[i]);
@@ -79,7 +79,7 @@ macro_rules! add_impl {
                     t
                 } else {
                     assert_eq!(self.shape, rhs.shape);
-                    let mut t: Tensor<$t> = self.clone();
+                    let mut t = self.clone();
                     for i in 0..t.size() {
                         t.data[i] = t.data[i].$fname(rhs.data[i]);
                     }
@@ -101,8 +101,14 @@ macro_rules! add_impl {
     )*)
 }
 
+// TODO: It would be better if these relied only on the traits, so that custom-made tensort types
+// could be used.
 add_impl! { Add, add, usize u8 u16 u32 u64 isize i8 i16 i32 i64 f32 f64 }
 add_impl! { Sub, sub, usize u8 u16 u32 u64 isize i8 i16 i32 i64 f32 f64 }
 add_impl! { Mul, mul, usize u8 u16 u32 u64 isize i8 i16 i32 i64 f32 f64 }
 add_impl! { Div, div, usize u8 u16 u32 u64 isize i8 i16 i32 i64 f32 f64 }
 add_impl! { Rem, rem, usize u8 u16 u32 u64 isize i8 i16 i32 i64 }
+
+add_impl! { BitAnd, bitand, usize u8 u16 u32 u64 isize i8 i16 i32 i64 bool }
+add_impl! { BitOr, bitor, usize u8 u16 u32 u64 isize i8 i16 i32 i64 bool }
+add_impl! { BitXor, bitxor, usize u8 u16 u32 u64 isize i8 i16 i32 i64 bool }
