@@ -11,13 +11,14 @@ extern crate rand;
 
 use num::traits::{Num, NumCast};
 
-/// Numeric is a short-hand for all traits that need to be implemented for `T` in the `Tensor<T>`
-/// struct.
+/// This is the basic trait that must be satisfied for basic elements used in `Tensor`.
 pub trait TensorType: Copy + PartialOrd {}
 impl<T: Copy + PartialOrd> TensorType for T {}
 
-pub trait Numeric: Copy + Num + NumCast + PartialOrd {}
-impl<T: Copy + Num + NumCast + PartialOrd> Numeric for T {}
+/// `Numeric` extends `TensorType` to all the numeric types supported by `Tensor` 
+/// (e.g. `u8` and `f32`).
+pub trait Numeric: TensorType + Num + NumCast {}
+impl<T: TensorType + Num + NumCast> Numeric for T {}
 
 pub mod tensor;
 pub mod math;
