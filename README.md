@@ -37,10 +37,10 @@ fn main() {
     let d = &a + &b;         // a copy is made
     println!("d = {}", d);
 
-    let e = T::dot(&a, &c);  // matrix multiplication (returns a new tensor)
+    let e = a.dot(&c);       // matrix multiplication (returns a new tensor)
     println!("e = {}", e);
 
-    let f = a + &b;          // a is moved (no memory is allocated)
+    let f = a + &b;          // a is moved (no new memory is allocated)
     println!("f = {}", f);
 
     // Higher-dimensional
