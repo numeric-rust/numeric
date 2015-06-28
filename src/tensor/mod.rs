@@ -8,7 +8,7 @@
 //! ```
 
 use std::vec::Vec;
-use {Numeric, TensorType};
+use TensorType;
 use num::traits::cast;
 
 /// An implementation of an N-dimensional matrix.
@@ -117,13 +117,8 @@ impl<T: TensorType> Tensor<T> {
         self.shape.len() == 1 && self.shape[0] == 1
     }
 
-    pub fn unwrap(self) -> T {
-        assert!(self.is_scalar(), "Tensor must be scalar to use unwrap()");
-        self.data[0]
-    }
-
-    pub fn value(&self) -> T {
-        assert!(self.is_scalar(), "Tensor must be scalar to use unwrap()");
+    pub fn scalar_value(&self) -> T {
+        debug_assert!(self.is_scalar(), "Tensor must be scalar to use scalar_value()");
         self.data[0]
     }
 
@@ -247,30 +242,18 @@ impl<T: TensorType> Tensor<T> {
         (slices, newaxes)
     }
 
-    /// Takes slices (subsets) of tensors and returns a tensor as a new object. Uses the
-    /// `AxisIndex` enum to specify indexing for each axis.
-    ///
-    /// ```
-    /// use numeric::{DoubleTensor, AxisIndex};
-    ///
-    /// let t = DoubleTensor::ones(&[2, 3, 4]);
-    ///
-    /// t.slice(&[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]
-    /// t.slice(&[AxisIndex::Index(-1)]); // shape [3, 4]
-    /// t.slice(&[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]
-    /// ```
-    pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor<T> {
+    fn prepare_slice(&self, slices_raw: &[AxisIndex]) -> (Vec<(usize, usize)>, Vec<usize>, Vec<usize>, Vec<usize>) {
         let (slices, newaxes) = self.expand_slices(slices_raw);
-
-        let n = slices.len();
-        let mut ranges: Vec<(usize, usize)> = Vec::with_capacity(n);
-        let mut dims: Vec<usize> = Vec::with_capacity(n);
-        let mut indices: Vec<usize> = Vec::with_capacity(n);
-        let mut shape: Vec<isize> = Vec::with_capacity(n);
         let mut axis = 0;
+        let n = slices.len();
+
+        let mut shape: Vec<usize> = Vec::with_capacity(n);
         for _ in 0..newaxes[0] {
             shape.push(1);
         }
+        let mut dims: Vec<usize> = Vec::with_capacity(n);
+        let mut ranges: Vec<(usize, usize)> = Vec::with_capacity(n);
+        let mut indices: Vec<usize> = Vec::with_capacity(n);
         for s in slices {
             let (st, en, keepdim) = match s {
                 AxisIndex::Index(i) => {
@@ -299,13 +282,30 @@ impl<T: TensorType> Tensor<T> {
             indices.push(st);
             dims.push(en - st);
             if keepdim {
-                shape.push((en - st) as isize);
+                shape.push((en - st) as usize);
             }
             for _ in 0..newaxes[axis + 1] {
                 shape.push(1);
             }
             axis += 1;
         }
+        (ranges, indices, dims, shape)
+    }
+
+    /// Takes slices (subsets) of tensors and returns a tensor as a new object. Uses the
+    /// `AxisIndex` enum to specify indexing for each axis.
+    ///
+    /// ```
+    /// use numeric::{DoubleTensor, AxisIndex};
+    ///
+    /// let t = DoubleTensor::ones(&[2, 3, 4]);
+    ///
+    /// t.slice(&[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]
+    /// t.slice(&[AxisIndex::Index(-1)]); // shape [3, 4]
+    /// t.slice(&[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]
+    /// ```
+    pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor<T> {
+        let (ranges, mut indices, dims, shape) = self.prepare_slice(&slices_raw);
 
         let mut t = Tensor::empty(&dims);
         let strides = self.strides();
@@ -337,8 +337,89 @@ impl<T: TensorType> Tensor<T> {
             base_i += 1;
         }
 
-        t.reshaped(&shape[..])
+        t.reshaped_proper(&shape[..])
     }
+
+    /// Similar to `slice`, except this updates the tensor with `rhs` instead of returning them.
+    pub fn slice_set(&mut self, slices_raw: &[AxisIndex], rhs: &Tensor<T>) {
+        let (ranges, mut indices, dims, shape) = self.prepare_slice(&slices_raw);
+        assert!(shape == rhs.shape, "Shape not matching");
+
+        let strides = self.strides();
+
+        let mut index = 0;
+        for si in 0..strides.len() {
+            index += strides[si] * indices[si];
+        }
+
+        let mut base_i = 0;
+        for _ in 0..rhs.size() {
+            let mut c = strides.len() - 1;
+
+            assert!(index < self.size());
+            self.data[index] = rhs[base_i];
+            index += strides[c];
+            indices[c] += strides[c];
+            while indices[c] >= ranges[c].1 {
+                if c == 0 {
+                    break;
+                }
+                // Reset
+                indices[c] = ranges[c].0;
+                index -= dims[c] * strides[c];
+                index += strides[c - 1];
+                indices[c - 1] += 1;
+                c -= 1;
+            }
+
+            base_i += 1;
+        }
+    }
+
+    pub fn bool_slice(&self, indices: &Tensor<bool>) -> Tensor<T> {
+        let mut s = 0;
+        for i in 0..indices.size() {
+            if indices[i] {
+                s += 1;
+            }
+        }
+        let mut t = Tensor::empty(&[s]);
+        let mut j = 0;
+        for i in 0..indices.size() {
+            if indices[i] {
+                t[j] = self.data[i];
+                j += 1;
+            }
+        }
+        t
+    }
+
+    pub fn bool_slice_set(&mut self, indices: &Tensor<bool>, values: &Tensor<T>) {
+        let mut s = 0;
+        for i in 0..indices.size() {
+            if indices[i] {
+                s += 1;
+            }
+        }
+        if values.is_scalar() {
+            let v = values.scalar_value();
+            for i in 0..indices.size() {
+                if indices[i] {
+                    self.data[i] = v;
+                }
+            }
+        } else {
+            assert!(values.size() == s);
+            let mut j = 0;
+            for i in 0..indices.size() {
+                if indices[i] {
+                    self.data[i] = values[j];
+                    j += 1;
+                }
+            }
+        }
+    }
+
 
     /// Takes a flatten index (in row-major order) and returns a vector of the per-axis indices.
     pub fn unravel_index(&self, index: usize) -> Vec<usize> {
@@ -397,12 +478,16 @@ impl<T: TensorType> Tensor<T> {
     }
     */
 
-    // Moves data
-    pub fn reshaped(self, shape: &[isize]) -> Tensor<T> {
-        let proper_shape = self.convert_shape(shape);
+    fn reshaped_proper(self, proper_shape: &[usize]) -> Tensor<T> {
         let s = proper_shape.iter().fold(1, |acc, &item| acc * item);
         assert_eq!(self.size(), s);
-        Tensor{data: self.data, shape: proper_shape}
+        Tensor{data: self.data, shape: proper_shape.to_vec()}
+    }
+
+    /// Reshapes the data. This moves the data, so no memory is allocate.
+    pub fn reshaped(self, shape: &[isize]) -> Tensor<T> {
+        let proper_shape = self.convert_shape(shape);
+        self.reshaped_proper(&proper_shape[..])
     }
 
     #[inline]
@@ -502,7 +587,7 @@ fn shape_product(shape: &[usize]) -> usize {
     shape.iter().fold(1, |acc, &v| acc * v)
 }
 
-impl<T: Numeric> Clone for Tensor<T> {
+impl<T: Copy> Clone for Tensor<T> {
     fn clone(&self) -> Tensor<T> {
         Tensor{data: self.data.clone(), shape: self.shape.clone()}
     }
