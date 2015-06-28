@@ -17,14 +17,16 @@ use num::traits::cast;
 /// ```
 /// use numeric::Tensor;
 /// let t = Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
-/// println!("{}", t);
+/// println!("t = {}", t);
 /// ```
 ///
 /// Will output:
 ///
 /// ```text
-/// [[  1.00   3.00]
-///  [  2.00   2.00]]
+/// t =
+///  1 3
+///  2 2
+/// [Tensor<f64> of shape 2x2]
 /// ```
 pub struct Tensor<T> {
     /// The underlying data matrix, stored in row-major order.
@@ -51,7 +53,7 @@ pub enum AxisIndex {
     Ellipsis,
     /// Creates a new axis of length 1 at this location.
     NewAxis,
-    /// Picks one elements of an axis. This will remove that axis from the tensor.
+    /// Picks one element of an axis. This will remove that axis from the tensor.
     Index(isize),
     /// Specifies a half-open range. Slice(2, 5) will pick out indices 2, 3 and 4.
     Slice(isize, isize),
