@@ -1,9 +1,11 @@
 //! Numeric Rust provides a foundation for doing scientific computing with Rust. It aims to be for
 //! Rust what Numpy is for Python.
 //!
-//! Its Tensor object uses OpenBLAS for fast matrix muliplications and other operations.
+//! OpenBLAS/LAPACK is used to make things like matrix muliplications and solving linear equations
+//! fast.
 extern crate libc;
 extern crate blas_sys;
+extern crate lapack_sys;
 extern crate num;
 extern crate rand;
 
@@ -20,6 +22,7 @@ impl<T: Copy + Num + NumCast + PartialOrd> Numeric for T {}
 pub mod tensor;
 pub mod math;
 pub mod random;
+pub mod linalg;
 
 mod tests;
 

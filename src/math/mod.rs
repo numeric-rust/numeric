@@ -4,9 +4,7 @@
 use tensor::Tensor;
 use {Numeric, TensorType};
 use num::traits::Float;
-//use std::f64 as a;
-//use std::f32 as b;
-//
+
 macro_rules! add_impl0 {
     ($($f:ident)*) => ($(
         pub fn $f<T: Numeric + Float>(x: &Tensor<T>) -> Tensor<T> {

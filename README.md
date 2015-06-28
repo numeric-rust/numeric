@@ -1,9 +1,9 @@
 
 # Numeric Rust
 
-N-dimensional matrix class for Rust 1.0. It links to OpenBLAS to make tensor
-operations fast (like matrix multipliations). It utilizes Rust's move semantics
-as much as possible to avoid unnecessary copies.
+N-dimensional matrix class for Rust 1.0. It links to OpenBLAS and LAPACK to make tensor
+operations fast (such as matrix multiplications and linear solvers). It utilizes
+Rust's move semantics as much as possible to avoid unnecessary copies.
 
 ## Features
 
@@ -15,6 +15,7 @@ Some of the completed and planned features:
 * [x] Slicing
 * [x] Generic (anything from `Tensor<bool>` to `Tensor<f64>`)
 * [x] Mathematical functions
+* [x] Linear solver
 * [ ] Strided slices
 * [ ] Updating slices
 * [ ] Broadcasted axes

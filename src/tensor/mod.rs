@@ -145,6 +145,11 @@ impl<T: TensorType> Tensor<T> {
         &self.data
     }
 
+    /// Mutable reference to data
+    pub fn data_mut(&mut self) -> &mut Vec<T> {
+        &mut self.data
+    }
+
     /// Flattens the tensor to one-dimensional. Takes ownership and returns a new tensor.
     pub fn flatten(self) -> Tensor<T> {
         let s = self.size();

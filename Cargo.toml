@@ -11,5 +11,6 @@ license = "MIT"
 [dependencies]
 libc = "0.1.8"
 blas-sys = "0.1.0"
+lapack-sys = "0.2.0"
 num = "0.1.25"
 rand = "0.3.8"

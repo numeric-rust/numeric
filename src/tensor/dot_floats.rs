@@ -5,8 +5,9 @@ use blas_sys;
 macro_rules! add_impl {
     ($t:ty, $gemv:ident, $gemm:ident, $dot:ident) => (
         impl Tensor<$t> {
-            /// Takes the product of two tensors. If the tensors are both matrices (2D), then a matrix
-            /// multiplication is taken. If the tensors are both vectors (1D), the scalar product is taken.
+            /// Takes the product of two tensors. If the tensors are both matrices (2D), then a
+            /// matrix multiplication is taken. If the tensors are both vectors (1D), the scalar
+            /// product is taken.
             pub fn dot(t1: &Tensor<$t>, t2: &Tensor<$t>) -> Tensor<$t> {
                 if t1.ndim() == 2 && t2.ndim() == 1 {
                     assert_eq!(t1.shape[1], t2.shape[0]);
@@ -22,18 +23,17 @@ macro_rules! add_impl {
                         }
                     } else {
                         unsafe {
-                            blas_sys::$gemv(
-                                &('T' as c_char),
-                                &(t1.shape[1] as c_int),
-                                &(t1.shape[0] as c_int),
-                                &1.0,
-                                t1.data.as_ptr(),
-                                &(t1.shape[1] as c_int),
-                                t2.data.as_ptr(),
-                                &1,
-                                &0.0,
-                                t3.data.as_mut_ptr(),
-                                &1
+                            blas_sys::$gemv(&('T' as c_char),
+                                            &(t1.shape[1] as c_int),
+                                            &(t1.shape[0] as c_int),
+                                            &1.0,
+                                            t1.data.as_ptr(),
+                                            &(t1.shape[1] as c_int),
+                                            t2.data.as_ptr(),
+                                            &1,
+                                            &0.0,
+                                            t3.data.as_mut_ptr(),
+                                            &1
                             );
                         }
                     }
@@ -57,19 +57,19 @@ macro_rules! add_impl {
                             // Note: dgemm assumes column-major while we have row-major,
                             //       so we have to re-arrange things a bit
                             blas_sys::$gemm(&('N' as c_char),
-                                             &('N' as c_char),
-                                             &(t2.shape[1] as c_int),
-                                             &(t1.shape[0] as c_int),
-                                             &(t2.shape[0] as c_int),
-                                             &1.0,
-                                             t2.data.as_ptr(),
-                                             &(t2.shape[1] as c_int),
-                                             t1.data.as_ptr(),
-                                             &(t2.shape[0] as c_int),
-                                             &0.0,
-                                             t3.data.as_mut_ptr(),
-                                             &(t2.shape[1] as c_int)
-                                             );
+                                            &('N' as c_char),
+                                            &(t2.shape[1] as c_int),
+                                            &(t1.shape[0] as c_int),
+                                            &(t2.shape[0] as c_int),
+                                            &1.0,
+                                            t2.data.as_ptr(),
+                                            &(t2.shape[1] as c_int),
+                                            t1.data.as_ptr(),
+                                            &(t2.shape[0] as c_int),
+                                            &0.0,
+                                            t3.data.as_mut_ptr(),
+                                            &(t2.shape[1] as c_int)
+                                            );
                         }
                     }
                     t3
@@ -85,10 +85,10 @@ macro_rules! add_impl {
                         let n = t1.size() as c_int;
                         unsafe {
                             v = blas_sys::$dot(&n,
-                                                t1.data.as_ptr(),
-                                                &1,
-                                                t2.data.as_ptr(),
-                                                &1);
+                                               t1.data.as_ptr(),
+                                               &1,
+                                               t2.data.as_ptr(),
+                                               &1);
                         }
                     }
                     Tensor::new(vec![v])
