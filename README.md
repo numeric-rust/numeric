@@ -17,8 +17,8 @@ Some of the completed and planned features:
 * [x] Mathematical functions
 * [x] Linear solver
 * [x] Basic random number generation
+* [x] Updating slices
 * [ ] Strided slices
-* [ ] Updating slices
 * [ ] Broadcasted axes
 * [ ] Matrix inverse and SVD
 
