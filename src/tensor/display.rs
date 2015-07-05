@@ -9,7 +9,9 @@ macro_rules! add_impl {
                 let mv = &self.data[..];
                 let mut ret = "\n".to_string();
                 // Limit to 1000 elements shown
-                if self.ndim() <= 2 && self.size() <= 1000 {
+                if self.is_scalar() {
+
+                } if self.ndim() <= 2 && self.size() <= 1000 {
                     // Pre-generate all strings
                     let mut ss: Vec<String> = Vec::with_capacity(self.size());
                     let mut longest: usize = 0;
@@ -57,18 +59,23 @@ macro_rules! add_impl {
                     ret.push_str("...");
                 }
 
-                // Format shape
-                // TODO: Is there an implode/join function?
-                let mut shape_str = "".to_string();
-                for i in 0..self.shape.len() {
-                    if i == 0 {
-                        shape_str.push_str(&format!("{}", self.shape[i])[..]);
-                    } else {
-                        shape_str.push_str(&format!("x{}", self.shape[i])[..]);
+                if self.is_scalar() {
+                    //write!(f, "{}\n[Tensor<{}> of shape scalar]", ret, $name)
+                    write!(f, "Tensor<{}>::scalar({})", $name, self.data[0])
+                } else {
+                    // Format shape
+                    // TODO: Is there an implode/join function?
+                    let mut shape_str = "".to_string();
+                    for i in 0..self.shape.len() {
+                        if i == 0 {
+                            shape_str.push_str(&format!("{}", self.shape[i])[..]);
+                        } else {
+                            shape_str.push_str(&format!("x{}", self.shape[i])[..]);
+                        }
                     }
-                }
 
-                write!(f, "{}\n[Tensor<{}> of shape {}]", ret, $name, shape_str)
+                    write!(f, "{}\n[Tensor<{}> of shape {}]", ret, $name, shape_str)
+                }
             }
         }
     )
