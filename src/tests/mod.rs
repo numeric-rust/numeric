@@ -8,5 +8,6 @@ mod mul;
 mod div;
 
 mod indexing;
+mod summary;
 
 //mod f64;
