@@ -1,8 +1,9 @@
+#[allow(unused_imports)]
 use tensor::Tensor;
 
 #[test]
 fn add_axis() {
-    let mut a: Tensor<f64> = Tensor::range(2*3*4).reshaped(&[2, 3, 4]);
+    let a: Tensor<f64> = Tensor::range(2*3*4).reshaped(&[2, 3, 4]);
 
     let answer0 = Tensor::new(vec![12., 14., 16., 18.,
                                    20., 22., 24., 26.,
@@ -26,8 +27,8 @@ fn add_axis() {
 
 #[test]
 fn bitand_axis() {
-    let mut a = Tensor::new(vec![true, true, true,
-                                 false, true, false]).reshaped(&[2, 3]);
+    let a = Tensor::new(vec![true, true, true,
+                             false, true, false]).reshaped(&[2, 3]);
 
     let answer0 = Tensor::new(vec![false, true, false]);
     let answer1 = Tensor::new(vec![true, false]);
