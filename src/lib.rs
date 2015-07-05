@@ -11,6 +11,7 @@ extern crate rand;
 
 use num::traits::{Num, NumCast};
 
+// TODO: Sometimes TensorType is used, sometimes Copy. Make a decision and stick with it.
 /// This is the basic trait that must be satisfied for basic elements used in `Tensor`.
 pub trait TensorType: Copy {}
 impl<T: Copy> TensorType for T {}
