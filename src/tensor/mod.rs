@@ -110,11 +110,11 @@ impl<T: TensorType> Tensor<T> {
     }
 
     pub fn scalar(value: T) -> Tensor<T> {
-        Tensor{data: vec![value], shape: vec![1]}
+        Tensor{data: vec![value], shape: vec![]}
     }
 
     pub fn is_scalar(&self) -> bool {
-        self.shape.len() == 1 && self.shape[0] == 1
+        self.ndim() == 0 && self.size() == 1
     }
 
     pub fn scalar_value(&self) -> T {
@@ -580,7 +580,6 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
         }
         t
     }
-
 }
 
 fn shape_product(shape: &[usize]) -> usize {
