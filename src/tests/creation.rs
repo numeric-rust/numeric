@@ -46,23 +46,23 @@ macro_rules! add_impl {
 
             #[test]
             fn test_partial_eq_1() {
-                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshaped(&[3, 2]);
-                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshaped(&[3, 2]);
+                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshape(&[3, 2]);
+                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshape(&[3, 2]);
                 assert!(t1 == t2);
             }
 
             #[test]
             fn test_partial_eq_2() {
-                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshaped(&[3, 2]);
-                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshaped(&[2, 3]);
+                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshape(&[3, 2]);
+                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshape(&[2, 3]);
                 let p = t1 != t2;
                 assert!(p);
             }
 
             #[test]
             fn test_partial_eq_3() {
-                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshaped(&[3, 2]);
-                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 3.0, -3.0]).reshaped(&[3, 2]);
+                let t1 = T::new(vec![1.0, 2.0, 3.0, 10.0, 2.0, -3.0]).reshape(&[3, 2]);
+                let t2 = T::new(vec![1.0, 2.0, 3.0, 10.0, 3.0, -3.0]).reshape(&[3, 2]);
                 assert!(t1 != t2);
             }
         }

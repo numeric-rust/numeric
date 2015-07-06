@@ -16,7 +16,7 @@ use num::traits::cast;
 ///
 /// ```
 /// use numeric::Tensor;
-/// let t = Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshaped(&[2, 2]);
+/// let t = Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshape(&[2, 2]);
 /// println!("t = {}", t);
 /// ```
 ///
@@ -337,7 +337,7 @@ impl<T: TensorType> Tensor<T> {
             base_i += 1;
         }
 
-        t.reshaped_proper(&shape[..])
+        t.reshape_proper(&shape[..])
     }
 
     /// Similar to `slice`, except this updates the tensor with `rhs` instead of returning them.
@@ -468,26 +468,16 @@ impl<T: TensorType> Tensor<T> {
         sh
     }
 
-    // Reshapes in-place
-    /*
-    pub fn reshape(&mut self, shape: &[isize]) {
-        let proper_shape = self.convert_shape(shape);
-        let s = proper_shape.iter().fold(1, |acc, &item| acc * item);
-        assert_eq!(self.size(), s);
-        self.shape = proper_shape;
-    }
-    */
-
-    fn reshaped_proper(self, proper_shape: &[usize]) -> Tensor<T> {
+    fn reshape_proper(self, proper_shape: &[usize]) -> Tensor<T> {
         let s = proper_shape.iter().fold(1, |acc, &item| acc * item);
         assert_eq!(self.size(), s);
         Tensor{data: self.data, shape: proper_shape.to_vec()}
     }
 
     /// Reshapes the data. This moves the data, so no memory is allocate.
-    pub fn reshaped(self, shape: &[isize]) -> Tensor<T> {
+    pub fn reshape(self, shape: &[isize]) -> Tensor<T> {
         let proper_shape = self.convert_shape(shape);
-        self.reshaped_proper(&proper_shape[..])
+        self.reshape_proper(&proper_shape[..])
     }
 
     #[inline]

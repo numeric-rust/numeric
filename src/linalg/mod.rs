@@ -8,7 +8,7 @@
 //! ```
 //! use numeric::Tensor;
 //!
-//! let a = Tensor::new(vec![1.0_f64, 0.5, 1.5, -1.0]).reshaped(&[2, 2]);
+//! let a = Tensor::new(vec![1.0_f64, 0.5, 1.5, -1.0]).reshape(&[2, 2]);
 //! let b = Tensor::ones(&[2]);
 //!
 //! let x = a.solve(&b);

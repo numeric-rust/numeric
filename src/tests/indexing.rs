@@ -31,14 +31,14 @@ macro_rules! add_impl {
 
             #[test]
             fn indexing_tuple_2() {
-                let t = T::range(6).reshaped(&[2, 3]);
+                let t = T::range(6).reshape(&[2, 3]);
                 let v = t[(1, 2)];
                 assert_eq!(v, 5.0);
             }
 
             #[test]
             fn indexing_tuple_3() {
-                let t = T::range(100).reshaped(&[2, 5, 10]);
+                let t = T::range(100).reshape(&[2, 5, 10]);
                 let v = t[(1, 2, 3)];
                 assert_eq!(v, 73.0);
             }
