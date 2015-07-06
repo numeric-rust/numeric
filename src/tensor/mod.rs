@@ -63,14 +63,6 @@ pub enum AxisIndex {
     SliceTo(isize),
 }
 
-// For now, these specialized ones are not used
-// It might be slower, but until a benchmarking framework
-// is established, I'll avoid this complication
-//mod add_floats;
-//mod sub_floats;
-//mod mul_floats;
-//mod div_floats;
-
 mod dot;
 
 mod display;
@@ -106,7 +98,6 @@ impl<T: TensorType> Tensor<T> {
             data.set_len(size);
         }
         Tensor{data: data, shape: sh}
-        //Tensor::filled(shape, T::zero())
     }
 
     pub fn scalar(value: T) -> Tensor<T> {
