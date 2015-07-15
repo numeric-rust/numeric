@@ -30,8 +30,8 @@ use numeric::Tensor;
 fn main() {
     type T = Tensor<f64>;
 
-    let a = T::range(6).reshaped(&[2, 3]);
-    let b = T::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshaped(&[2, 3]);
+    let a = T::range(6).reshape(&[2, 3]);
+    let b = T::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshape(&[2, 3]);
     let c = T::new(vec![7.0, 3.0, 2.0]);
 
     let d = &a + &b;         // a copy is made
