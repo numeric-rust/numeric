@@ -9,7 +9,7 @@
 
 use std::vec::Vec;
 use TensorType;
-use num::traits::cast;
+use num::traits::{cast, Signed};
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -128,6 +128,10 @@ impl<T: TensorType> Tensor<T> {
     /// Returns the shape of the tensor.
     pub fn shape(&self) -> &Vec<usize> {
         &self.shape
+    }
+
+    pub fn dim(&self, axis: usize) -> usize {
+        self.shape[axis]
     }
 
     /// Returns a reference of the underlying data vector.
@@ -529,7 +533,7 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
     /// Transposes a matrix (for now, requires it to be 2D).
     pub fn transpose(&self) -> Tensor<T> {
         assert!(self.ndim() == 2, "Can only transpose a matrix (2D tensor)");
-        return self.swapaxes(0, 1);
+        self.swapaxes(0, 1)
     }
 
     /// Creates a new vector with integer values starting at 0 and counting up:
@@ -560,6 +564,16 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
             fi = fi + T::one();
         }
         t
+    }
+}
+
+impl<T: TensorType + Signed> Tensor<T> {
+    /// Takes element-wise absolute value.
+    pub fn abs(mut self) -> Tensor<T> {
+        for i in 0..self.size() {
+            self.data[i] = self.data[i].abs();
+        }
+        self
     }
 }
 
