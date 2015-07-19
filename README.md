@@ -1,3 +1,4 @@
+[![Crates.io](https://img.shields.io/crates/v/numeric.svg)](https://crates.io/crates/numeric)
 
 # Numeric Rust
 
