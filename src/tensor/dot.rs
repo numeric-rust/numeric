@@ -1,6 +1,5 @@
 use tensor::Tensor;
-use libc::{c_int, c_char};
-use blas_sys;
+use blas;
 
 macro_rules! add_impl {
     ($t:ty, $gemv:ident, $gemm:ident, $dot:ident) => (
@@ -22,20 +21,8 @@ macro_rules! add_impl {
                             t3.data[i] = v;
                         }
                     } else {
-                        unsafe {
-                            blas_sys::$gemv(&('T' as c_char),
-                                            &(self.shape[1] as c_int),
-                                            &(self.shape[0] as c_int),
-                                            &1.0,
-                                            self.data.as_ptr(),
-                                            &(self.shape[1] as c_int),
-                                            rhs.data.as_ptr(),
-                                            &1,
-                                            &0.0,
-                                            t3.data.as_mut_ptr(),
-                                            &1
-                            );
-                        }
+                        blas::$gemv(b'T', self.shape[1], self.shape[0], 1.0, &self.data,
+                                    self.shape[1], &rhs.data, 1, 0.0, &mut t3.data, 1);
                     }
                     t3
                 } else if self.ndim() == 2 && rhs.ndim() == 2 {
@@ -53,24 +40,11 @@ macro_rules! add_impl {
                             }
                         }
                     } else {
-                        unsafe {
-                            // Note: dgemm assumes column-major while we have row-major,
-                            //       so we have to re-arrange things a bit
-                            blas_sys::$gemm(&('N' as c_char),
-                                            &('N' as c_char),
-                                            &(rhs.shape[1] as c_int),
-                                            &(self.shape[0] as c_int),
-                                            &(rhs.shape[0] as c_int),
-                                            &1.0,
-                                            rhs.data.as_ptr(),
-                                            &(rhs.shape[1] as c_int),
-                                            self.data.as_ptr(),
-                                            &(rhs.shape[0] as c_int),
-                                            &0.0,
-                                            t3.data.as_mut_ptr(),
-                                            &(rhs.shape[1] as c_int)
-                                            );
-                        }
+                        // Note: dgemm assumes column-major while we have row-major,
+                        //       so we have to re-arrange things a bit
+                        blas::$gemm(b'N', b'N', rhs.shape[1], self.shape[0], rhs.shape[0], 1.0,
+                                    &rhs.data, rhs.shape[1], &self.data, rhs.shape[0], 0.0,
+                                    &mut t3.data, rhs.shape[1]);
                     }
                     t3
                 } else if self.ndim() == 1 && rhs.ndim() == 1 { // scalar product
@@ -82,14 +56,7 @@ macro_rules! add_impl {
                             v += self.data[k] * rhs.data[k];
                         }
                     } else {
-                        let n = self.size() as c_int;
-                        unsafe {
-                            v = blas_sys::$dot(&n,
-                                               self.data.as_ptr(),
-                                               &1,
-                                               rhs.data.as_ptr(),
-                                               &1);
-                        }
+                        v = blas::$dot(self.size(), &self.data, 1, &rhs.data, 1);
                     }
                     Tensor::new(vec![v])
                 } else {
@@ -100,5 +67,5 @@ macro_rules! add_impl {
     )
 }
 
-add_impl!(f32, sgemv_, sgemm_, sdot_);
-add_impl!(f64, dgemv_, dgemm_, ddot_);
+add_impl!(f32, sgemv, sgemm, sdot);
+add_impl!(f64, dgemv, dgemm, ddot);
