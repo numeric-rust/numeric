@@ -3,9 +3,8 @@
 //!
 //! OpenBLAS/LAPACK is used to make things like matrix muliplications and solving linear equations
 //! fast.
-extern crate libc;
-extern crate blas_sys;
-extern crate lapack_sys;
+extern crate blas;
+extern crate lapack;
 extern crate num;
 extern crate rand;
 

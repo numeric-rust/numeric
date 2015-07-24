@@ -14,8 +14,7 @@
 //! let x = a.solve(&b);
 //! ```
 use tensor::Tensor;
-use libc::c_int;
-use lapack_sys;
+use lapack;
 
 macro_rules! add_impl {
     ($t:ty, $gesv:ident) => (
@@ -33,26 +32,12 @@ macro_rules! add_impl {
                 // A must be tranposed, since LAPACK is column-major.
                 let mut a_ = self.transpose();
                 let mut b_ = b.clone();
-                let mut info: c_int = 0;
+                let mut info = 0;
 
-                // TODO: This should not be necessary, but the lapack_sys currently specifies
-                //       everything as a mut
-                let mut n: c_int = self.shape()[0] as c_int;
-                let mut nrhs: c_int = 1;
-                let mut lda: c_int = n;
-                let mut ldb: c_int = n;
-                let mut ipiv: Tensor<i32> = Tensor::empty(&[n as usize]);
-                unsafe {
-                    lapack_sys::$gesv(&mut n,                       // n
-                                      &mut nrhs,                    // a
-                                      a_.data_mut().as_mut_ptr(),   // nrhs
-                                      &mut lda,                     // lda
-                                      ipiv.data_mut().as_mut_ptr(), // ipiv
-                                      b_.data_mut().as_mut_ptr(),   // b
-                                      &mut ldb,                     // ldb
-                                      &mut info                     // info
-                                      );
-                }
+                let n = self.shape()[0];
+                let mut ipiv: Tensor<i32> = Tensor::empty(&[n]);
+                lapack::$gesv(n, 1, a_.data_mut(), n, ipiv.data_mut(), b_.data_mut(), n,
+                              &mut info);
                 // TODO: Change this to a recoverable failure instead of a panic?
                 if info < 0 {
                     panic!("Illegal input");
@@ -65,5 +50,5 @@ macro_rules! add_impl {
     )
 }
 
-add_impl!(f64, dgesv_);
-add_impl!(f32, sgesv_);
+add_impl!(f64, dgesv);
+add_impl!(f32, sgesv);

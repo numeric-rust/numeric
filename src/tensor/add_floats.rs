@@ -1,7 +1,6 @@
 use std::ops::Add;
 use tensor::Tensor;
-use libc::c_int;
-use blas_sys;
+use blas;
 
 macro_rules! add_impl {
     ($t:ty, $bfunc:ident) => (
@@ -60,14 +59,7 @@ macro_rules! add_impl {
                             self.data[i] += rhs.data[i];
                         }
                     } else {
-                        unsafe {
-                            blas_sys::$bfunc(&(self.data.len() as c_int),
-                                             &1.0,
-                                             rhs.data.as_ptr(),
-                                             &1,
-                                             self.data.as_mut_ptr(),
-                                             &1);
-                        }
+                        blas::$bfunc(self.data.len(), 1.0, &rhs.data, 1, &mut self.data, 1);
                     }
                 }
                 self
@@ -101,14 +93,7 @@ macro_rules! add_impl {
                             t.data[i] += rhs.data[i];
                         }
                     } else {
-                        unsafe {
-                            blas_sys::$bfunc(&(self.data.len() as c_int),
-                                             &1.0,
-                                             rhs.data.as_ptr(),
-                                             &1,
-                                             t.data.as_mut_ptr(),
-                                             &1);
-                        }
+                        blas::$bfunc(self.data.len(), 1.0, &rhs.data, 1, &mut t.data, 1);
                     }
                     t
                 }
@@ -124,14 +109,7 @@ macro_rules! add_impl {
                         self.data[i] += rhs;
                     }
                 } else {
-                    unsafe {
-                        blas_sys::$bfunc(&(self.data.len() as c_int),
-                                         &1.0,
-                                         &rhs,
-                                         &0,
-                                         self.data.as_mut_ptr(),
-                                         &1);
-                    }
+                    blas::$bfunc(self.data.len(), 1.0, &rhs, 0, &mut self.data, 1);
                 }
                 self
             }
@@ -139,5 +117,5 @@ macro_rules! add_impl {
     )
 }
 
-add_impl!(f32, saxpy_);
-add_impl!(f64, daxpy_);
+add_impl!(f32, saxpy);
+add_impl!(f64, daxpy);

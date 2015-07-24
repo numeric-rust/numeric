@@ -1,7 +1,6 @@
 use std::ops::Mul;
 use tensor::Tensor;
-use libc::{c_int, c_char};
-use blas_sys;
+use blas;
 
 macro_rules! add_impl {
     ($t:ty, $tbmv:ident, $sbmv:ident, $scal:ident) => (
@@ -14,17 +13,7 @@ macro_rules! add_impl {
                         self.data[i] *= rhs.data[i];
                     }
                 } else {
-                    unsafe {
-                        blas_sys::$tbmv(&('L' as c_char),
-                                         &('T' as c_char),
-                                         &('N' as c_char),
-                                         &(self.size() as c_int),
-                                         &0,
-                                         rhs.data.as_ptr(),
-                                         &1,
-                                         self.data.as_mut_ptr(),
-                                         &1);
-                    }
+                    blas::$tbmv(b'L', b'T', b'N', self.size(), 0, &rhs.data, 1, &mut self.data, 1);
                 }
                 self
             }
@@ -39,17 +28,7 @@ macro_rules! add_impl {
                         self.data[i] *= rhs.data[i];
                     }
                 } else {
-                    unsafe {
-                        blas_sys::$tbmv(&('L' as c_char),
-                                         &('T' as c_char),
-                                         &('N' as c_char),
-                                         &(self.size() as c_int),
-                                         &0,
-                                         rhs.data.as_ptr(),
-                                         &1,
-                                         self.data.as_mut_ptr(),
-                                         &1);
-                    }
+                    blas::$tbmv(b'L', b'T', b'N', self.size(), 0, &rhs.data, 1, &mut self.data, 1);
                 }
                 self
             }
@@ -66,19 +45,8 @@ macro_rules! add_impl {
                         t.data[i] *= rhs.data[i];
                     }
                 } else {
-                    unsafe {
-                        blas_sys::$sbmv(&('L' as c_char),
-                                         &(self.size() as c_int),
-                                         &0,
-                                         &1.0,
-                                         self.data.as_ptr(),
-                                         &1,
-                                         rhs.data.as_ptr(),
-                                         &1,
-                                         &0.0,
-                                         t.data.as_mut_ptr(),
-                                         &1);
-                    }
+                    blas::$sbmv(b'L', self.size(), 0, 1.0, &self.data, 1, &rhs.data, 1, 0.0,
+                                &mut t.data, 1);
                 }
                 t
             }
@@ -93,12 +61,7 @@ macro_rules! add_impl {
                         self.data[i] *= rhs;
                     }
                 } else {
-                    unsafe {
-                        blas_sys::$scal(&(self.size() as c_int),
-                                         &rhs,
-                                         self.data.as_mut_ptr(),
-                                         &1);
-                    }
+                    blas::$scal(self.size(), rhs, &self.data, 1);
                 }
                 self
             }
@@ -106,5 +69,5 @@ macro_rules! add_impl {
     )
 }
 
-add_impl!(f32, stbmv_, ssbmv_, sscal_);
-add_impl!(f64, dtbmv_, dsbmv_, dscal_);
+add_impl!(f32, stbmv, ssbmv, sscal);
+add_impl!(f64, dtbmv, dsbmv, dscal);
