@@ -8,7 +8,7 @@
 //! ```
 
 use std::vec::Vec;
-use TensorType;
+use {TensorType, Numeric};
 use num::traits::{cast, Signed};
 
 /// An implementation of an N-dimensional matrix.
@@ -100,6 +100,7 @@ impl<T: TensorType> Tensor<T> {
         Tensor{data: data, shape: sh}
     }
 
+    /// Creates a Tensor representing a scalar
     pub fn scalar(value: T) -> Tensor<T> {
         Tensor{data: vec![value], shape: vec![]}
     }
@@ -130,6 +131,7 @@ impl<T: TensorType> Tensor<T> {
         &self.shape
     }
 
+    /// Returns length of single dimension.
     pub fn dim(&self, axis: usize) -> usize {
         self.shape[axis]
     }
@@ -564,6 +566,13 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
             fi = fi + T::one();
         }
         t
+    }
+}
+
+impl<T: Numeric> Tensor<T> {
+    /// Creates a scalar specified as a `f64` and internally casted to `T`
+    pub fn fscalar(value: f64) -> Tensor<T> {
+        Tensor{data: vec![cast(value).unwrap()], shape: vec![]}
     }
 }
 
