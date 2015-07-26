@@ -28,14 +28,3 @@ pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
     }
     y
 }
-
-/*
-pub fn gt<T: TensorType>(lhs: &Tensor<T>, rhs: &Tensor<T>) -> Tensor<bool> {
-    assert_eq!(lhs.shape(), rhs.shape());
-    let mut y = Tensor::empty(&lhs.shape());
-    for i in 0..lhs.size() {
-        y[i] = lhs[i] > rhs[i];
-    }
-    y
-}
-*/
