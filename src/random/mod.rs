@@ -19,7 +19,10 @@
 use rand::{Rng, SeedableRng, StdRng};
 use tensor::Tensor;
 use rand::distributions::range::SampleRange;
+use num::traits::Float;
 use Numeric;
+use math;
+use std::f64;
 
 pub struct RandomState {
     rng: StdRng,
@@ -42,5 +45,17 @@ impl RandomState {
             t[i] = self.rng.gen_range::<T>(low, high);
         }
         t
+    }
+
+    /// Generates a tensor by independentaly drawing samples from a standard normal
+    pub fn normal<T>(&mut self, shape: &[usize]) -> Tensor<T>
+            where T: Numeric + SampleRange + Float {
+        let u1 = self.uniform(T::zero(), T::one(), shape);
+        let u2 = self.uniform(T::zero(), T::one(), shape);
+
+        let minustwo = Tensor::fscalar(-2.0);
+        let twopi = Tensor::fscalar(2.0 * f64::consts::PI);
+
+        math::sqrt(math::ln(u1) * &minustwo) * &math::cos(u2 * &twopi)
     }
 }
