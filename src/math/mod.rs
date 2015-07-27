@@ -44,3 +44,12 @@ pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
     y
 }
 
+/// Calculates atan(y/x).
+pub fn atan2<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
+    assert!(x.shape() == y.shape(), "Shapes must match");
+    let mut z = Tensor::empty(&x.shape());
+    for i in 0..x.size() {
+        z[i] = y[i].atan2(x[i]);
+    }
+    z
+}
