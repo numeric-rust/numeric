@@ -9,7 +9,7 @@
 
 use std::vec::Vec;
 use {TensorType, Numeric};
-use num::traits::{cast, Signed};
+use num::traits::cast;
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
