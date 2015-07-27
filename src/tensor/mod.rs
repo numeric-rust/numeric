@@ -575,7 +575,7 @@ impl<T: Numeric> Tensor<T> {
         Tensor{data: vec![cast(value).unwrap()], shape: vec![]}
     }
 }
-
+/*
 impl<T: TensorType + Signed> Tensor<T> {
     /// Takes element-wise absolute value.
     pub fn abs(mut self) -> Tensor<T> {
@@ -585,6 +585,7 @@ impl<T: TensorType + Signed> Tensor<T> {
         self
     }
 }
+*/
 
 fn shape_product(shape: &[usize]) -> usize {
     shape.iter().fold(1, |acc, &v| acc * v)

@@ -27,6 +27,13 @@ pub mod linalg;
 
 mod tests;
 
-/// Many of the things in tensor is lifted into numeric since it is so common.
+/// Many of the things in tensor is lifted into numeric since they are so common.
 pub use tensor::{Tensor, AxisIndex};
 pub use tensor::{SingleTensor, DoubleTensor};
+
+/// Many of the functions in math are lifted into numeric since they are so common.
+pub use math::{log, ln, log10, log2, sin, cos, tan, asin, acos, atan, exp_m1, exp, exp2,
+               ln_1p, sinh, cosh, tanh, asinh, acosh, atanh, sqrt,
+               floor, ceil, round, trunc, fract, abs, signum,
+               is_nan, is_finite, is_infinite, is_normal,
+               is_sign_positive, is_sign_negative};

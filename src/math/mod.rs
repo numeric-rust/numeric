@@ -18,8 +18,9 @@ macro_rules! add_impl {
     )*)
 }
 
-add_impl! { ln log10 log2 sin cos tan asin acos atan exp_m1
-            ln_1p sinh cosh tanh asinh acosh atanh sqrt }
+add_impl! { ln log10 log2 sin cos tan asin acos atan exp_m1 exp exp2
+            ln_1p sinh cosh tanh asinh acosh atanh sqrt
+            floor ceil round trunc fract abs signum }
 
 pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
     let mut y = x;
@@ -28,3 +29,17 @@ pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
     }
     y
 }
+
+macro_rules! add_impl_to_bool {
+    ($($f:ident)*) => ($(
+        pub fn $f<T: Numeric + Float>(x: &Tensor<T>) -> Tensor<bool> {
+            let mut y = Tensor::empty(&x.shape());
+            for i in 0..y.size() {
+                y[i] = x[i].$f();
+            }
+            y
+        }
+    )*)
+}
+
+add_impl_to_bool! { is_nan is_finite is_infinite is_normal is_sign_positive is_sign_negative }
