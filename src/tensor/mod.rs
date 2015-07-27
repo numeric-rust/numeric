@@ -1,4 +1,4 @@
-//! The tensor module defines a N-dimensional matrix for use in scientific computing.
+//! The tensor module defines an N-dimensional matrix for use in scientific computing.
 //!
 //! Many of the things in this module are lifted out of the `tensor` namespace, which means you can
 //! do things like:
