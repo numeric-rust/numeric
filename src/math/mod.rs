@@ -53,3 +53,21 @@ pub fn atan2<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
     }
     z
 }
+
+pub fn powf<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
+    assert!(x.shape() == y.shape(), "Shapes must match");
+    let mut z = Tensor::empty(&x.shape());
+    for i in 0..x.size() {
+        z[i] = y[i].powf(x[i]);
+    }
+    z
+}
+
+pub fn powi<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<i32>) -> Tensor<T> {
+    assert!(x.shape() == y.shape(), "Shapes must match");
+    let mut z = Tensor::empty(&x.shape());
+    for i in 0..x.size() {
+        z[i] = y[i].powi(x[i]);
+    }
+    z
+}
