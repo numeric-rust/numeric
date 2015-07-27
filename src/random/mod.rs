@@ -47,7 +47,7 @@ impl RandomState {
         t
     }
 
-    /// Generates a tensor by independentaly drawing samples from a standard normal
+    /// Generates a tensor by independently drawing samples from a standard normal
     pub fn normal<T>(&mut self, shape: &[usize]) -> Tensor<T>
             where T: Numeric + SampleRange + Float {
         let u1 = self.uniform(T::zero(), T::one(), shape);
