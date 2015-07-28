@@ -1,0 +1,1 @@
+initSidebarItems({"type":[["DoubleTensor","Type alias for `Tensor<f64>`"],["SingleTensor","Type alias for `Tensor<f32>`"]],"enum":[["AxisIndex","Used for advanced slicing of a `Tensor`."]],"struct":[["Tensor","An implementation of an N-dimensional matrix. A quick example:"]]});

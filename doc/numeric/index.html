@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `numeric` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, numeric">
+
+    <title>numeric - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'numeric', ty: 'mod', relpath: '../'};</script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>numeric</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/numeric/lib.rs.html#1-42'>[src]</a></span></h1>
+<div class='docblock'><p>Numeric Rust provides a foundation for doing scientific computing with Rust. It aims to be for
+Rust what Numpy is for Python.</p>
+
+<p>OpenBLAS/LAPACK is used to make things like matrix muliplications and solving linear equations
+fast.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use tensor::{<a class='struct' href='../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a>};</code></td></tr><tr><td><code>pub use tensor::{<a class='type' href='../numeric/tensor/type.SingleTensor.html' title='numeric::tensor::SingleTensor'>SingleTensor</a>, <a class='type' href='../numeric/tensor/type.DoubleTensor.html' title='numeric::tensor::DoubleTensor'>DoubleTensor</a>};</code></td></tr><tr><td><code>pub use math::{<a class='fn' href='../numeric/math/fn.log.html' title='numeric::math::log'>log</a>, <a class='fn' href='../numeric/math/fn.ln.html' title='numeric::math::ln'>ln</a>, <a class='fn' href='../numeric/math/fn.log10.html' title='numeric::math::log10'>log10</a>, <a class='fn' href='../numeric/math/fn.log2.html' title='numeric::math::log2'>log2</a>, <a class='fn' href='../numeric/math/fn.sin.html' title='numeric::math::sin'>sin</a>, <a class='fn' href='../numeric/math/fn.cos.html' title='numeric::math::cos'>cos</a>, <a class='fn' href='../numeric/math/fn.tan.html' title='numeric::math::tan'>tan</a>, <a class='fn' href='../numeric/math/fn.asin.html' title='numeric::math::asin'>asin</a>, <a class='fn' href='../numeric/math/fn.acos.html' title='numeric::math::acos'>acos</a>, <a class='fn' href='../numeric/math/fn.atan.html' title='numeric::math::atan'>atan</a>, <a class='fn' href='../numeric/math/fn.exp_m1.html' title='numeric::math::exp_m1'>exp_m1</a>, <a class='fn' href='../numeric/math/fn.exp.html' title='numeric::math::exp'>exp</a>, <a class='fn' href='../numeric/math/fn.exp2.html' title='numeric::math::exp2'>exp2</a>, <a class='fn' href='../numeric/math/fn.ln_1p.html' title='numeric::math::ln_1p'>ln_1p</a>, <a class='fn' href='../numeric/math/fn.sinh.html' title='numeric::math::sinh'>sinh</a>, <a class='fn' href='../numeric/math/fn.cosh.html' title='numeric::math::cosh'>cosh</a>, <a class='fn' href='../numeric/math/fn.tanh.html' title='numeric::math::tanh'>tanh</a>, <a class='fn' href='../numeric/math/fn.asinh.html' title='numeric::math::asinh'>asinh</a>, <a class='fn' href='../numeric/math/fn.acosh.html' title='numeric::math::acosh'>acosh</a>, <a class='fn' href='../numeric/math/fn.atanh.html' title='numeric::math::atanh'>atanh</a>, <a class='fn' href='../numeric/math/fn.atan2.html' title='numeric::math::atan2'>atan2</a>, <a class='fn' href='../numeric/math/fn.sqrt.html' title='numeric::math::sqrt'>sqrt</a>, <a class='fn' href='../numeric/math/fn.floor.html' title='numeric::math::floor'>floor</a>, <a class='fn' href='../numeric/math/fn.ceil.html' title='numeric::math::ceil'>ceil</a>, <a class='fn' href='../numeric/math/fn.round.html' title='numeric::math::round'>round</a>, <a class='fn' href='../numeric/math/fn.trunc.html' title='numeric::math::trunc'>trunc</a>, <a class='fn' href='../numeric/math/fn.fract.html' title='numeric::math::fract'>fract</a>, <a class='fn' href='../numeric/math/fn.abs.html' title='numeric::math::abs'>abs</a>, <a class='fn' href='../numeric/math/fn.signum.html' title='numeric::math::signum'>signum</a>, <a class='fn' href='../numeric/math/fn.powf.html' title='numeric::math::powf'>powf</a>, <a class='fn' href='../numeric/math/fn.powi.html' title='numeric::math::powi'>powi</a>, <a class='fn' href='../numeric/math/fn.is_nan.html' title='numeric::math::is_nan'>is_nan</a>, <a class='fn' href='../numeric/math/fn.is_finite.html' title='numeric::math::is_finite'>is_finite</a>, <a class='fn' href='../numeric/math/fn.is_infinite.html' title='numeric::math::is_infinite'>is_infinite</a>, <a class='fn' href='../numeric/math/fn.is_normal.html' title='numeric::math::is_normal'>is_normal</a>, <a class='fn' href='../numeric/math/fn.is_sign_positive.html' title='numeric::math::is_sign_positive'>is_sign_positive</a>, <a class='fn' href='../numeric/math/fn.is_sign_negative.html' title='numeric::math::is_sign_negative'>is_sign_negative</a>};</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='linalg/index.html'
+                               title='numeric::linalg'>linalg</a></td>
+                        <td class='docblock short'><p>Linear algebra functions.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='math/index.html'
+                               title='numeric::math'>math</a></td>
+                        <td class='docblock short'><p>Contains mathematical functions that operate on tensors. These functions are largely modelled
+after what is available natively in Rust.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='random/index.html'
+                               title='numeric::random'>random</a></td>
+                        <td class='docblock short'><p>The random module provides methods of randomizing tensors.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='tensor/index.html'
+                               title='numeric::tensor'>tensor</a></td>
+                        <td class='docblock short'><p>The tensor module defines an N-dimensional matrix for use in scientific computing.</p>
+</td>
+                    </tr>
+                </table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='macro' href='macro.tensor!.html'
+                               title='numeric::tensor!'>tensor!</a></td>
+                        <td class='docblock short'><p>To use this macro, import Numeric as follows:</p>
+</td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Numeric.html'
+                               title='numeric::Numeric'>Numeric</a></td>
+                        <td class='docblock short'><p><code>Numeric</code> extends <code>TensorType</code> to all the numeric types supported by <code>Tensor</code>
+(e.g. <code>u8</code> and <code>f32</code>).</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.TensorType.html'
+                               title='numeric::TensorType'>TensorType</a></td>
+                        <td class='docblock short'><p>This is the basic trait that must be satisfied for basic elements used in <code>Tensor</code>.</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "numeric";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
