@@ -18,6 +18,7 @@ Some of the completed and planned features:
 * [x] Mathematical functions
 * [x] Linear solver
 * [x] Basic random number generation
+* [x] Creation macro
 * [x] Updating slices
 * [ ] Strided slices
 * [ ] Broadcasted axes
@@ -26,14 +27,15 @@ Some of the completed and planned features:
 ## Example
 
 ```rust
+#[macro_use(tensor)]
+extern crate numeric;
+
 use numeric::Tensor;
 
 fn main() {
-    type T = Tensor<f64>;
-
-    let a = T::range(6).reshape(&[2, 3]);
-    let b = T::new(vec![7.0, 3.0, 2.0, -3.0, 2.0, -5.0]).reshape(&[2, 3]);
-    let c = T::new(vec![7.0, 3.0, 2.0]);
+    let a: Tensor<f64> = Tensor::range(6).reshape(&[2, 3]);
+    let b = tensor![7.0, 3.0, 2.0; -3.0, 2.0, -5.0];
+    let c = tensor![7.0, 3.0, 2.0];
 
     let d = &a + &b;         // a copy is made
     println!("d = {}", d);
@@ -45,7 +47,8 @@ fn main() {
     println!("f = {}", f);
 
     // Higher-dimensional
-    println!("g = {}", T::ones(&[2, 3, 4, 5]));
+    let g: Tensor<f64> = Tensor::ones(&[2, 3, 4, 5]);
+    println!("g = {}", g);
 }
 ```
 
