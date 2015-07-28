@@ -6,6 +6,10 @@ N-dimensional matrix class for Rust 1.0. It links to OpenBLAS and LAPACK to make
 operations fast (such as matrix multiplications and linear solvers). It utilizes
 Rust's move semantics as much as possible to avoid unnecessary copies.
 
+## Documentation
+
+* http://numeric.rs/doc/numeric/index.html
+
 ## Features
 
 Some of the completed and planned features:
