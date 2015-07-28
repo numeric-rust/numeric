@@ -25,7 +25,7 @@ impl<T: Numeric> Tensor<T> {
     }
 
     /// Short-hand for `convert::<f64>()`.
-    pub fn to_f65(&self) -> Tensor<f64> {
+    pub fn to_f64(&self) -> Tensor<f64> {
         self.convert::<f64>()
     }
 }
