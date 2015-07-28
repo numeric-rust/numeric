@@ -29,7 +29,7 @@ macro_rules! add_impl {
                 assert!(b.ndim() == 1, "`b` must be a vector (1D)");
                 assert!(self.shape()[0] == b.size(), "`A` and `b` must match");
 
-                // A must be tranposed, since LAPACK is column-major.
+                // A must be transposed, since LAPACK is column-major.
                 let mut a_ = self.transpose();
                 let mut b_ = b.clone();
                 let mut info = 0;
