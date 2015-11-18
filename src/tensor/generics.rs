@@ -1,8 +1,10 @@
 use tensor::Tensor;
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor};
 
+// T <op> &T
+
 macro_rules! add_impl {
-    ($trait_name:ident, $func_name:ident) => (
+    ($trait_name:ident, $func_name:ident, $func_name_with_mul:ident) => (
         // T <op> T
         impl<T: Copy + $trait_name<Output=T>> $trait_name for Tensor<T> {
             type Output = Tensor<T>;
@@ -33,7 +35,6 @@ macro_rules! add_impl {
         impl<'a, T: Copy + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: &Self::Output) -> Self::Output {
-                //println!("add T + &T");
                 if rhs.is_scalar() {
                     let v = rhs[0];
                     for i in 0..self.size() {
@@ -53,6 +54,30 @@ macro_rules! add_impl {
                         self.data[i] = self.data[i].$func_name(rhs.data[i]);
                     }
                     self
+                }
+            }
+        }
+
+        // T <op> &T  (with out)
+        impl<T: Copy + $trait_name<Output=T>> Tensor<T> {
+            pub fn $func_name_with_mul(&self, rhs: &Tensor<T>, out: &mut Tensor<T>) -> () {
+                if rhs.is_scalar() {
+                    assert!(out.shape() == self.shape());
+                    let v = rhs[0];
+                    for i in 0..self.size() {
+                        out.data[i] = self.data[i].$func_name(v);
+                    }
+                } else if self.is_scalar() {
+                    assert!(out.shape() == rhs.shape());
+                    let v = self[0];
+                    for i in 0..rhs.size() {
+                        out.data[i] = v.$func_name(rhs.data[i]);
+                    }
+                } else {
+                    assert_eq!(self.shape, rhs.shape);
+                    for i in 0..self.size() {
+                        out.data[i] = self.data[i].$func_name(rhs.data[i]);
+                    }
                 }
             }
         }
@@ -101,15 +126,15 @@ macro_rules! add_impl {
 }
 
 // Any operation supported on T should be supported on Tensor<T>, as long as T supports Copy
-add_impl!(Add, add);
-add_impl!(Sub, sub);
-add_impl!(Mul, mul);
-add_impl!(Div, div);
-add_impl!(Rem, rem);
+add_impl!(Add, add, add_with_out);
+add_impl!(Sub, sub, sub_with_out);
+add_impl!(Mul, mul, mul_with_out);
+add_impl!(Div, div, div_with_out);
+add_impl!(Rem, rem, rem_with_out);
 
-add_impl!(BitAnd, bitand);
-add_impl!(BitOr, bitor);
-add_impl!(BitXor, bitxor);
+add_impl!(BitAnd, bitand, bitand_with_out);
+add_impl!(BitOr, bitor, bitor_with_out);
+add_impl!(BitXor, bitxor, bitxor_with_out);
 
 
 // -T
