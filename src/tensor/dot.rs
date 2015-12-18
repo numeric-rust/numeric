@@ -36,7 +36,7 @@ macro_rules! add_impl {
                                 for k in 0..self.shape[1] {
                                     v += self.get(i, k) * rhs.get(k, j);
                                 }
-                                t3.set(i, j, v);
+                                t3.set2(i, j, v);
                             }
                         }
                     } else {

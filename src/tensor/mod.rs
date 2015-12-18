@@ -491,9 +491,25 @@ impl<T: TensorType> Tensor<T> {
     }
 
     #[inline]
-    fn set(&mut self, i: usize, j: usize, v: T) {
+    fn set2(&mut self, i: usize, j: usize, v: T) {
         self.data[i * self.shape[1] + j] = v;
     }
+
+    pub fn set(&mut self, other: &Tensor<T>) -> () {
+        assert!(self.shape() == other.shape());
+        for i in 0..self.size() {
+            self.data[i] = other.data[i];
+        }
+    }
+
+    /*
+    fn set(&mut self, other: Tensor<T>) -> () {
+        assert!(self.shape() == other.shape());
+        for i in 0..self.size() {
+            self.data[i] = other.data[i];
+        }
+    }
+    */
 }
 
 impl<T: TensorType + Num + NumCast> Tensor<T> {
@@ -512,7 +528,7 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
     pub fn eye(size: usize) -> Tensor<T> {
         let mut t = Tensor::zeros(&[size, size]);
         for k in 0..size {
-            t.set(k, k, T::one());
+            t.set2(k, k, T::one());
         }
         t
     }
