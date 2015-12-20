@@ -83,6 +83,10 @@ impl<T: TensorType> Tensor<T> {
         self.data.as_ptr()
     }
 
+    pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
+        self.data.as_mut_ptr()
+    }
+
     /// Creates a new tensor from a `Vec` object. It will take ownership of the vector.
     pub fn new(data: Vec<T>) -> Tensor<T> {
         let len = data.len();
