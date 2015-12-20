@@ -79,6 +79,10 @@ mod binary;
 use num::traits::{Num, NumCast};
 
 impl<T: TensorType> Tensor<T> {
+    pub unsafe fn as_ptr(&self) -> *const T {
+        self.data.as_ptr()
+    }
+
     /// Creates a new tensor from a `Vec` object. It will take ownership of the vector.
     pub fn new(data: Vec<T>) -> Tensor<T> {
         let len = data.len();
