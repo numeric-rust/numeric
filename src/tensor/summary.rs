@@ -32,6 +32,16 @@ impl<T: Numeric> Tensor<T> {
         }
         s
     }
+
+    pub fn mean(&self) -> T {
+        let mut s = T::zero();
+        let mut t = T::zero();
+        for i in 0..self.size() {
+            s = s + self.data[i];
+            t = t + T::one();
+        }
+        s / t
+    }
 }
 
 macro_rules! add_impl {
