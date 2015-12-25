@@ -58,7 +58,7 @@ macro_rules! add_impl {
                     } else {
                         v = blas::$dot(self.size(), &self.data, 1, &rhs.data, 1);
                     }
-                    Tensor::new(vec![v])
+                    Tensor::scalar(v)
                 } else {
                     panic!("Dot product is not supported for the matrix dimensions provided");
                 }
