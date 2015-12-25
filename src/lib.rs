@@ -7,6 +7,8 @@ extern crate blas;
 extern crate lapack;
 extern crate num;
 extern crate rand;
+extern crate hdf5_sys;
+extern crate libc;
 
 use num::traits::{Num, NumCast};
 
@@ -24,6 +26,7 @@ pub mod tensor;
 pub mod math;
 pub mod random;
 pub mod linalg;
+pub mod io;
 
 /// Many of the things in tensor is lifted into numeric since they are so common.
 pub use tensor::{Tensor, AxisIndex};
