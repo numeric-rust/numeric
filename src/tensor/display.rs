@@ -61,7 +61,7 @@ macro_rules! add_impl {
 
                 if self.is_scalar() {
                     //write!(f, "{}\n[Tensor<{}> of shape scalar]", ret, $name)
-                    write!(f, "Tensor<{}>::scalar({})", $name, self.data[0])
+                    write!(f, "{}", self.data[0])
                 } else {
                     // Format shape
                     // TODO: Is there an implode/join function?
