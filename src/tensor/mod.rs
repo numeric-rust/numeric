@@ -35,6 +35,12 @@ pub struct Tensor<T> {
 
     /// The shape of the tensor.
     shape: Vec<usize>,
+
+    /// The strides for each axis.
+    strides: Vec<isize>,
+
+    /// The offsets for each axis.
+    offsets: Vec<isize>
 }
 
 // Common type-specific tensors
