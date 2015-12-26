@@ -2,9 +2,10 @@
 
 # Numeric Rust
 
-N-dimensional matrix class for Rust 1.0. It links to OpenBLAS and LAPACK to make tensor
-operations fast (such as matrix multiplications and linear solvers). It utilizes
-Rust's move semantics as much as possible to avoid unnecessary copies.
+General-purpose N-dimensional matrix class for Rust. It links to OpenBLAS and
+LAPACK to make tensor operations fast (such as matrix multiplications and
+linear solvers). It utilizes Rust's move semantics as much as possible to avoid
+unnecessary copies.
 
 ## Documentation
 
@@ -24,6 +25,7 @@ Some of the completed and planned features:
 * [x] Basic random number generation
 * [x] Creation macro
 * [x] Updating slices
+* [x] Saving/loading HDF5
 * [ ] Strided slices
 * [ ] Broadcasted axes
 * [ ] Matrix inverse and SVD
@@ -75,6 +77,13 @@ g =
 [Tensor<f64> of shape 2x3x4x5]
 ```
 
+## Contribute
+
+We love pull requests and there are tons of things to work on for this project.
+Don't hesitate to ask if you want suggestions for contributions (big or small).
+Add your name to the contributors file as part of your PR, no matter how small
+it may seem.
+
 ## Acknowledgement
 
-Borrowing shamelessly from the great projects Numpy and Torch7.
+Borrowing shamelessly from the great project Numpy and a little bit from Torch7.
