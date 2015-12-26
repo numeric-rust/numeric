@@ -2,6 +2,8 @@
 //use tensor;
 
 
+/// Macro for creating vectors and matrices.
+///
 /// To use this macro, import Numeric as follows:
 ///
 /// ```text
