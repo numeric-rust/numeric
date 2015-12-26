@@ -1,8 +1,33 @@
-//! IO module
+//! Saving and loading data to and from disk.
+//!
+//! # HDF5
+//!
+//! The recommended way to save/load data in Numeric is using HDF5.
+//!
+//! **Note:** The HDF5 library will by default not be thread-safe (it depends on how you compiled
+//! it), so do not call either of these functions concurrently.
+//!
+//! ##Saving to an HDF5 file:
 //!
 //! ```
-//! // Load HDF5 example here
+//! let path = Path::new("output.h5");
+//! let t1 = tensor![1_i32, 23; 20, 10];
+//! try!(t.save_hdf5(&path));
 //! ```
+//! The data will be saved to the group `/data`. Now, we can load this using:
+//!
+//! ## Loading from HDF5 file
+//!
+//! Now, we can load this file:
+//!
+//! ```
+//! let t2 = try!(numeric::io::load_hdf5_as_f64(&path, "/data"));
+//! ```
+//!
+//! Note that since we need to know the type of `t2` at compile time, it doesn't matter that we
+//! saved the file as `i32`, we have to specify how to load it. The way this is done is that it
+//! will load the `i32` natively and then convert it to `f64`. If your data converted, you simply
+//! have to load it as the same type as you know is in the file.
 
 extern crate std;
 
@@ -24,6 +49,10 @@ extern fn error_handler(_: hid_t, _: *const c_void) {
 macro_rules! add_save {
     ($t:ty, $h5type:expr) => (
         impl Tensor<$t> {
+            /// Saves tensor to an HDF5 file.
+            ///
+            /// **Warning**: This function is not thread-safe (unless you compiled HDF5 to be
+            /// thread-safe). Do no call this function concurrently from multiple threads.
             pub fn save_hdf5(&self, path: &Path) -> std::io::Result<()> {
                 let filename = match path.to_str() {
                     Some(v) => v,
@@ -39,7 +68,7 @@ macro_rules! add_save {
                     let filename_cstr = try!(::std::ffi::CString::new(filename));
                     let group_cstr = try!(::std::ffi::CString::new(group));
 
-                    ffi::H5Eset_auto2(0, error_handler, 0 as *const c_void);
+                    //ffi::H5Eset_auto2(0, error_handler, 0 as *const c_void);
 
                     let file = ffi::H5Fcreate(filename_cstr.as_ptr() as *const c_char,
                                    ffi::H5F_ACC_TRUNC, ffi::H5P_DEFAULT, ffi::H5P_DEFAULT);
@@ -61,7 +90,8 @@ macro_rules! add_save {
                                                self.as_ptr() as * const c_void);
 
                     if status < 0 {
-                        let err = std::io::Error::new(std::io::ErrorKind::Other, format!("Failed to write '{}': {:?}", group, path));
+                        let err = std::io::Error::new(std::io::ErrorKind::Other,
+                                                      format!("Failed to write '{}': {:?}", group, path));
                         return Err(err);
                     }
 
@@ -89,6 +119,7 @@ add_save!(f64, ffi::H5T_NATIVE_DOUBLE);
 
 macro_rules! add_load {
     ($name:ident, $t:ty) => (
+        /// Load HDF5 file and convert to specified type.
         pub fn $name(path: &Path, group: &str) -> std::io::Result<Tensor<$t>> {
             let filename = match path.to_str() {
                 Some(v) => v,
@@ -100,7 +131,6 @@ macro_rules! add_load {
             unsafe {
                 let filename_cstr = try!(::std::ffi::CString::new(filename));
                 let group_cstr = try!(::std::ffi::CString::new(group));
-
 
                 ffi::H5Eset_auto2(0, error_handler, 0 as *const c_void);
 
