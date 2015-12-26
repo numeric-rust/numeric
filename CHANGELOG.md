@@ -6,8 +6,8 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
-## Latest
-Released: TBD
+## 0.1.0
+Released: 2015-12-25
 * Changed internal storage to using `Rc` with copy-on-write semantics
 * Added HDF5 support (adds `hdf5-sys` as a dependency)
 * Dot product between two vectors results in a proper scalar

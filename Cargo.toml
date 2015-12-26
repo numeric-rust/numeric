@@ -1,13 +1,13 @@
 [package]
 name = "numeric"
-version = "0.0.7"
+version = "0.1.0"
 authors = ["Gustav Larsson <gustav.m.larsson@gmail.com>"]
 description = "N-dimensional matrix class for Rust"
 repository = "https://github.com/gustavla/numeric"
 homepage = "http://numeric.rs"
 documentation = "http://numeric.rs/doc/numeric/index.html"
 readme = "README.md"
-keywords = ["numeric", "tensor", "matrix", "vector", "scientific"]
+keywords = ["numeric", "tensor", "matrix", "vector", "hdf5"]
 license = "MIT"
 
 [dependencies]
