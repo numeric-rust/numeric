@@ -47,6 +47,9 @@ macro_rules! tensor {
     ($($x:expr),*) => (
         $crate::Tensor::new(vec![$($x),*])
     );
+    ($($x:expr,)*) => (
+        tensor![$($x),*]
+    );
     ($($($x:expr),*;)*) => ({
         let mut v = Vec::new();
         let mut n = 0;
@@ -66,7 +69,14 @@ mod tests {
     use Tensor;
 
     #[test]
-    fn tensor() {
+    fn tensor_1d() {
+        let x = Tensor::new(vec![1, 2, 3, 4, 5, 6]);
+        assert!(x == tensor![1, 2, 3, 4, 5, 6]);
+        assert!(x == tensor![1, 2, 3, 4, 5, 6,]);
+    }
+
+    #[test]
+    fn tensor_2d() {
         let x = Tensor::new(vec![1, 2, 3, 4, 5, 6]).reshape(&[3, 2]);
         assert!(x == tensor![1, 2; 3, 4; 5, 6]);
         assert!(x == tensor![1, 2; 3, 4; 5, 6;]);
