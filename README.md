@@ -30,6 +30,8 @@ Some of the completed and planned features:
 * [ ] Broadcasted axes
 * [ ] Matrix inverse and SVD
 
+Recent progress is summarized in [CHANGELOG.md](CHANGELOG.md).
+
 ## Example
 
 ```rust
@@ -81,7 +83,7 @@ g =
 
 We love pull requests and there are tons of things to work on for this project.
 Don't hesitate to ask if you want suggestions for contributions (big or small).
-Add your name to the contributors file as part of your PR, no matter how small
+Add your name to the [CONTRIBUTORS.md](CONTRIBUTORS.md) file as part of your PR, no matter how small
 it may seem.
 
 ## Acknowledgement
