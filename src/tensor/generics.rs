@@ -10,22 +10,34 @@ macro_rules! add_impl {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
-                    let v: T = rhs.scalar_value() as T;
-                    for i in 0..self.size() {
-                        self.data[i] = self.data[i].$func_name(v);
+                    {
+                        let n = self.size();
+                        let mut data = self.slice_mut();
+                        let v: T = rhs.scalar_value() as T;
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(v);
+                        }
                     }
                     self
                 } else if self.is_scalar() {
                     let mut t = Tensor::empty(&rhs.shape);
-                    let v = self.scalar_value();
-                    for i in 0..t.size() {
-                        t.data[i] = v.$func_name(rhs.data[i]);
+                    {
+                        let n = t.size();
+                        let mut data = t.slice_mut();
+                        let v = self.scalar_value();
+                        for i in 0..n {
+                            data[i] = v.$func_name(rhs.data[i]);
+                        }
                     }
                     t
                 } else {
-                    assert_eq!(self.shape, rhs.shape);
-                    for i in 0..self.size() {
-                        self.data[i] = self.data[i].$func_name(rhs.data[i]);
+                    {
+                        let n = self.size();
+                        assert_eq!(self.shape, rhs.shape);
+                        let mut data = self.slice_mut();
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(rhs.data[i]);
+                        }
                     }
                     self
                 }
@@ -36,22 +48,34 @@ macro_rules! add_impl {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: &Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
-                    let v = rhs[0];
-                    for i in 0..self.size() {
-                        self.data[i] = self.data[i].$func_name(v);
+                    {
+                        let n = self.size();
+                        let mut data = self.slice_mut();
+                        let v = rhs[0];
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(v);
+                        }
                     }
                     self
                 } else if self.is_scalar() {
                     let mut t: Tensor<T> = Tensor::empty(&rhs.shape);
-                    let v = self[0];
-                    for i in 0..t.size() {
-                        t.data[i] = v.$func_name(rhs.data[i]);
+                    {
+                        let n = t.size();
+                        let mut data = t.slice_mut();
+                        let v = self[0];
+                        for i in 0..n {
+                            data[i] = v.$func_name(rhs.data[i]);
+                        }
                     }
                     t
                 } else {
-                    assert_eq!(self.shape, rhs.shape);
-                    for i in 0..self.size() {
-                        self.data[i] = self.data[i].$func_name(rhs.data[i]);
+                    {
+                        let n = self.size();
+                        assert_eq!(self.shape, rhs.shape);
+                        let mut data = self.slice_mut();
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(rhs.data[i]);
+                        }
                     }
                     self
                 }
@@ -63,20 +87,25 @@ macro_rules! add_impl {
             pub fn $func_name_with_mul(&self, rhs: &Tensor<T>, out: &mut Tensor<T>) -> () {
                 if rhs.is_scalar() {
                     assert!(out.shape() == self.shape());
+                    let n = out.size();
+                    let mut data = out.slice_mut();
                     let v = rhs[0];
-                    for i in 0..self.size() {
-                        out.data[i] = self.data[i].$func_name(v);
+                    for i in 0..n {
+                        data[i] = data[i].$func_name(v);
                     }
                 } else if self.is_scalar() {
                     assert!(out.shape() == rhs.shape());
+                    let mut data = out.slice_mut();
                     let v = self[0];
                     for i in 0..rhs.size() {
-                        out.data[i] = v.$func_name(rhs.data[i]);
+                        data[i] = v.$func_name(rhs.data[i]);
                     }
                 } else {
                     assert_eq!(self.shape, rhs.shape);
-                    for i in 0..self.size() {
-                        out.data[i] = self.data[i].$func_name(rhs.data[i]);
+                    let n = out.size();
+                    let mut data = out.slice_mut();
+                    for i in 0..n {
+                        data[i] = self.data[i].$func_name(rhs.data[i]);
                     }
                 }
             }
@@ -89,23 +118,35 @@ macro_rules! add_impl {
                 //println!("$fname &T + &T");
                 if rhs.is_scalar() {
                     let mut t = self.clone();
-                    let v = rhs[0];
-                    for i in 0..t.size() {
-                        t.data[i] = t.data[i].$func_name(v);
+                    {
+                        let n = t.size();
+                        let mut data = t.slice_mut();
+                        let v = rhs[0];
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(v);
+                        }
                     }
                     t
                 } else if self.is_scalar() {
                     let mut t = Tensor::empty(&rhs.shape);
-                    let v = self[0];
-                    for i in 0..t.size() {
-                        t.data[i] = v.$func_name(rhs.data[i]);
+                    {
+                        let n = t.size();
+                        let mut data = t.slice_mut();
+                        let v = self[0];
+                        for i in 0..n {
+                            data[i] = v.$func_name(rhs.data[i]);
+                        }
                     }
                     t
                 } else {
                     assert_eq!(self.shape, rhs.shape);
                     let mut t = self.clone();
-                    for i in 0..t.size() {
-                        t.data[i] = t.data[i].$func_name(rhs.data[i]);
+                    {
+                        let n = t.size();
+                        let mut data = t.slice_mut();
+                        for i in 0..n {
+                            data[i] = data[i].$func_name(rhs.data[i]);
+                        }
                     }
                     t
                 }
@@ -116,8 +157,12 @@ macro_rules! add_impl {
         impl<T: Copy + $trait_name<Output=T>> $trait_name<T> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: T) -> Self::Output {
-                for i in 0..self.size() {
-                    self.data[i] = self.data[i].$func_name(rhs);
+                {
+                    let n = self.size();
+                    let mut data = self.slice_mut();
+                    for i in 0..n {
+                        data[i] = data[i].$func_name(rhs);
+                    }
                 }
                 self
             }
@@ -141,8 +186,12 @@ add_impl!(BitXor, bitxor, bitxor_with_out);
 impl<T: Copy + Neg<Output=T>> Neg for Tensor<T> {
     type Output = Tensor<T>;
     fn neg(mut self) -> Self::Output {
-        for i in 0..self.size() {
-            self.data[i] = -self.data[i];
+        {
+            let n = self.size();
+            let mut data = self.slice_mut();
+            for i in 0..n {
+                data[i] = -data[i];
+            }
         }
         self
     }
@@ -153,8 +202,11 @@ impl<'a, T: Copy + Neg<Output=T>> Neg for &'a Tensor<T> {
     type Output = Tensor<T>;
     fn neg(self) -> Self::Output {
         let mut t = Tensor::empty(&self.shape);
-        for i in 0..self.size() {
-            t.data[i] = -self.data[i];
+        {
+            let mut data = t.slice_mut();
+            for i in 0..self.size() {
+                data[i] = -self.data[i];
+            }
         }
         t
     }

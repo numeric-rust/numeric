@@ -68,6 +68,3 @@ fn unravel_index() {
     assert_eq!(t.unravel_index(175), vec![1, 1, 4, 1]);
     assert_eq!(t.unravel_index(300), vec![2, 2, 0, 0]);
 }
-
-
-

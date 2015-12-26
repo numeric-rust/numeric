@@ -36,7 +36,7 @@ macro_rules! add_impl {
 
                 let n = self.shape()[0];
                 let mut ipiv: Tensor<i32> = Tensor::empty(&[n]);
-                lapack::$gesv(n, 1, a_.data_mut(), n, ipiv.data_mut(), b_.data_mut(), n,
+                lapack::$gesv(n, 1, a_.slice_mut(), n, ipiv.slice_mut(), b_.slice_mut(), n,
                               &mut info);
                 // TODO: Change this to a recoverable failure instead of a panic?
                 if info < 0 {

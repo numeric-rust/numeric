@@ -6,9 +6,9 @@ macro_rules! add_impl {
             type T = Tensor<$t>;
 
             #[test]
-            fn slice_1() {
+            fn index_1() {
                 let t = T::range(200).reshape(&[2, 20, 5]);
-                let t2 = t.slice(&[AxisIndex::SliceFrom(1),
+                let t2 = t.index(&[AxisIndex::SliceFrom(1),
                                    AxisIndex::SliceTo(5),
                                    AxisIndex::Slice(2, 4)]);
                 let answer = T::new(vec![102.0, 103.0, 107.0, 108.0, 112.0,
@@ -17,9 +17,9 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn slice_2() {
+            fn index_2() {
                 let t = T::range(210).reshape(&[7, 5, 2, 3]);
-                let t2 = t.slice(&[AxisIndex::Slice(1, 3),
+                let t2 = t.index(&[AxisIndex::Slice(1, 3),
                                    AxisIndex::SliceTo(2),
                                    AxisIndex::Full,
                                    AxisIndex::Slice(1, 2)]);
@@ -29,9 +29,9 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn slice_index_1() {
+            fn index_index_1() {
                 let t = T::range(210).reshape(&[7, 5, 2, 3]);
-                let t2 = t.slice(&[AxisIndex::Index(2),
+                let t2 = t.index(&[AxisIndex::Index(2),
                                    AxisIndex::SliceTo(2),
                                    AxisIndex::Full,
                                    AxisIndex::Index(2)]);
@@ -40,9 +40,9 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn slice_ellipsis() {
+            fn index_ellipsis() {
                 let t = T::range(3*2*3*7).reshape(&[3, 2, 3, 7]);
-                let t2 = t.slice(&[AxisIndex::Index(1),
+                let t2 = t.index(&[AxisIndex::Index(1),
                                    AxisIndex::Ellipsis,
                                    AxisIndex::SliceFrom(5)]);
                 let answer = T::new(vec![47., 48., 54., 55.,  61., 62.,
@@ -51,9 +51,9 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn slice_implied_full() {
+            fn index_implied_full() {
                 let t = T::range(3*2*7*3).reshape(&[3, 2, 7, 3]);
-                let t2 = t.slice(&[AxisIndex::Index(1),
+                let t2 = t.index(&[AxisIndex::Index(1),
                                    AxisIndex::Index(1),
                                    AxisIndex::Slice(1, 3)]);
                 let answer = T::new(vec![66., 67., 68.,
@@ -63,35 +63,35 @@ macro_rules! add_impl {
 
             #[test]
             #[should_panic]
-            fn slice_ellipsis_multiple() {
+            fn index_ellipsis_multiple() {
                 let t = T::range(3*2*3*7).reshape(&[3, 2, 3, 7]);
                 // Can't use more than one Ellipsis
-                t.slice(&[AxisIndex::Ellipsis,
+                t.index(&[AxisIndex::Ellipsis,
                           AxisIndex::Index(2),
                           AxisIndex::Ellipsis]);
             }
 
             #[test]
-            fn slice_new_axis_empty() {
+            fn index_new_axis_empty() {
                 let t = T::new(vec![]);
-                assert!(t.slice(&[AxisIndex::NewAxis]).shape() == &[1, 0]);
-                assert!(t.slice(&[AxisIndex::NewAxis, AxisIndex::NewAxis]).shape() == &[1, 1, 0]);
-                assert!(t.slice(&[AxisIndex::Ellipsis, AxisIndex::NewAxis]).shape() == &[0, 1]);
-                assert!(t.slice(&[AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[0, 1]);
-                assert!(t.slice(&[AxisIndex::NewAxis, AxisIndex::Ellipsis, AxisIndex::NewAxis]).shape() == &[1, 0, 1]);
+                assert!(t.index(&[AxisIndex::NewAxis]).shape() == &[1, 0]);
+                assert!(t.index(&[AxisIndex::NewAxis, AxisIndex::NewAxis]).shape() == &[1, 1, 0]);
+                assert!(t.index(&[AxisIndex::Ellipsis, AxisIndex::NewAxis]).shape() == &[0, 1]);
+                assert!(t.index(&[AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[0, 1]);
+                assert!(t.index(&[AxisIndex::NewAxis, AxisIndex::Ellipsis, AxisIndex::NewAxis]).shape() == &[1, 0, 1]);
             }
 
             #[test]
-            fn slice_new_axis_multidimensional() {
+            fn index_new_axis_multidimensional() {
                 let t = T::range(210).reshape(&[7, 5, 2, 3]);
 
-                assert!(t.slice(&[AxisIndex::NewAxis]).shape() == &[1, 7, 5, 2, 3]);
-                assert!(t.slice(&[AxisIndex::Full,AxisIndex::NewAxis]).shape() == &[7, 1, 5, 2, 3]);
-                assert!(t.slice(&[AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 5, 1, 2, 3]);
-                assert!(t.slice(&[AxisIndex::Full, AxisIndex::NewAxis, AxisIndex::Full]).shape() == &[7, 1, 5, 2, 3]);
-                assert!(t.slice(&[AxisIndex::Full, AxisIndex::NewAxis, AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 1, 5, 2, 1, 3]);
-                assert!(t.slice(&[AxisIndex::Ellipsis, AxisIndex::NewAxis, AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 5, 1, 2, 3, 1]);
-                assert!(t.slice(&[AxisIndex::NewAxis, AxisIndex::Ellipsis, AxisIndex::NewAxis, AxisIndex::NewAxis]).shape() == &[1, 7, 5, 2, 3, 1, 1]);
+                assert!(t.index(&[AxisIndex::NewAxis]).shape() == &[1, 7, 5, 2, 3]);
+                assert!(t.index(&[AxisIndex::Full,AxisIndex::NewAxis]).shape() == &[7, 1, 5, 2, 3]);
+                assert!(t.index(&[AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 5, 1, 2, 3]);
+                assert!(t.index(&[AxisIndex::Full, AxisIndex::NewAxis, AxisIndex::Full]).shape() == &[7, 1, 5, 2, 3]);
+                assert!(t.index(&[AxisIndex::Full, AxisIndex::NewAxis, AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 1, 5, 2, 1, 3]);
+                assert!(t.index(&[AxisIndex::Ellipsis, AxisIndex::NewAxis, AxisIndex::Full, AxisIndex::Full, AxisIndex::NewAxis]).shape() == &[7, 5, 1, 2, 3, 1]);
+                assert!(t.index(&[AxisIndex::NewAxis, AxisIndex::Ellipsis, AxisIndex::NewAxis, AxisIndex::NewAxis]).shape() == &[1, 7, 5, 2, 3, 1, 1]);
             }
         }
     )

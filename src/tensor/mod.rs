@@ -10,6 +10,7 @@
 use std::vec::Vec;
 use {TensorType, Numeric};
 use num::traits::cast;
+use std::rc::Rc;
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -30,7 +31,7 @@ use num::traits::cast;
 /// ```
 pub struct Tensor<T> {
     /// The underlying data matrix, stored in row-major order.
-    data: Vec<T>,
+    data: Rc<Vec<T>>,
 
     /// The shape of the tensor.
     shape: Vec<usize>,
@@ -84,13 +85,13 @@ impl<T: TensorType> Tensor<T> {
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
-        self.data.as_mut_ptr()
+        self.slice_mut().as_mut_ptr()
     }
 
     /// Creates a new tensor from a `Vec` object. It will take ownership of the vector.
     pub fn new(data: Vec<T>) -> Tensor<T> {
         let len = data.len();
-        Tensor{data: data, shape: vec![len]}
+        Tensor{data: Rc::new(data), shape: vec![len]}
     }
 
     /// Creates a zero-filled tensor of the specified shape.
@@ -105,12 +106,23 @@ impl<T: TensorType> Tensor<T> {
         unsafe {
             data.set_len(size);
         }
-        Tensor{data: data, shape: sh}
+        Tensor{data: Rc::new(data), shape: sh}
+    }
+
+    /// Returns a flat slice of the tensor.
+    pub fn slice(&self) -> &[T] {
+        &self.data[..]
+    }
+
+    /// Returns a mutable flat slice of the tensors. This will cause a copy unless the tensor is
+    /// unique. This is mostly used internally.
+    pub fn slice_mut(&mut self) -> &mut [T] {
+        &mut Rc::make_mut(&mut self.data)[..]
     }
 
     /// Creates a Tensor representing a scalar
     pub fn scalar(value: T) -> Tensor<T> {
-        Tensor{data: vec![value], shape: vec![]}
+        Tensor{data: Rc::new(vec![value]), shape: vec![]}
     }
 
     pub fn is_scalar(&self) -> bool {
@@ -131,7 +143,7 @@ impl<T: TensorType> Tensor<T> {
         for _ in 0..size {
             data.push(v);
         }
-        Tensor{data: data, shape: sh}
+        Tensor{data: Rc::new(data), shape: sh}
     }
 
     /// Returns the shape of the tensor.
@@ -147,11 +159,6 @@ impl<T: TensorType> Tensor<T> {
     /// Returns a reference of the underlying data vector.
     pub fn data(&self) -> &Vec<T> {
         &self.data
-    }
-
-    /// Mutable reference to data
-    pub fn data_mut(&mut self) -> &mut Vec<T> {
-        &mut self.data
     }
 
     /// Flattens the tensor to one-dimensional. Takes ownership and returns a new tensor.
@@ -190,14 +197,14 @@ impl<T: TensorType> Tensor<T> {
         }
     }
 
-    fn expand_slices(&self, slices_raw: &[AxisIndex]) -> (Vec<AxisIndex>, Vec<usize>) {
+    fn expand_indices(&self, selection: &[AxisIndex]) -> (Vec<AxisIndex>, Vec<usize>) {
         // The returned axis will not contain any AxisIndex::Ellipsis
-        let mut slices: Vec<AxisIndex> = Vec::with_capacity(self.shape.len());
+        let mut sel: Vec<AxisIndex> = Vec::with_capacity(self.shape.len());
         let mut newaxes: Vec<usize> = Vec::with_capacity(self.shape.len());
 
         // Count how many non NewAxis and non Ellipsis
         let mut nondotted = 0;
-        for s in slices_raw {
+        for s in selection {
             match *s {
                 AxisIndex::NewAxis | AxisIndex::Ellipsis => {
                     nondotted += 0;
@@ -211,14 +218,14 @@ impl<T: TensorType> Tensor<T> {
         // Add an extra index to newaxes that represent insertion before the first axis
         newaxes.push(0);
         let mut ellipsis_found = false;
-        for s in slices_raw {
+        for s in selection {
             match *s {
                 AxisIndex::Ellipsis => {
                     assert!(!ellipsis_found, "At most one AxisIndex::Ellipsis may be used");
                     assert!(self.shape.len() >= nondotted);
 
                     for _ in 0..(self.shape.len() - nondotted) {
-                        slices.push(AxisIndex::Full);
+                        sel.push(AxisIndex::Full);
                         newaxes.push(0);
                     }
                     ellipsis_found = true;
@@ -231,26 +238,26 @@ impl<T: TensorType> Tensor<T> {
                 },
                 _ => {
                     newaxes.push(0);
-                    slices.push(*s);
+                    sel.push(*s);
                 }
             }
         }
-        while slices.len() < self.shape.len() {
-            slices.push(AxisIndex::Full);
+        while sel.len() < self.shape.len() {
+            sel.push(AxisIndex::Full);
         }
         while newaxes.len() < self.shape.len() + 1 {
             newaxes.push(0)
         }
-        assert!(slices.len() == self.shape.len(), "Too many indices specified");
+        assert!(sel.len() == self.shape.len(), "Too many indices specified");
         debug_assert!(newaxes.len() == self.shape.len() + 1, "newaxis wrong length");
 
-        (slices, newaxes)
+        (sel, newaxes)
     }
 
-    fn prepare_slice(&self, slices_raw: &[AxisIndex]) -> (Vec<(usize, usize)>, Vec<usize>, Vec<usize>, Vec<usize>) {
-        let (slices, newaxes) = self.expand_slices(slices_raw);
+    fn prepare_index(&self, selection: &[AxisIndex]) -> (Vec<(usize, usize)>, Vec<usize>, Vec<usize>, Vec<usize>) {
+        let (sel, newaxes) = self.expand_indices(selection);
         let mut axis = 0;
-        let n = slices.len();
+        let n = sel.len();
 
         let mut shape: Vec<usize> = Vec::with_capacity(n);
         for _ in 0..newaxes[0] {
@@ -259,7 +266,7 @@ impl<T: TensorType> Tensor<T> {
         let mut dims: Vec<usize> = Vec::with_capacity(n);
         let mut ranges: Vec<(usize, usize)> = Vec::with_capacity(n);
         let mut indices: Vec<usize> = Vec::with_capacity(n);
-        for s in slices {
+        for s in sel {
             let (st, en, keepdim) = match s {
                 AxisIndex::Index(i) => {
                     let idx = self.resolve_axis(axis, i);
@@ -278,7 +285,7 @@ impl<T: TensorType> Tensor<T> {
                     (self.resolve_axis(axis, start), self.shape[axis], true)
                 },
                 AxisIndex::Ellipsis | AxisIndex::NewAxis => {
-                    // Should have been removed by expand_slices at this point
+                    // Should have been removed by expand_indices at this point
                     unreachable!();
                 },
             };
@@ -305,12 +312,12 @@ impl<T: TensorType> Tensor<T> {
     ///
     /// let t = DoubleTensor::ones(&[2, 3, 4]);
     ///
-    /// t.slice(&[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]
-    /// t.slice(&[AxisIndex::Index(-1)]); // shape [3, 4]
-    /// t.slice(&[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]
+    /// t.index(&[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]
+    /// t.index(&[AxisIndex::Index(-1)]); // shape [3, 4]
+    /// t.index(&[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]
     /// ```
-    pub fn slice(&self, slices_raw: &[AxisIndex]) -> Tensor<T> {
-        let (ranges, mut indices, dims, shape) = self.prepare_slice(&slices_raw);
+    pub fn index(&self, selection: &[AxisIndex]) -> Tensor<T> {
+        let (ranges, mut indices, dims, shape) = self.prepare_index(&selection);
 
         let mut t = Tensor::empty(&dims);
         let strides = self.strides();
@@ -320,35 +327,39 @@ impl<T: TensorType> Tensor<T> {
             index += strides[si] * indices[si];
         }
 
-        let mut base_i = 0;
-        for _ in 0..t.data.len() {
-            let mut c = strides.len() - 1;
+        {
+            let n = t.size();
+            let mut data = t.slice_mut();
+            let mut base_i = 0;
+            for _ in 0..n {
+                let mut c = strides.len() - 1;
 
-            t.data[base_i] = self.data[index];
-            index += strides[c];
-            indices[c] += strides[c];
-            while indices[c] >= ranges[c].1 {
-                if c == 0 {
-                    break;
+                data[base_i] = self.data[index];
+                index += strides[c];
+                indices[c] += strides[c];
+                while indices[c] >= ranges[c].1 {
+                    if c == 0 {
+                        break;
+                    }
+                    // Reset
+                    indices[c] = ranges[c].0;
+                    index -= dims[c] * strides[c];
+                    index += strides[c - 1];
+                    indices[c - 1] += 1;
+                    c -= 1;
                 }
-                // Reset
-                indices[c] = ranges[c].0;
-                index -= dims[c] * strides[c];
-                index += strides[c - 1];
-                indices[c - 1] += 1;
-                c -= 1;
-            }
 
-            base_i += 1;
+                base_i += 1;
+            }
         }
 
         t.reshape_proper(&shape[..])
     }
 
-    /// Similar to `slice`, except this updates the tensor with `rhs` instead of returning them.
-    pub fn slice_set(&mut self, slices_raw: &[AxisIndex], rhs: &Tensor<T>) {
-        let (ranges, mut indices, dims, shape) = self.prepare_slice(&slices_raw);
-        assert!(shape == rhs.shape, "Shape not matching");
+    /// Similar to `index`, except this updates the tensor with `other` instead of returning them.
+    pub fn index_set(&mut self, selection: &[AxisIndex], other: &Tensor<T>) {
+        let (ranges, mut indices, dims, shape) = self.prepare_index(&selection);
+        assert!(shape == other.shape, "Shape not matching");
 
         let strides = self.strides();
 
@@ -357,12 +368,14 @@ impl<T: TensorType> Tensor<T> {
             index += strides[si] * indices[si];
         }
 
+        let n = self.size();
+        let mut data = self.slice_mut();
         let mut base_i = 0;
-        for _ in 0..rhs.size() {
+        for _ in 0..other.size() {
             let mut c = strides.len() - 1;
 
-            assert!(index < self.size());
-            self.data[index] = rhs[base_i];
+            assert!(index < n);
+            data[index] = other[base_i];
             index += strides[c];
             indices[c] += strides[c];
             while indices[c] >= ranges[c].1 {
@@ -381,7 +394,7 @@ impl<T: TensorType> Tensor<T> {
         }
     }
 
-    pub fn bool_slice(&self, indices: &Tensor<bool>) -> Tensor<T> {
+    pub fn bool_index(&self, indices: &Tensor<bool>) -> Tensor<T> {
         let mut s = 0;
         for i in 0..indices.size() {
             if indices[i] {
@@ -399,7 +412,7 @@ impl<T: TensorType> Tensor<T> {
         t
     }
 
-    pub fn bool_slice_set(&mut self, indices: &Tensor<bool>, values: &Tensor<T>) {
+    pub fn bool_index_set(&mut self, indices: &Tensor<bool>, values: &Tensor<T>) {
         let mut s = 0;
         for i in 0..indices.size() {
             if indices[i] {
@@ -408,17 +421,19 @@ impl<T: TensorType> Tensor<T> {
         }
         if values.is_scalar() {
             let v = values.scalar_value();
+            let mut data = self.slice_mut();
             for i in 0..indices.size() {
                 if indices[i] {
-                    self.data[i] = v;
+                    data[i] = v;
                 }
             }
         } else {
             assert!(values.size() == s);
             let mut j = 0;
+            let mut data = self.slice_mut();
             for i in 0..indices.size() {
                 if indices[i] {
-                    self.data[i] = values[j];
+                    data[i] = values[j];
                     j += 1;
                 }
             }
@@ -486,30 +501,26 @@ impl<T: TensorType> Tensor<T> {
     }
 
     #[inline]
-    fn get(&self, i: usize, j: usize) -> T {
+    fn get2(&self, i: usize, j: usize) -> T {
         self.data[i * self.shape[1] + j]
     }
 
     #[inline]
     fn set2(&mut self, i: usize, j: usize, v: T) {
-        self.data[i * self.shape[1] + j] = v;
+        let sh1 = self.shape[1];
+        let mut data = self.slice_mut();
+        data[i * sh1 + j] = v;
     }
 
+    /// Sets all the values according to another tensor of the same shape.
     pub fn set(&mut self, other: &Tensor<T>) -> () {
         assert!(self.shape() == other.shape());
-        for i in 0..self.size() {
-            self.data[i] = other.data[i];
+        let n = self.size();
+        let mut data = self.slice_mut();
+        for i in 0..n {
+            data[i] = other.data[i];
         }
     }
-
-    /*
-    fn set(&mut self, other: Tensor<T>) -> () {
-        assert!(self.shape() == other.shape());
-        for i in 0..self.size() {
-            self.data[i] = other.data[i];
-        }
-    }
-    */
 }
 
 impl<T: TensorType + Num + NumCast> Tensor<T> {
@@ -576,7 +587,7 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
             data.push(v);
             v = v + T::one();
         }
-        Tensor{data: data, shape: vec![size]}
+        Tensor{data: Rc::new(data), shape: vec![size]}
     }
 
     /// Creates a new vector between two values at constant increments. The number of elements is
@@ -596,7 +607,7 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
 impl<T: Numeric> Tensor<T> {
     /// Creates a scalar specified as a `f64` and internally casted to `T`
     pub fn fscalar(value: f64) -> Tensor<T> {
-        Tensor{data: vec![cast(value).unwrap()], shape: vec![]}
+        Tensor{data: Rc::new(vec![cast(value).unwrap()]), shape: vec![]}
     }
 }
 

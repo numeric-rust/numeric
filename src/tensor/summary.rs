@@ -67,10 +67,11 @@ macro_rules! add_impl {
                     let mut index = t.unravel_index(start);
                     index.insert(axis, 0);
                     let orig_index = self.ravel_index(&index[..]);
-                    t.data[start] = self.data[orig_index];
+                    let mut v = self.data[orig_index];
                     for k in 1..axis_size {
-                        t.data[start] = t.data[start].$func_name(self.data[orig_index + k * stride]);
+                        v = v.$func_name(self.data[orig_index + k * stride]);
                     }
+                    t[start] = v;
                 }
                 t
             }

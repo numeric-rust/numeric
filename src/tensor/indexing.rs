@@ -15,7 +15,7 @@ impl<'b, T: TensorType> Index<&'b [usize]> for Tensor<T> {
 impl<'b, T: TensorType> IndexMut<&'b [usize]> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, ii: &'b [usize]) -> &'a mut T {
         let index = self.ravel_index(ii);
-        &mut self.data[index]
+        &mut self.slice_mut()[index]
     }
 }
 
@@ -30,7 +30,7 @@ impl<'b, T: TensorType> Index<&'b Vec<usize>> for Tensor<T> {
 impl<'b, T: TensorType> IndexMut<&'b Vec<usize>> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, ii: &'b Vec<usize>) -> &'a mut T {
         let index = self.ravel_index(&ii[..]);
-        &mut self.data[index]
+        &mut self.slice_mut()[index]
     }
 }
 
@@ -44,7 +44,7 @@ impl<T: TensorType> Index<usize> for Tensor<T> {
 
 impl<T: TensorType> IndexMut<usize> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: usize) -> &'a mut T {
-        &mut self.data[_index]
+        &mut self.slice_mut()[_index]
     }
 }
 
@@ -60,7 +60,7 @@ impl<T: TensorType> Index<(usize,)> for Tensor<T> {
 impl<T: TensorType> IndexMut<(usize,)> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: (usize,)) -> &'a mut T {
         assert!(self.ndim() == 1);
-        &mut self.data[_index.0]
+        &mut self.slice_mut()[_index.0]
     }
 }
 
@@ -76,7 +76,8 @@ impl<T: TensorType> Index<(usize, usize)> for Tensor<T> {
 impl<T: TensorType> IndexMut<(usize, usize)> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: (usize, usize)) -> &'a mut T {
         assert!(self.ndim() == 2);
-        &mut self.data[(_index.0 * self.shape[1] + _index.1)]
+        let i = _index.0 * self.shape[1] + _index.1;
+        &mut self.slice_mut()[i]
     }
 }
 
@@ -94,8 +95,8 @@ impl<T: TensorType> Index<(usize, usize, usize)> for Tensor<T> {
 impl<T: TensorType> IndexMut<(usize, usize, usize)> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: (usize, usize, usize)) -> &'a mut T {
         assert!(self.ndim() == 3);
-        &mut self.data[(_index.0 * self.shape[1] * self.shape[2] +
-                        _index.1 * self.shape[2] +
-                        _index.2)]
+        let (sh1, sh2) = (self.shape[1], self.shape[2]);
+        &mut self.slice_mut()[(_index.0 * sh1 * sh2 +
+                               _index.1 * sh2 + _index.2)]
     }
 }

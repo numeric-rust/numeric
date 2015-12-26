@@ -11,18 +11,21 @@ macro_rules! add_impl {
                 if self.ndim() == 2 && rhs.ndim() == 1 {
                     assert_eq!(self.shape[1], rhs.shape[0]);
                     let mut t3 = Tensor::empty(&[self.shape[0]]);
-                    if cfg!(noblas) {
-                        // Naive implementation, BLAS will be much faster
-                        for i in 0..self.shape[0] {
-                            let mut v = 0.0;
-                            for k in 0..self.shape[1] {
-                                v += self.get(i, k) * rhs.data[k];
+                    {
+                        let mut data = t3.slice_mut();
+                        if cfg!(noblas) {
+                            // Naive implementation, BLAS will be much faster
+                            for i in 0..self.shape[0] {
+                                let mut v = 0.0;
+                                for k in 0..self.shape[1] {
+                                    v += self.get2(i, k) * rhs.data[k];
+                                }
+                                data[i] = v;
                             }
-                            t3.data[i] = v;
+                        } else {
+                            blas::$gemv(b'T', self.shape[1], self.shape[0], 1.0, &self.data,
+                                        self.shape[1], &rhs.data, 1, 0.0, data, 1);
                         }
-                    } else {
-                        blas::$gemv(b'T', self.shape[1], self.shape[0], 1.0, &self.data,
-                                    self.shape[1], &rhs.data, 1, 0.0, &mut t3.data, 1);
                     }
                     t3
                 } else if self.ndim() == 2 && rhs.ndim() == 2 {
@@ -34,7 +37,7 @@ macro_rules! add_impl {
                             for j in 0..rhs.shape[1] {
                                 let mut v = 0.0;
                                 for k in 0..self.shape[1] {
-                                    v += self.get(i, k) * rhs.get(k, j);
+                                    v += self.get2(i, k) * rhs.get2(k, j);
                                 }
                                 t3.set2(i, j, v);
                             }
@@ -42,9 +45,10 @@ macro_rules! add_impl {
                     } else {
                         // Note: dgemm assumes column-major while we have row-major,
                         //       so we have to re-arrange things a bit
+                        let mut data = t3.slice_mut();
                         blas::$gemm(b'N', b'N', rhs.shape[1], self.shape[0], rhs.shape[0], 1.0,
                                     &rhs.data, rhs.shape[1], &self.data, rhs.shape[0], 0.0,
-                                    &mut t3.data, rhs.shape[1]);
+                                    data, rhs.shape[1]);
                     }
                     t3
                 } else if self.ndim() == 1 && rhs.ndim() == 1 { // scalar product

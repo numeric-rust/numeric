@@ -1,6 +1,6 @@
 mod creation;
 mod dot;
-mod slice;
+mod advanced_indexing;
 
 mod add;
 mod sub;
@@ -9,5 +9,7 @@ mod div;
 
 mod indexing;
 mod summary;
+
+mod io;
 
 //mod f64;
