@@ -7,7 +7,7 @@
 //! **Note:** The HDF5 library will by default not be thread-safe (it depends on how you compiled
 //! it), so do not call either of these functions concurrently.
 //!
-//! ##Saving to an HDF5 file:
+//! ##Saving to HDF5 file:
 //!
 //! ```no_run
 //! use std::path::Path;
@@ -17,7 +17,7 @@
 //! let t: Tensor<i32> = Tensor::range(100);
 //! let ret = t.save_hdf5(&path);
 //! ```
-//! The data will be saved to the group `/data`. Now, we can load this using:
+//! The data will be saved to the group `/data`.
 //!
 //! ## Loading from HDF5 file
 //!
