@@ -9,10 +9,13 @@
 //!
 //! ##Saving to an HDF5 file:
 //!
-//! ```
+//! ```no_run
+//! use std::path::Path;
+//! use numeric::Tensor;
+//!
 //! let path = Path::new("output.h5");
-//! let t1 = tensor![1_i32, 23; 20, 10];
-//! try!(t.save_hdf5(&path));
+//! let t: Tensor<i32> = Tensor::range(100);
+//! let ret = t.save_hdf5(&path);
 //! ```
 //! The data will be saved to the group `/data`. Now, we can load this using:
 //!
@@ -20,11 +23,18 @@
 //!
 //! Now, we can load this file:
 //!
-//! ```
-//! let t2 = try!(numeric::io::load_hdf5_as_f64(&path, "/data"));
+//! ```no_run
+//! use std::path::Path;
+//! use numeric::Tensor;
+//!
+//! let path = Path::new("output.h5");
+//! let t = match numeric::io::load_hdf5_as_f64(&path, "/data") {
+//!     Ok(v) => v,
+//!     Err(e) => panic!("Failed: {}", e),
+//! };
 //! ```
 //!
-//! Note that since we need to know the type of `t2` at compile time, it doesn't matter that we
+//! Note that since we need to know the type of `t` at compile time, it doesn't matter that we
 //! saved the file as `i32`, we have to specify how to load it. The way this is done is that it
 //! will load the `i32` natively and then convert it to `f64`. If your data converted, you simply
 //! have to load it as the same type as you know is in the file.
