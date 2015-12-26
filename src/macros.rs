@@ -42,7 +42,7 @@
 #[macro_export]
 macro_rules! tensor {
     ($elem:expr; $n:expr) => (
-        $crate::Tensor::filled(&[$n], $elem)
+        $crate::Tensor::new(vec![$elem; $n])
     );
     ($($x:expr),*) => (
         $crate::Tensor::new(vec![$($x),*])
