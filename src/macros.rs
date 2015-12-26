@@ -42,10 +42,10 @@
 #[macro_export]
 macro_rules! tensor {
     ($elem:expr; $n:expr) => (
-        numeric::Tensor::filled(&[$n], $elem)
+        $crate::Tensor::filled(&[$n], $elem)
     );
     ($($x:expr),*) => (
-        numeric::Tensor::new(vec![$($x),*])
+        $crate::Tensor::new(vec![$($x),*])
     );
     ($($($x:expr),*);*) => ({
         let mut v = Vec::new();
@@ -54,6 +54,18 @@ macro_rules! tensor {
             n += 1;
             $(v.push($x);)*
         )*
-        numeric::Tensor::new(v).reshape(&[n, -1])
+        $crate::Tensor::new(v).reshape(&[n, -1])
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use Tensor;
+
+    #[test]
+    fn tensor() {
+        let x = Tensor::new(vec![1, 2, 3, 4, 5, 6]).reshape(&[3, 2]);
+        let y = tensor![1, 2; 3, 4; 5, 6];
+        assert!(x == y);
+    }
 }
