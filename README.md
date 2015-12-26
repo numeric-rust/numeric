@@ -86,6 +86,6 @@ Don't hesitate to ask if you want suggestions for contributions (big or small).
 Add your name to the [CONTRIBUTORS.md](CONTRIBUTORS.md) file as part of your PR, no matter how small
 it may seem.
 
-## Acknowledgement
+## Acknowledgements
 
-Borrowing shamelessly from the great project Numpy and a little bit from Torch7.
+Numeric Rust is primarily inspired by Numpy and borrows heavily from that project. Even the name is a play on **Num**eric **Py**thon. Another source of some inspiration is Torch7.
