@@ -9,6 +9,7 @@
 
     <title>mod.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
@@ -24,17 +25,17 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -627,6 +628,41 @@
 <span id="585">585</span>
 <span id="586">586</span>
 <span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! The tensor module defines an N-dimensional matrix for use in scientific computing.</span>
 <span class='doccomment'>//!</span>
@@ -640,6 +676,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>vec</span>::<span class='ident'>Vec</span>;
 <span class='kw'>use</span> {<span class='ident'>TensorType</span>, <span class='ident'>Numeric</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>cast</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 
 <span class='doccomment'>/// An implementation of an N-dimensional matrix.</span>
 <span class='doccomment'>/// A quick example:</span>
@@ -660,7 +697,7 @@
 <span class='doccomment'>/// ```</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// The underlying data matrix, stored in row-major order.</span>
-    <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
+    <span class='ident'>data</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
 
     <span class='doccomment'>/// The shape of the tensor.</span>
     <span class='ident'>shape</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>,
@@ -709,10 +746,18 @@
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::{<span class='ident'>Num</span>, <span class='ident'>NumCast</span>};
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>as_ptr</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>T</span> {
+        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>as_ptr</span>()
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>as_mut_ptr</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
+        <span class='self'>self</span>.<span class='ident'>slice_mut</span>().<span class='ident'>as_mut_ptr</span>()
+    }
+
     <span class='doccomment'>/// Creates a new tensor from a `Vec` object. It will take ownership of the vector.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>data</span>.<span class='ident'>len</span>();
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>data</span>, <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>len</span>]}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>data</span>), <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>len</span>]}
     }
 
     <span class='doccomment'>/// Creates a zero-filled tensor of the specified shape.</span>
@@ -727,12 +772,23 @@
         <span class='kw'>unsafe</span> {
             <span class='ident'>data</span>.<span class='ident'>set_len</span>(<span class='ident'>size</span>);
         }
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>data</span>, <span class='ident'>shape</span>: <span class='ident'>sh</span>}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>data</span>), <span class='ident'>shape</span>: <span class='ident'>sh</span>}
+    }
+
+    <span class='doccomment'>/// Returns a flat slice of the tensor.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>] {
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[..]
+    }
+
+    <span class='doccomment'>/// Returns a mutable flat slice of the tensors. This will cause a copy unless the tensor is</span>
+    <span class='doccomment'>/// unique. This is mostly used internally.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>] {
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Rc</span>::<span class='ident'>make_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>)[..]
     }
 
     <span class='doccomment'>/// Creates a Tensor representing a scalar</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>scalar</span>(<span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>value</span>], <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[]}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>value</span>]), <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[]}
     }
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_scalar</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -753,7 +809,7 @@
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>size</span> {
             <span class='ident'>data</span>.<span class='ident'>push</span>(<span class='ident'>v</span>);
         }
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>data</span>, <span class='ident'>shape</span>: <span class='ident'>sh</span>}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>data</span>), <span class='ident'>shape</span>: <span class='ident'>sh</span>}
     }
 
     <span class='doccomment'>/// Returns the shape of the tensor.</span>
@@ -769,11 +825,6 @@
     <span class='doccomment'>/// Returns a reference of the underlying data vector.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>
-    }
-
-    <span class='doccomment'>/// Mutable reference to data</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
     }
 
     <span class='doccomment'>/// Flattens the tensor to one-dimensional. Takes ownership and returns a new tensor.</span>
@@ -812,14 +863,14 @@
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>expand_slices</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>slices_raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>AxisIndex</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) {
+    <span class='kw'>fn</span> <span class='ident'>expand_indices</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>selection</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>AxisIndex</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) {
         <span class='comment'>// The returned axis will not contain any AxisIndex::Ellipsis</span>
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>slices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>AxisIndex</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sel</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>AxisIndex</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>());
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>newaxes</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>());
 
         <span class='comment'>// Count how many non NewAxis and non Ellipsis</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>nondotted</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>slices_raw</span> {
+        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>selection</span> {
             <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>s</span> {
                 <span class='ident'>AxisIndex</span>::<span class='ident'>NewAxis</span> <span class='op'>|</span> <span class='ident'>AxisIndex</span>::<span class='ident'>Ellipsis</span> <span class='op'>=&gt;</span> {
                     <span class='ident'>nondotted</span> <span class='op'>+=</span> <span class='number'>0</span>;
@@ -833,14 +884,14 @@
         <span class='comment'>// Add an extra index to newaxes that represent insertion before the first axis</span>
         <span class='ident'>newaxes</span>.<span class='ident'>push</span>(<span class='number'>0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ellipsis_found</span> <span class='op'>=</span> <span class='boolval'>false</span>;
-        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>slices_raw</span> {
+        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>selection</span> {
             <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>s</span> {
                 <span class='ident'>AxisIndex</span>::<span class='ident'>Ellipsis</span> <span class='op'>=&gt;</span> {
                     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>ellipsis_found</span>, <span class='string'>&quot;At most one AxisIndex::Ellipsis may be used&quot;</span>);
                     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='ident'>nondotted</span>);
 
                     <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..(<span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>nondotted</span>) {
-                        <span class='ident'>slices</span>.<span class='ident'>push</span>(<span class='ident'>AxisIndex</span>::<span class='ident'>Full</span>);
+                        <span class='ident'>sel</span>.<span class='ident'>push</span>(<span class='ident'>AxisIndex</span>::<span class='ident'>Full</span>);
                         <span class='ident'>newaxes</span>.<span class='ident'>push</span>(<span class='number'>0</span>);
                     }
                     <span class='ident'>ellipsis_found</span> <span class='op'>=</span> <span class='boolval'>true</span>;
@@ -853,26 +904,26 @@
                 },
                 _ <span class='op'>=&gt;</span> {
                     <span class='ident'>newaxes</span>.<span class='ident'>push</span>(<span class='number'>0</span>);
-                    <span class='ident'>slices</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>s</span>);
+                    <span class='ident'>sel</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>s</span>);
                 }
             }
         }
-        <span class='kw'>while</span> <span class='ident'>slices</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() {
-            <span class='ident'>slices</span>.<span class='ident'>push</span>(<span class='ident'>AxisIndex</span>::<span class='ident'>Full</span>);
+        <span class='kw'>while</span> <span class='ident'>sel</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() {
+            <span class='ident'>sel</span>.<span class='ident'>push</span>(<span class='ident'>AxisIndex</span>::<span class='ident'>Full</span>);
         }
         <span class='kw'>while</span> <span class='ident'>newaxes</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='number'>1</span> {
             <span class='ident'>newaxes</span>.<span class='ident'>push</span>(<span class='number'>0</span>)
         }
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>slices</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>(), <span class='string'>&quot;Too many indices specified&quot;</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sel</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>(), <span class='string'>&quot;Too many indices specified&quot;</span>);
         <span class='macro'>debug_assert</span><span class='macro'>!</span>(<span class='ident'>newaxes</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='number'>1</span>, <span class='string'>&quot;newaxis wrong length&quot;</span>);
 
-        (<span class='ident'>slices</span>, <span class='ident'>newaxes</span>)
+        (<span class='ident'>sel</span>, <span class='ident'>newaxes</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>prepare_slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>slices_raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) {
-        <span class='kw'>let</span> (<span class='ident'>slices</span>, <span class='ident'>newaxes</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>expand_slices</span>(<span class='ident'>slices_raw</span>);
+    <span class='kw'>fn</span> <span class='ident'>prepare_index</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>selection</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) {
+        <span class='kw'>let</span> (<span class='ident'>sel</span>, <span class='ident'>newaxes</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>expand_indices</span>(<span class='ident'>selection</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>axis</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>slices</span>.<span class='ident'>len</span>();
+        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>sel</span>.<span class='ident'>len</span>();
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shape</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>n</span>);
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>newaxes</span>[<span class='number'>0</span>] {
@@ -881,7 +932,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dims</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>n</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ranges</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>n</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>indices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>n</span>);
-        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>slices</span> {
+        <span class='kw'>for</span> <span class='ident'>s</span> <span class='kw'>in</span> <span class='ident'>sel</span> {
             <span class='kw'>let</span> (<span class='ident'>st</span>, <span class='ident'>en</span>, <span class='ident'>keepdim</span>) <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>s</span> {
                 <span class='ident'>AxisIndex</span>::<span class='ident'>Index</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>resolve_axis</span>(<span class='ident'>axis</span>, <span class='ident'>i</span>);
@@ -900,7 +951,7 @@
                     (<span class='self'>self</span>.<span class='ident'>resolve_axis</span>(<span class='ident'>axis</span>, <span class='ident'>start</span>), <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='ident'>axis</span>], <span class='boolval'>true</span>)
                 },
                 <span class='ident'>AxisIndex</span>::<span class='ident'>Ellipsis</span> <span class='op'>|</span> <span class='ident'>AxisIndex</span>::<span class='ident'>NewAxis</span> <span class='op'>=&gt;</span> {
-                    <span class='comment'>// Should have been removed by expand_slices at this point</span>
+                    <span class='comment'>// Should have been removed by expand_indices at this point</span>
                     <span class='macro'>unreachable</span><span class='macro'>!</span>();
                 },
             };
@@ -927,12 +978,12 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let t = DoubleTensor::ones(&amp;[2, 3, 4]);</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// t.slice(&amp;[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]</span>
-    <span class='doccomment'>/// t.slice(&amp;[AxisIndex::Index(-1)]); // shape [3, 4]</span>
-    <span class='doccomment'>/// t.slice(&amp;[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]</span>
+    <span class='doccomment'>/// t.index(&amp;[AxisIndex::Ellipsis, AxisIndex::Slice(1, 3)]); // shape [2, 3, 2]</span>
+    <span class='doccomment'>/// t.index(&amp;[AxisIndex::Index(-1)]); // shape [3, 4]</span>
+    <span class='doccomment'>/// t.index(&amp;[AxisIndex::Full, AxisIndex::SliceFrom(1), AxisIndex::Index(1)]); // shape [2, 2]</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>slices_raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> (<span class='ident'>ranges</span>, <span class='kw-2'>mut</span> <span class='ident'>indices</span>, <span class='ident'>dims</span>, <span class='ident'>shape</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prepare_slice</span>(<span class='kw-2'>&amp;</span><span class='ident'>slices_raw</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>index</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>selection</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>]) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> (<span class='ident'>ranges</span>, <span class='kw-2'>mut</span> <span class='ident'>indices</span>, <span class='ident'>dims</span>, <span class='ident'>shape</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prepare_index</span>(<span class='kw-2'>&amp;</span><span class='ident'>selection</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>dims</span>);
         <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>();
@@ -942,35 +993,39 @@
             <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>si</span>] <span class='op'>*</span> <span class='ident'>indices</span>[<span class='ident'>si</span>];
         }
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>base_i</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>t</span>.<span class='ident'>data</span>.<span class='ident'>len</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>strides</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>;
+        {
+            <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>base_i</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>strides</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>;
 
-            <span class='ident'>t</span>.<span class='ident'>data</span>[<span class='ident'>base_i</span>] <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>index</span>];
-            <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
-            <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
-            <span class='kw'>while</span> <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>&gt;=</span> <span class='ident'>ranges</span>[<span class='ident'>c</span>].<span class='number'>1</span> {
-                <span class='kw'>if</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='number'>0</span> {
-                    <span class='kw'>break</span>;
+                <span class='ident'>data</span>[<span class='ident'>base_i</span>] <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>index</span>];
+                <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
+                <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
+                <span class='kw'>while</span> <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>&gt;=</span> <span class='ident'>ranges</span>[<span class='ident'>c</span>].<span class='number'>1</span> {
+                    <span class='kw'>if</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='number'>0</span> {
+                        <span class='kw'>break</span>;
+                    }
+                    <span class='comment'>// Reset</span>
+                    <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>=</span> <span class='ident'>ranges</span>[<span class='ident'>c</span>].<span class='number'>0</span>;
+                    <span class='ident'>index</span> <span class='op'>-=</span> <span class='ident'>dims</span>[<span class='ident'>c</span>] <span class='op'>*</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
+                    <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span> <span class='op'>-</span> <span class='number'>1</span>];
+                    <span class='ident'>indices</span>[<span class='ident'>c</span> <span class='op'>-</span> <span class='number'>1</span>] <span class='op'>+=</span> <span class='number'>1</span>;
+                    <span class='ident'>c</span> <span class='op'>-=</span> <span class='number'>1</span>;
                 }
-                <span class='comment'>// Reset</span>
-                <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>=</span> <span class='ident'>ranges</span>[<span class='ident'>c</span>].<span class='number'>0</span>;
-                <span class='ident'>index</span> <span class='op'>-=</span> <span class='ident'>dims</span>[<span class='ident'>c</span>] <span class='op'>*</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
-                <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span> <span class='op'>-</span> <span class='number'>1</span>];
-                <span class='ident'>indices</span>[<span class='ident'>c</span> <span class='op'>-</span> <span class='number'>1</span>] <span class='op'>+=</span> <span class='number'>1</span>;
-                <span class='ident'>c</span> <span class='op'>-=</span> <span class='number'>1</span>;
-            }
 
-            <span class='ident'>base_i</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                <span class='ident'>base_i</span> <span class='op'>+=</span> <span class='number'>1</span>;
+            }
         }
 
         <span class='ident'>t</span>.<span class='ident'>reshape_proper</span>(<span class='kw-2'>&amp;</span><span class='ident'>shape</span>[..])
     }
 
-    <span class='doccomment'>/// Similar to `slice`, except this updates the tensor with `rhs` instead of returning them.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice_set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>slices_raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>], <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
-        <span class='kw'>let</span> (<span class='ident'>ranges</span>, <span class='kw-2'>mut</span> <span class='ident'>indices</span>, <span class='ident'>dims</span>, <span class='ident'>shape</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prepare_slice</span>(<span class='kw-2'>&amp;</span><span class='ident'>slices_raw</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>shape</span> <span class='op'>==</span> <span class='ident'>rhs</span>.<span class='ident'>shape</span>, <span class='string'>&quot;Shape not matching&quot;</span>);
+    <span class='doccomment'>/// Similar to `index`, except this updates the tensor with `other` instead of returning them.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>index_set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>selection</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>AxisIndex</span>], <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
+        <span class='kw'>let</span> (<span class='ident'>ranges</span>, <span class='kw-2'>mut</span> <span class='ident'>indices</span>, <span class='ident'>dims</span>, <span class='ident'>shape</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>prepare_index</span>(<span class='kw-2'>&amp;</span><span class='ident'>selection</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>shape</span> <span class='op'>==</span> <span class='ident'>other</span>.<span class='ident'>shape</span>, <span class='string'>&quot;Shape not matching&quot;</span>);
 
         <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>();
 
@@ -979,12 +1034,14 @@
             <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>si</span>] <span class='op'>*</span> <span class='ident'>indices</span>[<span class='ident'>si</span>];
         }
 
+        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>base_i</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>rhs</span>.<span class='ident'>size</span>() {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>other</span>.<span class='ident'>size</span>() {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>strides</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>;
 
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>index</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>size</span>());
-            <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>index</span>] <span class='op'>=</span> <span class='ident'>rhs</span>[<span class='ident'>base_i</span>];
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>index</span> <span class='op'>&lt;</span> <span class='ident'>n</span>);
+            <span class='ident'>data</span>[<span class='ident'>index</span>] <span class='op'>=</span> <span class='ident'>other</span>[<span class='ident'>base_i</span>];
             <span class='ident'>index</span> <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
             <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>+=</span> <span class='ident'>strides</span>[<span class='ident'>c</span>];
             <span class='kw'>while</span> <span class='ident'>indices</span>[<span class='ident'>c</span>] <span class='op'>&gt;=</span> <span class='ident'>ranges</span>[<span class='ident'>c</span>].<span class='number'>1</span> {
@@ -1003,7 +1060,7 @@
         }
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool_slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>indices</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool_index</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>indices</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>indices</span>.<span class='ident'>size</span>() {
             <span class='kw'>if</span> <span class='ident'>indices</span>[<span class='ident'>i</span>] {
@@ -1021,7 +1078,7 @@
         <span class='ident'>t</span>
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool_slice_set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>indices</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>, <span class='ident'>values</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool_index_set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>indices</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>, <span class='ident'>values</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>indices</span>.<span class='ident'>size</span>() {
             <span class='kw'>if</span> <span class='ident'>indices</span>[<span class='ident'>i</span>] {
@@ -1030,17 +1087,19 @@
         }
         <span class='kw'>if</span> <span class='ident'>values</span>.<span class='ident'>is_scalar</span>() {
             <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>values</span>.<span class='ident'>scalar_value</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>indices</span>.<span class='ident'>size</span>() {
                 <span class='kw'>if</span> <span class='ident'>indices</span>[<span class='ident'>i</span>] {
-                    <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>;
+                    <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>;
                 }
             }
         } <span class='kw'>else</span> {
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>values</span>.<span class='ident'>size</span>() <span class='op'>==</span> <span class='ident'>s</span>);
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>j</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>indices</span>.<span class='ident'>size</span>() {
                 <span class='kw'>if</span> <span class='ident'>indices</span>[<span class='ident'>i</span>] {
-                    <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>values</span>[<span class='ident'>j</span>];
+                    <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>values</span>[<span class='ident'>j</span>];
                     <span class='ident'>j</span> <span class='op'>+=</span> <span class='number'>1</span>;
                 }
             }
@@ -1108,13 +1167,25 @@
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>, <span class='ident'>j</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
+    <span class='kw'>fn</span> <span class='ident'>get2</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>, <span class='ident'>j</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>j</span>]
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>, <span class='ident'>j</span>: <span class='ident'>usize</span>, <span class='ident'>v</span>: <span class='ident'>T</span>) {
-        <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>j</span>] <span class='op'>=</span> <span class='ident'>v</span>;
+    <span class='kw'>fn</span> <span class='ident'>set2</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>, <span class='ident'>j</span>: <span class='ident'>usize</span>, <span class='ident'>v</span>: <span class='ident'>T</span>) {
+        <span class='kw'>let</span> <span class='ident'>sh1</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>];
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
+        <span class='ident'>data</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='ident'>sh1</span> <span class='op'>+</span> <span class='ident'>j</span>] <span class='op'>=</span> <span class='ident'>v</span>;
+    }
+
+    <span class='doccomment'>/// Sets all the values according to another tensor of the same shape.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> () {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>shape</span>() <span class='op'>==</span> <span class='ident'>other</span>.<span class='ident'>shape</span>());
+        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
+            <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>other</span>.<span class='ident'>data</span>[<span class='ident'>i</span>];
+        }
     }
 }
 
@@ -1134,7 +1205,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eye</span>(<span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>zeros</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>size</span>, <span class='ident'>size</span>]);
         <span class='kw'>for</span> <span class='ident'>k</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>size</span> {
-            <span class='ident'>t</span>.<span class='ident'>set</span>(<span class='ident'>k</span>, <span class='ident'>k</span>, <span class='ident'>T</span>::<span class='ident'>one</span>());
+            <span class='ident'>t</span>.<span class='ident'>set2</span>(<span class='ident'>k</span>, <span class='ident'>k</span>, <span class='ident'>T</span>::<span class='ident'>one</span>());
         }
         <span class='ident'>t</span>
     }
@@ -1182,7 +1253,7 @@
             <span class='ident'>data</span>.<span class='ident'>push</span>(<span class='ident'>v</span>);
             <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span> <span class='op'>+</span> <span class='ident'>T</span>::<span class='ident'>one</span>();
         }
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>data</span>, <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>size</span>]}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>data</span>), <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>size</span>]}
     }
 
     <span class='doccomment'>/// Creates a new vector between two values at constant increments. The number of elements is</span>
@@ -1202,7 +1273,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Numeric</span><span class='op'>&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Creates a scalar specified as a `f64` and internally casted to `T`</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fscalar</span>(<span class='ident'>value</span>: <span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>cast</span>(<span class='ident'>value</span>).<span class='ident'>unwrap</span>()], <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[]}
+        <span class='ident'>Tensor</span>{<span class='ident'>data</span>: <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>cast</span>(<span class='ident'>value</span>).<span class='ident'>unwrap</span>()]), <span class='ident'>shape</span>: <span class='macro'>vec</span><span class='macro'>!</span>[]}
     }
 }
 
@@ -1221,36 +1292,49 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -1262,6 +1346,6 @@
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     
-    <script async src="../../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

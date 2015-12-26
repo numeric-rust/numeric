@@ -9,6 +9,7 @@
 
     <title>numeric::math::is_sign_positive - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,61 +25,76 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='../index.html'>numeric</a>::<wbr><a href='index.html'>math</a></p><script>window.sidebarCurrent = {name: 'is_sign_positive', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>numeric</a>::<wbr><a href='index.html'>math</a>::<wbr><a class='fn' href=''>is_sign_positive</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-25829' href='../../src/numeric/math/mod.rs.html#27-33'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn is_sign_positive&lt;T: <a class='trait' href='../../numeric/trait.Numeric.html' title='numeric::Numeric'>Numeric</a> + <a class='trait' href='http://doc.rust-lang.org/num/num/traits/trait.Float.html' title='num::traits::Float'>Float</a>&gt;(x: &amp;<a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;T&gt;) -&gt; <a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</pre></section>
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>numeric</a>::<wbr><a href='index.html'>math</a>::<wbr><a class='fn' href=''>is_sign_positive</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2881' class='srclink' href='../../src/numeric/math/mod.rs.html#27-33' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn is_sign_positive&lt;T: <a class='trait' href='../../numeric/trait.Numeric.html' title='numeric::Numeric'>Numeric</a> + <a class='trait' href='http://rust-num.github.io/num/num/traits/trait.Float.html' title='num::traits::Float'>Float</a>&gt;(x: &amp;<a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;T&gt;) -&gt; <a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -90,6 +106,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
