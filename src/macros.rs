@@ -41,6 +41,8 @@
 /// ```
 #[macro_export]
 macro_rules! tensor {
+    (@count) => (0);
+    (@count $head:tt $($tail:tt)*) => (1 + tensor!(@count $($tail)*));
     ($elem:expr; $n:expr) => (
         $crate::Tensor::new(vec![$elem; $n])
     );
@@ -50,15 +52,9 @@ macro_rules! tensor {
     ($($x:expr,)*) => (
         tensor![$($x),*]
     );
-    ($($($x:expr),*;)*) => ({
-        let mut v = Vec::new();
-        let mut n = 0;
-        $(
-            n += 1;
-            $(v.push($x);)*
-        )*
-        $crate::Tensor::new(v).reshape(&[n, -1])
-    });
+    ($($($x:expr),*;)*) => (
+        $crate::Tensor::new(vec![$($($x),*),*]).reshape(&[tensor!(@count $([$($x),*])*), -1])
+    );
     ($($($x:expr),*);*) => (
         tensor![$($($x),*;)*]
     );
