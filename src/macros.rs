@@ -47,7 +47,7 @@ macro_rules! tensor {
     ($($x:expr),*) => (
         $crate::Tensor::new(vec![$($x),*])
     );
-    ($($($x:expr),*);*) => ({
+    ($($($x:expr),*;)*) => ({
         let mut v = Vec::new();
         let mut n = 0;
         $(
@@ -56,6 +56,9 @@ macro_rules! tensor {
         )*
         $crate::Tensor::new(v).reshape(&[n, -1])
     });
+    ($($($x:expr),*);*) => (
+        tensor![$($($x),*;)*]
+    );
 }
 
 #[cfg(test)]
@@ -65,7 +68,7 @@ mod tests {
     #[test]
     fn tensor() {
         let x = Tensor::new(vec![1, 2, 3, 4, 5, 6]).reshape(&[3, 2]);
-        let y = tensor![1, 2; 3, 4; 5, 6];
-        assert!(x == y);
+        assert!(x == tensor![1, 2; 3, 4; 5, 6]);
+        assert!(x == tensor![1, 2; 3, 4; 5, 6;]);
     }
 }
