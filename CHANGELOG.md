@@ -1,18 +1,25 @@
 # Changelog
-Numeric does not use semantic versioning, at least not currently for 0.0.x.
-Numeric is still experimental and breaking changes occur often.
+Numeric does not use semantic versioning, at least not currently for 0.x.y.
+Numeric is still experimental and breaking changes occur often. If I break
+more things than usual, I will try to bump the minor (x).
 
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
 ## Latest
 Released: TBD
+* Changed internal storage to using `Rc` with copy-on-write semantics
 * Added HDF5 support (adds `hdf5-sys` as a dependency)
 * Dot product between two vectors results in a proper scalar
 * Added `as_ptr` and `as_mut_ptr`
 * Added in-place updates (e.g. `mul_with_out`)
-* Moved `set` to `set2` and added a new `set` (set tensor to another)
+* Moved `set` to `set2` and `get` to `get2`
+* Added a new `set` that unrelated to the old `set`
 * Added `mean`
+* Renamed `slice` to `index` (as well as `_set`)
+* Renamed `bool_slice` to `bool_index` (as well as (`_set`)
+* Added `slice` and `slice_mut` (that returns actual Rust slices)
+* Scalars are displayed without decoration
 
 ## 0.0.7
 Released: 2015-07-28
