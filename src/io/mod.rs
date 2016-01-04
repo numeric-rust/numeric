@@ -41,18 +41,13 @@
 
 extern crate std;
 
-use libc::{c_char, c_void, c_ulonglong, c_int};
+use libc::{c_char, c_void};
 use std::path::Path;
 use hdf5_sys as ffi;
 
 use tensor::Tensor;
 
-#[allow(non_camel_case_types)]
-type hsize_t = c_ulonglong;
-#[allow(non_camel_case_types)]
-type hid_t = c_int;
-
-extern fn error_handler(_: hid_t, _: *const c_void) {
+extern fn error_handler(_: ffi::hid_t, _: *const c_void) {
     // Suppress errors. We will rely on return statuses alone.
 }
 
@@ -165,9 +160,9 @@ macro_rules! add_load {
                 let space = ffi::H5Dget_space(dset);
                 let ndims = ffi::H5Sget_simple_extent_ndims(space);
 
-                let mut shape: Tensor<hsize_t> = Tensor::zeros(&[ndims as usize]);
+                let mut shape: Tensor<ffi::hsize_t> = Tensor::zeros(&[ndims as usize]);
 
-                if ffi::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(), 0 as *mut hsize_t) != ndims {
+                if ffi::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(), 0 as *mut ffi::hsize_t) != ndims {
                     let err = std::io::Error::new(std::io::ErrorKind::InvalidData, format!("Could not read shape of tesor: {}", filename));
                     return Err(err);
                 }
