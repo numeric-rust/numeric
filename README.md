@@ -26,7 +26,7 @@ Some of the completed and planned features:
 * [x] Creation macro
 * [x] Updating slices
 * [x] Saving/loading HDF5
-* [ ] Strided slices
+* [x] Strided slices
 * [ ] Broadcasted axes
 * [ ] Matrix inverse and SVD
 
