@@ -38,5 +38,3 @@ pub use math::{log, ln, log10, log2, sin, cos, tan, asin, acos, atan, exp_m1, ex
                floor, ceil, round, trunc, fract, abs, signum, powf, powi,
                is_nan, is_finite, is_infinite, is_normal,
                is_sign_positive, is_sign_negative};
-
-mod tests;

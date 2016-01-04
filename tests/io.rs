@@ -1,8 +1,6 @@
-#[allow(unused_imports)] use tensor::Tensor;
-#[allow(unused_imports)] use io;
-#[allow(unused_imports)] use std::path::Path;
-#[allow(unused_imports)] use std::env;
-#[allow(unused_imports)] use std::fs;
+use numeric::{Tensor, io};
+use std::env;
+use std::fs;
 
 #[test]
 fn hdf5() {

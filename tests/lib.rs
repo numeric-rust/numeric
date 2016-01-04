@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate numeric;
+
 mod creation;
 mod dot;
 mod advanced_indexing;
@@ -10,6 +13,7 @@ mod div;
 mod indexing;
 mod summary;
 
-//mod io;
+mod macros;
 
-//mod f64;
+// These tests tend to exit abruptly for some reason
+//mod io;

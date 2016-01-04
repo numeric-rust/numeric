@@ -1,11 +1,9 @@
-#[allow(unused_imports)]
-use tensor::Tensor;
+use numeric::Tensor;
 
 macro_rules! add_impl {
     ($t:ty, $m:ident) => (
         mod $m {
-            #[allow(unused_imports)]
-            use tensor::Tensor;
+            use numeric::Tensor;
             type T = Tensor<$t>;
 
             /*

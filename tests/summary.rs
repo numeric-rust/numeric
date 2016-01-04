@@ -1,5 +1,4 @@
-#[allow(unused_imports)]
-use tensor::Tensor;
+use numeric::Tensor;
 
 #[test]
 fn add_axis() {

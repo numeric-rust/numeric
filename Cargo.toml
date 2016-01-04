@@ -17,3 +17,7 @@ num = "0.1.29"
 rand = "0.3.12"
 libc = "0.2.4"
 hdf5-sys = "0.3.2"
+
+[[test]]
+name = "numeric"
+path = "tests/lib.rs"
