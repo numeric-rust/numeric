@@ -6,15 +6,21 @@ impl<T: Numeric> Tensor<T> {
     /// Returns a new tensor with the elements converted to the selected type.
     ///
     /// ```
+    /// # #[macro_use] extern crate numeric; fn main() {
     /// use numeric::Tensor;
     ///
-    /// let tdouble = Tensor::new(vec![1.0f64, 2.0, 3.0]);
+    /// let tdouble = tensor![1.0f64, 2.0, 3.0];
     /// let tsingle = tdouble.convert::<f32>();
+    /// # }
     /// ```
     pub fn convert<D: Numeric>(&self) -> Tensor<D> {
         let mut t = Tensor::zeros(&self.shape);
-        for i in 0..self.size() {
-            t[i] = cast(self[i]).unwrap();
+        {
+            let n = t.size();
+            let mut data = t.slice_mut();
+            for i in 0..n {
+                data[i] = cast(data[i]).unwrap();
+            }
         }
         t
     }

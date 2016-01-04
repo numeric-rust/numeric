@@ -6,6 +6,15 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
+## Latest
+* Added strided and offset tensors
+* Removed AxisIndex::{Slice, SliceFrom, SliceTo}
+* Added AxisIndex::StridedSlice
+* `flatten` does not take ownership anymore
+* Added `iter` and `TensorIterator`
+* Added notion of `canonical` (row-major, no offset, default strides)
+* Added `canonize` and `canonize_inplace`
+
 ## 0.1.0
 Released: 2015-12-25
 * Changed internal storage to using `Rc` with copy-on-write semantics

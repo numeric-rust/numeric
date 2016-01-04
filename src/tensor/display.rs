@@ -6,7 +6,6 @@ macro_rules! add_impl {
     ($t:ty, $name:tt) => (
         impl fmt::Display for Tensor<$t> {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                let mv = &self.data[..];
                 let mut ret = "\n".to_string();
                 // Limit to 1000 elements shown
                 if self.is_scalar() {
@@ -15,8 +14,8 @@ macro_rules! add_impl {
                     // Pre-generate all strings
                     let mut ss: Vec<String> = Vec::with_capacity(self.size());
                     let mut longest: usize = 0;
-                    for i in 0..self.size() {
-                        let s = format!("{}", mv[i]);
+                    for v in self.iter() {
+                        let s = format!("{}", v);
                         ss.push(s.to_string());
                         if s.len() > longest {
                             longest = s.len();
@@ -33,14 +32,15 @@ macro_rules! add_impl {
                             ret = format!("{}{}", ret, s);
                         }
                     } else if self.ndim() == 2 {
-                        let s0 = self.strides()[0];
+                        let s0 = self.shape[1] as isize;
                         //ret.push_str("[[");
                         for i in 0..self.shape[0] {
                             if i > 0 {
                                 //ret.push_str(" [");
                             }
                             for j in 0..self.shape[1] {
-                                let s = &ss[i * s0 + j];
+                                let s = &ss[(i as isize * s0 + j as isize) as usize];
+
                                 for _ in 0..(1 + longest - s.len()) {
                                     ret.push_str(" ");
                                 }
@@ -60,8 +60,7 @@ macro_rules! add_impl {
                 }
 
                 if self.is_scalar() {
-                    //write!(f, "{}\n[Tensor<{}> of shape scalar]", ret, $name)
-                    write!(f, "{}", self.data[0])
+                    write!(f, "{}", self.scalar_value())
                 } else {
                     // Format shape
                     // TODO: Is there an implode/join function?

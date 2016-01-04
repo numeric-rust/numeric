@@ -23,8 +23,10 @@ macro_rules! add_impl {
                                 data[i] = v;
                             }
                         } else {
-                            blas::$gemv(b'T', self.shape[1], self.shape[0], 1.0, &self.data,
-                                        self.shape[1], &rhs.data, 1, 0.0, data, 1);
+                            let t1 = self.canonize();
+                            let t2 = rhs.canonize();
+                            blas::$gemv(b'T', t1.shape[1], t1.shape[0], 1.0, &t1.data,
+                                        t1.shape[1], &t2.data, 1, 0.0, data, 1);
                         }
                     }
                     t3
@@ -45,10 +47,12 @@ macro_rules! add_impl {
                     } else {
                         // Note: dgemm assumes column-major while we have row-major,
                         //       so we have to re-arrange things a bit
+                        let t1 = self.canonize();
+                        let t2 = rhs.canonize();
                         let mut data = t3.slice_mut();
-                        blas::$gemm(b'N', b'N', rhs.shape[1], self.shape[0], rhs.shape[0], 1.0,
-                                    &rhs.data, rhs.shape[1], &self.data, rhs.shape[0], 0.0,
-                                    data, rhs.shape[1]);
+                        blas::$gemm(b'N', b'N', t2.shape[1], t1.shape[0], t2.shape[0], 1.0,
+                                    &t2.data, t2.shape[1], &t1.data, t2.shape[0], 0.0,
+                                    data, t2.shape[1]);
                     }
                     t3
                 } else if self.ndim() == 1 && rhs.ndim() == 1 { // scalar product
@@ -56,11 +60,13 @@ macro_rules! add_impl {
                     let mut v = 0.0;
                     if cfg!(noblas) {
                         // Naive implementation, BLAS will be much faster
-                        for k in 0..self.shape[0] {
-                            v += self.data[k] * rhs.data[k];
+                        for (v1, v2) in self.iter().zip(rhs.iter()) {
+                            v += v1 * v2;
                         }
                     } else {
-                        v = blas::$dot(self.size(), &self.data, 1, &rhs.data, 1);
+                        let t1 = self.canonize();
+                        let t2 = rhs.canonize();
+                        v = blas::$dot(t1.size(), &t1.data, 1, &t2.data, 1);
                     }
                     Tensor::scalar(v)
                 } else {

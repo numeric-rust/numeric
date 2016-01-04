@@ -1,25 +1,30 @@
 use std::ops::{Add, Mul, BitAnd, BitOr, BitXor};
-use tensor::Tensor;
+use tensor::{Tensor, Full, Index};
 use Numeric;
+use TensorType;
 
 impl<T: Numeric> Tensor<T> {
     pub fn max(&self) -> T {
-        debug_assert!(self.size() > 0, "Can't take max of empty tensor");
-        let mut m = self.data[0];
-        for i in 1..self.size() {
-            if self.data[i] > m {
-                m = self.data[i];
+        assert!(self.size() > 0, "Can't take max of empty tensor");
+        let mut m = T::zero();
+        for (i, v) in self.iter().enumerate() {
+            if i == 0 {
+                m = v;
+            } else if v > m {
+                m = v;
             }
         }
         m
     }
 
     pub fn min(&self) -> T {
-        debug_assert!(self.size() > 0, "Can't take min of empty tensor");
-        let mut m = self.data[0];
-        for i in 1..self.size() {
-            if self.data[i] < m {
-                m = self.data[i];
+        assert!(self.size() > 0, "Can't take min of empty tensor");
+        let mut m = T::zero();
+        for (i, v) in self.iter().enumerate() {
+            if i == 0 {
+                m = v;
+            } else if v < m {
+                m = v;
             }
         }
         m
@@ -27,8 +32,8 @@ impl<T: Numeric> Tensor<T> {
 
     pub fn sum(&self) -> T {
         let mut s = T::zero();
-        for i in 0..self.size() {
-            s = s + self.data[i];
+        for v in self.iter() {
+            s = s + v;
         }
         s
     }
@@ -36,8 +41,8 @@ impl<T: Numeric> Tensor<T> {
     pub fn mean(&self) -> T {
         let mut s = T::zero();
         let mut t = T::zero();
-        for i in 0..self.size() {
-            s = s + self.data[i];
+        for v in self.iter() {
+            s = s + v;
             t = t + T::one();
         }
         s / t
@@ -46,33 +51,19 @@ impl<T: Numeric> Tensor<T> {
 
 macro_rules! add_impl {
     ($trait_name:ident, $func_name:ident, $new_func_name:ident) => (
-        impl<T: Copy + $trait_name<Output=T>> Tensor<T> {
+        impl<T: TensorType + $trait_name<Output=T>> Tensor<T> {
             pub fn $new_func_name(&self, axis: usize) -> Tensor<T> {
                 assert!(axis < self.ndim(), "Reduced axis must exist");
+                let mut sel = vec![Full; axis];
+                sel.push(Index(0));
 
-                let mut sh = Vec::with_capacity(self.ndim() - 1);
-                for i in 0..self.ndim() {
-                    if i != axis {
-                        sh.push(self.shape[i]);
-                    }
+                let mut t = self.index(&sel[..]);
+                let d = self.dim(axis);
+                for i in 1..d {
+                    sel[axis] = Index(i as isize);
+                    t = (&t).$func_name(&self.index(&sel[..]));
                 }
 
-                let mut t = Tensor::empty(&sh);
-
-                let strides = self.strides();
-                let stride = strides[axis];
-                let axis_size = self.shape[axis];
-                let t_size = t.size();
-                for start in 0..t_size {
-                    let mut index = t.unravel_index(start);
-                    index.insert(axis, 0);
-                    let orig_index = self.ravel_index(&index[..]);
-                    let mut v = self.data[orig_index];
-                    for k in 1..axis_size {
-                        v = v.$func_name(self.data[orig_index + k * stride]);
-                    }
-                    t[start] = v;
-                }
                 t
             }
         }

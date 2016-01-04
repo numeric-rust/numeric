@@ -8,6 +8,7 @@ macro_rules! add_impl {
             use tensor::Tensor;
             type T = Tensor<$t>;
 
+            /*
             #[test]
             fn indexing() {
                 let t = T::range(6);
@@ -21,6 +22,7 @@ macro_rules! add_impl {
                 t[2] = 1.0;
                 assert!(t == T::new(vec![0.0, 0.0, 1.0]));
             }
+            */
 
             #[test]
             fn indexing_tuple_1() {

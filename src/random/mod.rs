@@ -41,8 +41,12 @@ impl RandomState {
     pub fn uniform<T>(&mut self, low: T, high: T, shape: &[usize]) -> Tensor<T>
             where T: Numeric + SampleRange {
         let mut t = Tensor::zeros(shape);
-        for i in 0..t.size() {
-            t[i] = self.rng.gen_range::<T>(low, high);
+        {
+            let n = t.size();
+            let mut data = t.slice_mut();
+            for i in 0..n {
+                data[i] = self.rng.gen_range::<T>(low, high);
+            }
         }
         t
     }

@@ -7,15 +7,18 @@ macro_rules! add_impl {
         impl<T: TensorType + PartialOrd> Tensor<T> {
             pub fn $new_fname(&self, rhs: &Tensor<T>) -> Tensor<bool> {
                 let mut y = Tensor::empty(&self.shape());
-                if rhs.is_scalar() {
-                    let v = rhs.scalar_value();
-                    for i in 0..self.size() {
-                        y[i] = self.data[i].$fname(&v);
-                    }
-                } else {
-                    assert_eq!(self.shape(), rhs.shape());
-                    for i in 0..self.size() {
-                        y[i] = self.data[i].$fname(&rhs.data[i]);
+                {
+                    let mut data = y.slice_mut();
+                    if rhs.is_scalar() {
+                        let v2 = rhs.scalar_value();
+                        for (i, v1) in rhs.iter().enumerate() {
+                            data[i] = v1.$fname(&v2);
+                        }
+                    } else {
+                        assert_eq!(self.shape(), rhs.shape());
+                        for (i, (v1, v2)) in self.iter().zip(rhs.iter()).enumerate() {
+                            data[i] = v1.$fname(&v2);
+                        }
                     }
                 }
                 y
@@ -33,8 +36,8 @@ add_impl!(elem_ne, ne);
 
 impl Tensor<bool> {
     pub fn all(&self) -> bool {
-        for i in 0..self.size() {
-            if !self.data[i] {
+        for v in self.iter() {
+            if !v {
                 return false;
             }
         }
@@ -42,8 +45,8 @@ impl Tensor<bool> {
     }
 
     pub fn any(&self) -> bool {
-        for i in 0..self.size() {
-            if self.data[i] {
+        for v in self.iter() {
+            if v {
                 return true;
             }
         }

@@ -31,7 +31,7 @@ macro_rules! add_impl {
 
                 // A must be transposed, since LAPACK is column-major.
                 let mut a_ = self.transpose();
-                let mut b_ = b.clone();
+                let mut b_ = b.canonize();
                 let mut info = 0;
 
                 let n = self.shape()[0];
