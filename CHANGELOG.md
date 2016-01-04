@@ -6,7 +6,8 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
-## Latest
+## 0.1.1
+Released: 2016-01-03
 * Added strided and offset tensors
 * Removed AxisIndex::{Slice, SliceFrom, SliceTo}
 * Added AxisIndex::StridedSlice
