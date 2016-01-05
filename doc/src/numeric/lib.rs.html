@@ -70,22 +70,6 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Numeric Rust provides a foundation for doing scientific computing with Rust. It aims to be for</span>
 <span class='doccomment'>//! Rust what Numpy is for Python.</span>
@@ -99,18 +83,7 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hdf5_sys</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 
-<span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::{<span class='ident'>Num</span>, <span class='ident'>NumCast</span>};
-
-<span class='comment'>// TODO: Sometimes TensorType is used, sometimes Copy. Make a decision and stick with it.</span>
-<span class='doccomment'>/// This is the basic trait that must be satisfied for basic elements used in `Tensor`.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>TensorType</span>: <span class='ident'>Copy</span> {}
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Copy</span><span class='op'>&gt;</span> <span class='ident'>TensorType</span> <span class='kw'>for</span> <span class='ident'>T</span> {}
-
-<span class='doccomment'>/// `Numeric` extends `TensorType` to all the numeric types supported by `Tensor` </span>
-<span class='doccomment'>/// (e.g. `u8` and `f32`).</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Numeric</span>: <span class='ident'>TensorType</span> <span class='op'>+</span> <span class='ident'>Num</span> <span class='op'>+</span> <span class='ident'>NumCast</span> <span class='op'>+</span> <span class='ident'>PartialOrd</span> {}
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span> <span class='op'>+</span> <span class='ident'>Num</span> <span class='op'>+</span> <span class='ident'>NumCast</span> <span class='op'>+</span> <span class='ident'>PartialOrd</span><span class='op'>&gt;</span> <span class='ident'>Numeric</span> <span class='kw'>for</span> <span class='ident'>T</span> {}
-
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>traits</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>tensor</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>math</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>random</span>;
@@ -118,7 +91,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>io</span>;
 
 <span class='doccomment'>/// Many of the things in tensor is lifted into numeric since they are so common.</span>
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>tensor</span>::{<span class='ident'>Tensor</span>, <span class='ident'>AxisIndex</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>tensor</span>::{<span class='ident'>Tensor</span>, <span class='ident'>AxisIndex</span>, <span class='ident'>Ellipsis</span>, <span class='ident'>StridedSlice</span>, <span class='ident'>Index</span>, <span class='ident'>Full</span>, <span class='ident'>NewAxis</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>tensor</span>::{<span class='ident'>SingleTensor</span>, <span class='ident'>DoubleTensor</span>};
 
 <span class='doccomment'>/// Many of the functions in math are lifted into numeric since they are so common.</span>
@@ -127,11 +100,6 @@
                <span class='ident'>floor</span>, <span class='ident'>ceil</span>, <span class='ident'>round</span>, <span class='ident'>trunc</span>, <span class='ident'>fract</span>, <span class='ident'>abs</span>, <span class='ident'>signum</span>, <span class='ident'>powf</span>, <span class='ident'>powi</span>,
                <span class='ident'>is_nan</span>, <span class='ident'>is_finite</span>, <span class='ident'>is_infinite</span>, <span class='ident'>is_normal</span>,
                <span class='ident'>is_sign_positive</span>, <span class='ident'>is_sign_negative</span>};
-
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>macros</span>;
-
-<span class='kw'>mod</span> <span class='ident'>tests</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

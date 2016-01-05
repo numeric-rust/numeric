@@ -298,6 +298,19 @@
 <span id="255">255</span>
 <span id="256">256</span>
 <span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Saving and loading data to and from disk.</span>
 <span class='doccomment'>//!</span>
@@ -308,42 +321,47 @@
 <span class='doccomment'>//! **Note:** The HDF5 library will by default not be thread-safe (it depends on how you compiled</span>
 <span class='doccomment'>//! it), so do not call either of these functions concurrently.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ##Saving to an HDF5 file:</span>
+<span class='doccomment'>//! ##Saving to HDF5 file:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! use std::path::Path;</span>
+<span class='doccomment'>//! use numeric::Tensor;</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! let path = Path::new(&quot;output.h5&quot;);</span>
-<span class='doccomment'>//! let t1 = tensor![1_i32, 23; 20, 10];</span>
-<span class='doccomment'>//! try!(t.save_hdf5(&amp;path));</span>
+<span class='doccomment'>//! let t: Tensor&lt;i32&gt; = Tensor::range(100);</span>
+<span class='doccomment'>//! let ret = t.save_hdf5(&amp;path);</span>
 <span class='doccomment'>//! ```</span>
-<span class='doccomment'>//! The data will be saved to the group `/data`. Now, we can load this using:</span>
+<span class='doccomment'>//! The data will be saved to the group `/data`.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Loading from HDF5 file</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Now, we can load this file:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//! let t2 = try!(numeric::io::load_hdf5_as_f64(&amp;path, &quot;/data&quot;));</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! use std::path::Path;</span>
+<span class='doccomment'>//! use numeric::Tensor;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! let path = Path::new(&quot;output.h5&quot;);</span>
+<span class='doccomment'>//! let t = match numeric::io::load_hdf5_as_f64(&amp;path, &quot;/data&quot;) {</span>
+<span class='doccomment'>//!     Ok(v) =&gt; v,</span>
+<span class='doccomment'>//!     Err(e) =&gt; panic!(&quot;Failed: {}&quot;, e),</span>
+<span class='doccomment'>//! };</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Note that since we need to know the type of `t2` at compile time, it doesn&#39;t matter that we</span>
+<span class='doccomment'>//! Note that since we need to know the type of `t` at compile time, it doesn&#39;t matter that we</span>
 <span class='doccomment'>//! saved the file as `i32`, we have to specify how to load it. The way this is done is that it</span>
 <span class='doccomment'>//! will load the `i32` natively and then convert it to `f64`. If your data converted, you simply</span>
 <span class='doccomment'>//! have to load it as the same type as you know is in the file.</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>std</span>;
 
-<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_char</span>, <span class='ident'>c_void</span>, <span class='ident'>c_ulonglong</span>, <span class='ident'>c_int</span>};
+<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_char</span>, <span class='ident'>c_void</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>hdf5_sys</span> <span class='kw'>as</span> <span class='ident'>ffi</span>;
 
 <span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
 
-<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
-<span class='kw'>type</span> <span class='ident'>hsize_t</span> <span class='op'>=</span> <span class='ident'>c_ulonglong</span>;
-<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
-<span class='kw'>type</span> <span class='ident'>hid_t</span> <span class='op'>=</span> <span class='ident'>c_int</span>;
-
-<span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>error_handler</span>(_: <span class='ident'>hid_t</span>, _: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) {
+<span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>error_handler</span>(_: <span class='ident'>ffi</span>::<span class='ident'>hid_t</span>, _: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) {
     <span class='comment'>// Suppress errors. We will rely on return statuses alone.</span>
 }
 
@@ -358,7 +376,8 @@
                 <span class='kw'>let</span> <span class='ident'>filename</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>path</span>.<span class='ident'>to_str</span>() {
                     <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> <span class='ident'>v</span>,
                     <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {
-                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidInput</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Path could not be converted to string: {:?}&quot;</span>, <span class='ident'>path</span>));
+                        <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Path could not be converted to string: {:?}&quot;</span>, <span class='ident'>path</span>);
+                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidInput</span>, <span class='ident'>msg</span>);
                         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                     },
                 };
@@ -379,7 +398,8 @@
                         <span class='ident'>shape</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>s</span> <span class='kw'>as</span> <span class='ident'>u64</span>);
                     }
 
-                    <span class='kw'>let</span> <span class='ident'>space</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Screate_simple</span>(<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>shape</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null</span>());
+                    <span class='kw'>let</span> <span class='ident'>space</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Screate_simple</span>(<span class='ident'>shape</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>shape</span>.<span class='ident'>as_ptr</span>(),
+                                                      <span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null</span>());
 
                     <span class='kw'>let</span> <span class='ident'>dset</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Dcreate2</span>(<span class='ident'>file</span>, <span class='ident'>group_cstr</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>,
                                                <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h5type</span>, <span class='ident'>space</span>,
@@ -387,12 +407,12 @@
                                                <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
                                                <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>);
 
-                    <span class='kw'>let</span> <span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Dwrite</span>(<span class='ident'>dset</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h5type</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                               <span class='self'>self</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span> <span class='kw'>const</span> <span class='ident'>c_void</span>);
+                    <span class='kw'>let</span> <span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Dwrite</span>(<span class='ident'>dset</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h5type</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                               <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='self'>self</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span> <span class='kw'>const</span> <span class='ident'>c_void</span>);
 
                     <span class='kw'>if</span> <span class='ident'>status</span> <span class='op'>&lt;</span> <span class='number'>0</span> {
-                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>Other</span>,
-                                                      <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Failed to write &#39;{}&#39;: {:?}&quot;</span>, <span class='ident'>group</span>, <span class='ident'>path</span>));
+                        <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Failed to write &#39;{}&#39;: {:?}&quot;</span>, <span class='ident'>group</span>, <span class='ident'>path</span>);
+                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>Other</span>, <span class='ident'>msg</span>);
                         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                     }
 
@@ -425,7 +445,8 @@
             <span class='kw'>let</span> <span class='ident'>filename</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>path</span>.<span class='ident'>to_str</span>() {
                 <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> <span class='ident'>v</span>,
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidInput</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Path could not be converted to string: {:?}&quot;</span>, <span class='ident'>path</span>));
+                    <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Path could not be converted to string: {:?}&quot;</span>, <span class='ident'>path</span>);
+                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidInput</span>, <span class='ident'>msg</span>);
                     <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                 },
             };
@@ -439,7 +460,8 @@
                                <span class='ident'>ffi</span>::<span class='ident'>H5F_ACC_RDONLY</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>);
 
                 <span class='kw'>if</span> <span class='ident'>file</span> <span class='op'>&lt;</span> <span class='number'>0</span> {
-                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>NotFound</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;File not found: {:?}&quot;</span>, <span class='ident'>path</span>));
+                    <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;File not found: {:?}&quot;</span>, <span class='ident'>path</span>);
+                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>NotFound</span>, <span class='ident'>msg</span>);
                     <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                 }
 
@@ -447,7 +469,8 @@
                                         <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>);
 
                 <span class='kw'>if</span> <span class='ident'>dset</span> <span class='op'>&lt;</span> <span class='number'>0</span> {
-                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>NotFound</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Group &#39;{}&#39; not found: {}&quot;</span>, <span class='ident'>group</span>, <span class='ident'>filename</span>));
+                    <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Group &#39;{}&#39; not found: {}&quot;</span>, <span class='ident'>group</span>, <span class='ident'>filename</span>);
+                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>NotFound</span>, <span class='ident'>msg</span>);
                     <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                 }
 
@@ -456,10 +479,11 @@
                 <span class='kw'>let</span> <span class='ident'>space</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Dget_space</span>(<span class='ident'>dset</span>);
                 <span class='kw'>let</span> <span class='ident'>ndims</span> <span class='op'>=</span> <span class='ident'>ffi</span>::<span class='ident'>H5Sget_simple_extent_ndims</span>(<span class='ident'>space</span>);
 
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shape</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>hsize_t</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>zeros</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>ndims</span> <span class='kw'>as</span> <span class='ident'>usize</span>]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shape</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>ffi</span>::<span class='ident'>hsize_t</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>zeros</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>ndims</span> <span class='kw'>as</span> <span class='ident'>usize</span>]);
 
-                <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Sget_simple_extent_dims</span>(<span class='ident'>space</span>, <span class='ident'>shape</span>.<span class='ident'>as_mut_ptr</span>(), <span class='number'>0</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>hsize_t</span>) <span class='op'>!=</span> <span class='ident'>ndims</span> {
-                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidData</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Could not read shape of tesor: {}&quot;</span>, <span class='ident'>filename</span>));
+                <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Sget_simple_extent_dims</span>(<span class='ident'>space</span>, <span class='ident'>shape</span>.<span class='ident'>as_mut_ptr</span>(), <span class='number'>0</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>ffi</span>::<span class='ident'>hsize_t</span>) <span class='op'>!=</span> <span class='ident'>ndims</span> {
+                    <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Could not read shape of tesor: {}&quot;</span>, <span class='ident'>filename</span>);
+                    <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidData</span>, <span class='ident'>msg</span>);
                     <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                 }
 
@@ -471,65 +495,67 @@
                     <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT8</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT8</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT8</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT8</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>i8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT8</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT8</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT16</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>u16</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT16</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT16</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT16</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>i16</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT16</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT16</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT32</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT32</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT32</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT32</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT32</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT32</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT64</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT64</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_UINT64</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT64</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>i64</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT64</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_INT64</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_FLOAT</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_FLOAT</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_FLOAT</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>ffi</span>::<span class='ident'>H5Tequal</span>(<span class='ident'>datatype</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_DOUBLE</span>) <span class='op'>==</span> <span class='number'>1</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>native_data</span>: <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='ident'>unsigned_shape</span>[..]);
                         <span class='comment'>// Finally load the actual data</span>
-                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_DOUBLE</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>,
-                                     <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
+                        <span class='ident'>ffi</span>::<span class='ident'>H5Dread</span>(<span class='ident'>dset</span>, <span class='ident'>ffi</span>::<span class='ident'>H5T_NATIVE_DOUBLE</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>, <span class='ident'>ffi</span>::<span class='ident'>H5S_ALL</span>,
+                                     <span class='ident'>ffi</span>::<span class='ident'>H5P_DEFAULT</span>, <span class='ident'>native_data</span>.<span class='ident'>as_mut_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>);
                         <span class='ident'>native_data</span>.<span class='ident'>convert</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span>()
                     } <span class='kw'>else</span> {
-                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidData</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Unable to convert &#39;{}&#39; to {}: {}&quot;</span>, <span class='ident'>group</span>, <span class='string'>&quot;f64&quot;</span>, <span class='ident'>filename</span>));
+                        <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Unable to convert &#39;{}&#39; to {}: {}&quot;</span>,
+                                          <span class='ident'>group</span>, <span class='string'>&quot;f64&quot;</span>, <span class='ident'>filename</span>);
+                        <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidData</span>, <span class='ident'>msg</span>);
                         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>err</span>);
                     }
                 };

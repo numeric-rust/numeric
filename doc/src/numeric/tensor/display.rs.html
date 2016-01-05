@@ -137,7 +137,6 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
-<span id="97">97</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
@@ -147,7 +146,6 @@
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span>:<span class='ident'>ty</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>tt</span>) <span class='op'>=&gt;</span> (
         <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span><span class='op'>&gt;</span> {
             <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-                <span class='kw'>let</span> <span class='ident'>mv</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[..];
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='string'>&quot;\n&quot;</span>.<span class='ident'>to_string</span>();
                 <span class='comment'>// Limit to 1000 elements shown</span>
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_scalar</span>() {
@@ -156,8 +154,8 @@
                     <span class='comment'>// Pre-generate all strings</span>
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ss</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='self'>self</span>.<span class='ident'>size</span>());
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>longest</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>0</span>;
-                    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>size</span>() {
-                        <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>mv</span>[<span class='ident'>i</span>]);
+                    <span class='kw'>for</span> <span class='ident'>v</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>iter</span>() {
+                        <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>v</span>);
                         <span class='ident'>ss</span>.<span class='ident'>push</span>(<span class='ident'>s</span>.<span class='ident'>to_string</span>());
                         <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='ident'>longest</span> {
                             <span class='ident'>longest</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>len</span>();
@@ -174,14 +172,15 @@
                             <span class='ident'>ret</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}{}&quot;</span>, <span class='ident'>ret</span>, <span class='ident'>s</span>);
                         }
                     } <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>2</span> {
-                        <span class='kw'>let</span> <span class='ident'>s0</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>];
+                        <span class='kw'>let</span> <span class='ident'>s0</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='kw'>as</span> <span class='ident'>isize</span>;
                         <span class='comment'>//ret.push_str(&quot;[[&quot;);</span>
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>0</span>] {
                             <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
                                 <span class='comment'>//ret.push_str(&quot; [&quot;);</span>
                             }
                             <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] {
-                                <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ss</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='ident'>s0</span> <span class='op'>+</span> <span class='ident'>j</span>];
+                                <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ss</span>[(<span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='ident'>s0</span> <span class='op'>+</span> <span class='ident'>j</span> <span class='kw'>as</span> <span class='ident'>isize</span>) <span class='kw'>as</span> <span class='ident'>usize</span>];
+
                                 <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..(<span class='number'>1</span> <span class='op'>+</span> <span class='ident'>longest</span> <span class='op'>-</span> <span class='ident'>s</span>.<span class='ident'>len</span>()) {
                                     <span class='ident'>ret</span>.<span class='ident'>push_str</span>(<span class='string'>&quot; &quot;</span>);
                                 }
@@ -201,8 +200,7 @@
                 }
 
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_scalar</span>() {
-                    <span class='comment'>//write!(f, &quot;{}\n[Tensor&lt;{}&gt; of shape scalar]&quot;, ret, $name)</span>
-                    <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>data</span>[<span class='number'>0</span>])
+                    <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>scalar_value</span>())
                 } <span class='kw'>else</span> {
                     <span class='comment'>// Format shape</span>
                     <span class='comment'>// TODO: Is there an implode/join function?</span>

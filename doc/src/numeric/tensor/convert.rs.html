@@ -72,24 +72,36 @@
 <span id="29">29</span>
 <span id="30">30</span>
 <span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>cast</span>;
-<span class='kw'>use</span> <span class='ident'>Numeric</span>;
+<span class='kw'>use</span> <span class='ident'>traits</span>::<span class='ident'>NumericTrait</span>;
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Numeric</span><span class='op'>&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>NumericTrait</span><span class='op'>&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Returns a new tensor with the elements converted to the selected type.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// # #[macro_use] extern crate numeric; fn main() {</span>
     <span class='doccomment'>/// use numeric::Tensor;</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let tdouble = Tensor::new(vec![1.0f64, 2.0, 3.0]);</span>
+    <span class='doccomment'>/// let tdouble = tensor![1.0f64, 2.0, 3.0];</span>
     <span class='doccomment'>/// let tsingle = tdouble.convert::&lt;f32&gt;();</span>
+    <span class='doccomment'>/// # }</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>convert</span><span class='op'>&lt;</span><span class='ident'>D</span>: <span class='ident'>Numeric</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>convert</span><span class='op'>&lt;</span><span class='ident'>D</span>: <span class='ident'>NumericTrait</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>zeros</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>shape</span>);
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>size</span>() {
-            <span class='ident'>t</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>cast</span>(<span class='self'>self</span>[<span class='ident'>i</span>]).<span class='ident'>unwrap</span>();
+        {
+            <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
+            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
+                <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>cast</span>(<span class='ident'>data</span>[<span class='ident'>i</span>]).<span class='ident'>unwrap</span>();
+            }
         }
         <span class='ident'>t</span>
     }

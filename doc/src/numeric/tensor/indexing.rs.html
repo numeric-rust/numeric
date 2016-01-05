@@ -143,109 +143,141 @@
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
 </pre><pre class='rust '>
-<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_imports</span>)]</span>
-<span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Index</span>, <span class='ident'>IndexMut</span>};
-<span class='kw'>use</span> <span class='ident'>TensorType</span>;
+<span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
+<span class='kw'>use</span> <span class='ident'>traits</span>::<span class='ident'>TensorTrait</span>;
 
 <span class='comment'>// Vector indexing</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>ii</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>canonical</span>);
         <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ravel_index</span>(<span class='ident'>ii</span>);
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>index</span>]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>ii</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>usize</span>]) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>canonical</span>);
         <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ravel_index</span>(<span class='ident'>ii</span>);
         <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[<span class='ident'>index</span>]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>ii</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>canonical</span>);
         <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ravel_index</span>(<span class='kw-2'>&amp;</span><span class='ident'>ii</span>[..]);
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>index</span>]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>ii</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>canonical</span>);
+        <span class='comment'>//self.canonize_inplace();</span>
         <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ravel_index</span>(<span class='kw-2'>&amp;</span><span class='ident'>ii</span>[..]);
         <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[<span class='ident'>index</span>]
     }
 }
 
-<span class='comment'>// Flattened indexing (this will index it as one-dimensional)</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
-    <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>_index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>_index</span>]
+<span class='comment'>/*
+// Flattened indexing (this will index it as one-dimensional)
+impl&lt;T: TensorTrait&gt; Index&lt;usize&gt; for Tensor&lt;T&gt; {
+    type Output = T;
+    fn index&lt;&#39;a&gt;(&amp;&#39;a self, _index: usize) -&gt; &amp;&#39;a T {
+        &amp;self.data[self.mem_offset + _index]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[<span class='ident'>_index</span>]
+impl&lt;T: TensorTrait&gt; IndexMut&lt;usize&gt; for Tensor&lt;T&gt; {
+    fn index_mut&lt;&#39;a&gt;(&amp;&#39;a mut self, _index: usize) -&gt; &amp;&#39;a mut T {
+        //self.harden_inplace();
+        let offset = self.mem_offset;
+        &amp;mut self.slice_mut()[offset + _index]
     }
 }
+*/</span>
 
 <span class='comment'>// 1-D indexing</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>,)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>,)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>,)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>1</span>);
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>_index</span>.<span class='number'>0</span>]
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[(<span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>0</span>]) <span class='kw'>as</span> <span class='ident'>usize</span>]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>,)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>,)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>,)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>1</span>);
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[<span class='ident'>_index</span>.<span class='number'>0</span>]
+        <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='kw'>as</span> <span class='ident'>isize</span>;
+        <span class='kw'>let</span> <span class='ident'>s0</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>0</span>];
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[(<span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='ident'>s0</span>) <span class='kw'>as</span> <span class='ident'>usize</span>]
     }
 }
 
 <span class='comment'>// 2-D indexing</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>2</span>);
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[(<span class='ident'>_index</span>.<span class='number'>0</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>1</span>)]
+        <span class='comment'>//&amp;self.data[(_index.1 * self.shape[1] + _index.1)]</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='op'>+</span> (<span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>0</span>] <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>1</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>1</span>]) <span class='kw'>as</span> <span class='ident'>usize</span>]
     }
 }
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>2</span>);
-        <span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>_index</span>.<span class='number'>0</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>1</span>;
+        <span class='comment'>//self.harden_inplace();</span>
+        <span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='op'>+</span> (<span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>0</span>] <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>1</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>1</span>]) <span class='kw'>as</span> <span class='ident'>usize</span>;
         <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[<span class='ident'>i</span>]
     }
 }
 
 <span class='comment'>// 3-D indexing</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span>;
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>3</span>);
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[(<span class='ident'>_index</span>.<span class='number'>0</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>] <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>2</span>] <span class='op'>+</span>
-                    <span class='ident'>_index</span>.<span class='number'>1</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>2</span>] <span class='op'>+</span>
-                    <span class='ident'>_index</span>.<span class='number'>2</span>)]
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[(<span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>+</span>
+                    <span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>0</span>] <span class='op'>+</span>
+                    <span class='ident'>_index</span>.<span class='number'>1</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>1</span>] <span class='op'>+</span>
+                    <span class='ident'>_index</span>.<span class='number'>2</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>2</span>]) <span class='kw'>as</span> <span class='ident'>usize</span>]
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorType</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span><span class='op'>&gt;</span> <span class='ident'>IndexMut</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>index_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_index</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>3</span>);
-        <span class='kw'>let</span> (<span class='ident'>sh1</span>, <span class='ident'>sh2</span>) <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>1</span>], <span class='self'>self</span>.<span class='ident'>shape</span>[<span class='number'>2</span>]);
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[(<span class='ident'>_index</span>.<span class='number'>0</span> <span class='op'>*</span> <span class='ident'>sh1</span> <span class='op'>*</span> <span class='ident'>sh2</span> <span class='op'>+</span>
-                               <span class='ident'>_index</span>.<span class='number'>1</span> <span class='op'>*</span> <span class='ident'>sh2</span> <span class='op'>+</span> <span class='ident'>_index</span>.<span class='number'>2</span>)]
+        <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem_offset</span> <span class='kw'>as</span> <span class='ident'>isize</span>;
+        <span class='kw'>let</span> (<span class='ident'>s0</span>, <span class='ident'>s1</span>, <span class='ident'>s2</span>) <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>1</span>], <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>2</span>], <span class='self'>self</span>.<span class='ident'>strides</span>[<span class='number'>3</span>]);
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>()[(<span class='ident'>offset</span> <span class='op'>+</span>
+                               <span class='ident'>_index</span>.<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='ident'>s0</span> <span class='op'>+</span>
+                               <span class='ident'>_index</span>.<span class='number'>1</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='ident'>s1</span> <span class='op'>+</span>
+                               <span class='ident'>_index</span>.<span class='number'>2</span> <span class='kw'>as</span> <span class='ident'>isize</span> <span class='op'>*</span> <span class='ident'>s2</span>) <span class='kw'>as</span> <span class='ident'>usize</span>]
     }
 }
+
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

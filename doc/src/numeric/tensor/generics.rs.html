@@ -254,19 +254,53 @@
 <span id="211">211</span>
 <span id="212">212</span>
 <span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>tensor</span>::<span class='ident'>Tensor</span>;
+<span class='kw'>use</span> <span class='ident'>traits</span>::<span class='ident'>TensorTrait</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Add</span>, <span class='ident'>Sub</span>, <span class='ident'>Mul</span>, <span class='ident'>Div</span>, <span class='ident'>Rem</span>, <span class='ident'>Neg</span>, <span class='ident'>BitAnd</span>, <span class='ident'>BitOr</span>, <span class='ident'>BitXor</span>};
 
 <span class='comment'>// T &lt;op&gt; &amp;T</span>
-
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>add_impl</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name_with_mul</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> (
         <span class='comment'>// T &lt;op&gt; T</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
             <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
             <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>Self</span>::<span class='ident'>Output</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
                 <span class='kw'>if</span> <span class='ident'>rhs</span>.<span class='ident'>is_scalar</span>() {
+                    <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
@@ -288,6 +322,7 @@
                     }
                     <span class='ident'>t</span>
                 } <span class='kw'>else</span> {
+                    <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
                         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>shape</span>, <span class='ident'>rhs</span>.<span class='ident'>shape</span>);
@@ -300,15 +335,17 @@
                 }
             }
         }
+
         <span class='comment'>// T &lt;op&gt; &amp;T</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
             <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
             <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>Output</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
                 <span class='kw'>if</span> <span class='ident'>rhs</span>.<span class='ident'>is_scalar</span>() {
+                    <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
-                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>[<span class='number'>0</span>];
+                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>scalar_value</span>();
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
                             <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>v</span>);
                         }
@@ -319,13 +356,14 @@
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
-                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>[<span class='number'>0</span>];
+                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>scalar_value</span>();
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
                             <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>rhs</span>.<span class='ident'>data</span>[<span class='ident'>i</span>]);
                         }
                     }
                     <span class='ident'>t</span>
                 } <span class='kw'>else</span> {
+                    <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
                         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>shape</span>, <span class='ident'>rhs</span>.<span class='ident'>shape</span>);
@@ -340,20 +378,21 @@
         }
 
         <span class='comment'>// T &lt;op&gt; &amp;T  (with out)</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name_with_mul</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> () {
+                <span class='ident'>out</span>.<span class='ident'>canonize_inplace</span>();
                 <span class='kw'>if</span> <span class='ident'>rhs</span>.<span class='ident'>is_scalar</span>() {
                     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>out</span>.<span class='ident'>shape</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>shape</span>());
                     <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>out</span>.<span class='ident'>size</span>();
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>out</span>.<span class='ident'>slice_mut</span>();
-                    <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>[<span class='number'>0</span>];
+                    <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>scalar_value</span>();
                     <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
                         <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>v</span>);
                     }
                 } <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_scalar</span>() {
                     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>out</span>.<span class='ident'>shape</span>() <span class='op'>==</span> <span class='ident'>rhs</span>.<span class='ident'>shape</span>());
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>out</span>.<span class='ident'>slice_mut</span>();
-                    <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>[<span class='number'>0</span>];
+                    <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>scalar_value</span>();
                     <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>rhs</span>.<span class='ident'>size</span>() {
                         <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>rhs</span>.<span class='ident'>data</span>[<span class='ident'>i</span>]);
                     }
@@ -369,16 +408,18 @@
         }
 
         <span class='comment'>// &amp;T &lt;op&gt; &amp;T</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
             <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
             <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>Output</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
                 <span class='comment'>//println!(&quot;$fname &amp;T + &amp;T&quot;);</span>
                 <span class='kw'>if</span> <span class='ident'>rhs</span>.<span class='ident'>is_scalar</span>() {
-                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
+                    <span class='comment'>//let mut t = self.clone();</span>
+                    <span class='comment'>//let mut t: Tensor&lt;T&gt; = Tensor::empty(&amp;self.shape);</span>
+                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>canonize</span>();
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
-                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>[<span class='number'>0</span>];
+                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>scalar_value</span>();
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
                             <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>v</span>);
                         }
@@ -389,7 +430,7 @@
                     {
                         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
-                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>[<span class='number'>0</span>];
+                        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>scalar_value</span>();
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
                             <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>rhs</span>.<span class='ident'>data</span>[<span class='ident'>i</span>]);
                         }
@@ -397,12 +438,12 @@
                     <span class='ident'>t</span>
                 } <span class='kw'>else</span> {
                     <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>shape</span>, <span class='ident'>rhs</span>.<span class='ident'>shape</span>);
-                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
+                    <span class='comment'>//let mut t: Tensor&lt;T&gt; = Tensor::empty(&amp;self.shape);</span>
+                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>canonize</span>();
                     {
-                        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>size</span>();
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
-                        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>n</span> {
-                            <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>rhs</span>.<span class='ident'>data</span>[<span class='ident'>i</span>]);
+                        <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>rhs</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
+                            <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='ident'>v</span>);
                         }
                     }
                     <span class='ident'>t</span>
@@ -411,9 +452,10 @@
         }
 
         <span class='comment'>// T &lt;op&gt; S</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
             <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
             <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func_name</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
+                <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
                 {
                     <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
@@ -427,7 +469,7 @@
     )
 }
 
-<span class='comment'>// Any operation supported on T should be supported on Tensor&lt;T&gt;, as long as T supports Copy</span>
+<span class='comment'>// Any operation supported on T should be supported on Tensor&lt;T&gt;, as long as T supports TensorTrait</span>
 <span class='macro'>add_impl</span><span class='macro'>!</span>(<span class='ident'>Add</span>, <span class='ident'>add</span>, <span class='ident'>add_with_out</span>);
 <span class='macro'>add_impl</span><span class='macro'>!</span>(<span class='ident'>Sub</span>, <span class='ident'>sub</span>, <span class='ident'>sub_with_out</span>);
 <span class='macro'>add_impl</span><span class='macro'>!</span>(<span class='ident'>Mul</span>, <span class='ident'>mul</span>, <span class='ident'>mul_with_out</span>);
@@ -438,11 +480,11 @@
 <span class='macro'>add_impl</span><span class='macro'>!</span>(<span class='ident'>BitOr</span>, <span class='ident'>bitor</span>, <span class='ident'>bitor_with_out</span>);
 <span class='macro'>add_impl</span><span class='macro'>!</span>(<span class='ident'>BitXor</span>, <span class='ident'>bitxor</span>, <span class='ident'>bitxor_with_out</span>);
 
-
 <span class='comment'>// -T</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Neg</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Neg</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='ident'>Neg</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Neg</span> <span class='kw'>for</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>neg</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
+        <span class='self'>self</span>.<span class='ident'>canonize_inplace</span>();
         {
             <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>size</span>();
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>();
@@ -455,19 +497,43 @@
 }
 
 <span class='comment'>// -&amp;T</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Neg</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Neg</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>TensorTrait</span> <span class='op'>+</span> <span class='ident'>Neg</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> <span class='ident'>Neg</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Tensor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>neg</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>Tensor</span>::<span class='ident'>empty</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>shape</span>);
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>slice_mut</span>();
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>size</span>() {
-                <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='op'>-</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>i</span>];
+            <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
+                <span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='op'>-</span><span class='ident'>v</span>;
             }
         }
         <span class='ident'>t</span>
     }
 }
+
+<span class='comment'>/*
+#[test]
+fn test_negate1() {
+    let t0 = tensor![1.0, 10.0; 23.0, -4.0];
+    let t1 = -&amp;t0;
+
+    let ta = tensor![-1.0, -10.0; -23.0, 4.0];
+    assert!(t1 == ta);
+}
+
+#[test]
+fn test_negate2() {
+    let t0 = Tensor::range(120).reshape(&amp;[5, 4, 2, 3]);
+    let t1 = t0.index(&amp;[AxisIndex::Index(3),
+                        AxisIndex::StridedSlice(Some(3), None, -2),
+                        AxisIndex::Index(1),
+                        AxisIndex::StridedSlice(None, None, 2)]);
+    let t2 = -&amp;t1;
+
+    let ta = tensor![-93, -95; -81, -83];
+    assert!(t2 == ta);
+}
+*/</span>
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

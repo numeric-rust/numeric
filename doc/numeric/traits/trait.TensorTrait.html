@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `Numeric` trait in crate `numeric`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, Numeric">
+    <meta name="description" content="API documentation for the Rust `TensorTrait` trait in crate `numeric`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TensorTrait">
 
-    <title>numeric::Numeric - Rust</title>
+    <title>numeric::traits::TensorTrait - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
     
@@ -27,7 +27,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='index.html'>numeric</a></p><script>window.sidebarCurrent = {name: 'Numeric', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>numeric</a>::<wbr><a href='index.html'>traits</a></p><script>window.sidebarCurrent = {name: 'TensorTrait', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,18 +42,17 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>numeric</a>::<wbr><a class='trait' href=''>Numeric</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>numeric</a>::<wbr><a href='index.html'>traits</a>::<wbr><a class='trait' href=''>TensorTrait</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-14' class='srclink' href='../src/numeric/lib.rs.html#22' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait Numeric: <a class='trait' href='../numeric/trait.TensorType.html' title='numeric::TensorType'>TensorType</a> + <a class='trait' href='http://rust-num.github.io/num/num/traits/trait.Num.html' title='num::traits::Num'>Num</a> + <a class='trait' href='http://rust-num.github.io/num/num/traits/trait.NumCast.html' title='num::traits::NumCast'>NumCast</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a> { }</pre><div class='docblock'><p><code>Numeric</code> extends <code>TensorType</code> to all the numeric types supported by <code>Tensor</code>
-(e.g. <code>u8</code> and <code>f32</code>).</p>
+        </span><a id='src-13' class='srclink' href='../../src/numeric/traits.rs.html#4' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait TensorTrait: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> { }</pre><div class='docblock'><p>This is the basic trait that must be satisfied for basic elements used in <code>Tensor</code>.</p>
 </div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     </ul><script type="text/javascript" async
-                              src="../implementors/numeric/trait.Numeric.js">
+                              src="../../implementors/numeric/traits/trait.TensorTrait.js">
                       </script></section>
     <section id='search' class="content hidden"></section>
 
@@ -106,13 +105,13 @@
     
 
     <script>
-        window.rootPath = "../";
+        window.rootPath = "../../";
         window.currentCrate = "numeric";
         window.playgroundUrl = "";
     </script>
-    <script src="../jquery.js"></script>
-    <script src="../main.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
     
-    <script defer src="../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

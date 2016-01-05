@@ -46,25 +46,25 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-29' class='srclink' href='../../src/numeric/tensor/mod.rs.html#50-65' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-47' class='srclink' href='../../src/numeric/tensor/mod.rs.html#101-115' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum AxisIndex {
     Full,
     Ellipsis,
     NewAxis,
     Index(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>),
-    Slice(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>),
-    SliceFrom(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>),
-    SliceTo(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>),
+    StridedSlice(<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>&gt;, <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>&gt;, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>),
 }</pre><div class='docblock'><p>Used for advanced slicing of a <code>Tensor</code>.</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.Full'><code>Full</code></td><td><div class='docblock'><p>Indexes from start to end for this axis.</p>
 </div></td></tr><tr><td id='variant.Ellipsis'><code>Ellipsis</code></td><td><div class='docblock'><p>Indexes from start to end for all axes in the middle. A maximum of one can be used.</p>
 </div></td></tr><tr><td id='variant.NewAxis'><code>NewAxis</code></td><td><div class='docblock'><p>Creates a new axis of length 1 at this location.</p>
 </div></td></tr><tr><td id='variant.Index'><code>Index</code></td><td><div class='docblock'><p>Picks one element of an axis. This will remove that axis from the tensor.</p>
-</div></td></tr><tr><td id='variant.Slice'><code>Slice</code></td><td><div class='docblock'><p>Specifies a half-open range. Slice(2, 5) will pick out indices 2, 3 and 4.</p>
-</div></td></tr><tr><td id='variant.SliceFrom'><code>SliceFrom</code></td><td><div class='docblock'><p>Specifies the start (inclusive) and to the end.</p>
-</div></td></tr><tr><td id='variant.SliceTo'><code>SliceTo</code></td><td><div class='docblock'><p>Specifies the end (exclusive) from the start.</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h4>
+</div></td></tr><tr><td id='variant.StridedSlice'><code>StridedSlice</code></td><td><div class='docblock'><p>Makes a strided slice <code>(start, end, step)</code>, with the same semantics as Python&#39;s Numpy. If
+<code>start</code> is specified as <code>None</code>, it will start from the first element if <code>step</code> is positive
+and last element if <code>step</code> is negative. If <code>end</code> is <code>None</code>, it will imply beyond the last
+element if <code>step</code> is positive and one before the first element if <code>step</code> is negative.</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h4>
 <h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a></code></h3><div class='impl-items'></div></section>
     <section id='search' class="content hidden"></section>

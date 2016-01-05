@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["NumericTrait","`NumericTrait` extends `TensorTrait` to all the numeric types supported by `Tensor` (e.g. `u8` and `f32`)."],["TensorTrait","This is the basic trait that must be satisfied for basic elements used in `Tensor`."]]});
