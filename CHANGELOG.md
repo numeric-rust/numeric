@@ -6,6 +6,13 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
+## 0.1.2
+Released: 2016-01-04
+* Moved `tests` out of `src`
+* Moved `TensorType` to `TensorTrait` and placed in `numeric::traits`
+* Moved `Numeric` to `NumericTrait` and placed in `numeric::traits`
+* Moved repo from `gustavla/numeric` to `numeric-rust/numeric`
+
 ## 0.1.1
 Released: 2016-01-03
 * Added strided and offset tensors
