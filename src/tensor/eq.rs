@@ -1,8 +1,8 @@
-use tensor::Tensor;
 use std::cmp::{PartialEq, Eq};
-use TensorType;
+use tensor::Tensor;
+use traits::TensorTrait;
 
-impl<T: TensorType + PartialOrd> PartialEq<Tensor<T>> for Tensor<T> {
+impl<T: TensorTrait + PartialOrd> PartialEq<Tensor<T>> for Tensor<T> {
     fn eq(&self, rhs: &Tensor<T>) -> bool {
         // Iterators are slow, but it should be faster to iterate
         // without iterators than to canonize, right?
@@ -25,6 +25,6 @@ impl<T: TensorType + PartialOrd> PartialEq<Tensor<T>> for Tensor<T> {
     }
 }
 
-impl<T: TensorType + PartialOrd> Eq for Tensor<T> { }
+impl<T: TensorTrait + PartialOrd> Eq for Tensor<T> { }
 
 

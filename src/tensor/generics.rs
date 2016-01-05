@@ -1,11 +1,12 @@
 use tensor::Tensor;
+use traits::TensorTrait;
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor};
 
 // T <op> &T
 macro_rules! add_impl {
     ($trait_name:ident, $func_name:ident, $func_name_with_mul:ident) => (
         // T <op> T
-        impl<T: Copy + $trait_name<Output=T>> $trait_name for Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> $trait_name for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
@@ -46,7 +47,7 @@ macro_rules! add_impl {
         }
 
         // T <op> &T
-        impl<'a, T: Copy + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for Tensor<T> {
+        impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: &Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
@@ -87,7 +88,7 @@ macro_rules! add_impl {
         }
 
         // T <op> &T  (with out)
-        impl<T: Copy + $trait_name<Output=T>> Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> Tensor<T> {
             pub fn $func_name_with_mul(&self, rhs: &Tensor<T>, out: &mut Tensor<T>) -> () {
                 out.canonize_inplace();
                 if rhs.is_scalar() {
@@ -117,7 +118,7 @@ macro_rules! add_impl {
         }
 
         // &T <op> &T
-        impl<'a, T: Copy + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for &'a Tensor<T> {
+        impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for &'a Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(self, rhs: &Self::Output) -> Self::Output {
                 //println!("$fname &T + &T");
@@ -161,7 +162,7 @@ macro_rules! add_impl {
         }
 
         // T <op> S
-        impl<T: Copy + $trait_name<Output=T>> $trait_name<T> for Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> $trait_name<T> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: T) -> Self::Output {
                 self.canonize_inplace();
@@ -178,7 +179,7 @@ macro_rules! add_impl {
     )
 }
 
-// Any operation supported on T should be supported on Tensor<T>, as long as T supports Copy
+// Any operation supported on T should be supported on Tensor<T>, as long as T supports TensorTrait
 add_impl!(Add, add, add_with_out);
 add_impl!(Sub, sub, sub_with_out);
 add_impl!(Mul, mul, mul_with_out);
@@ -190,7 +191,7 @@ add_impl!(BitOr, bitor, bitor_with_out);
 add_impl!(BitXor, bitxor, bitxor_with_out);
 
 // -T
-impl<T: Copy + Neg<Output=T>> Neg for Tensor<T> {
+impl<T: TensorTrait + Neg<Output=T>> Neg for Tensor<T> {
     type Output = Tensor<T>;
     fn neg(mut self) -> Self::Output {
         self.canonize_inplace();
@@ -206,7 +207,7 @@ impl<T: Copy + Neg<Output=T>> Neg for Tensor<T> {
 }
 
 // -&T
-impl<'a, T: Copy + Neg<Output=T>> Neg for &'a Tensor<T> {
+impl<'a, T: TensorTrait + Neg<Output=T>> Neg for &'a Tensor<T> {
     type Output = Tensor<T>;
     fn neg(self) -> Self::Output {
         let mut t = Tensor::empty(&self.shape);

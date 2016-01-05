@@ -1,7 +1,7 @@
 use tensor::Tensor;
-use TensorType;
+use traits::TensorTrait;
 
-impl<T: TensorType> Tensor<T> {
+impl<T: TensorTrait> Tensor<T> {
     pub fn concat(lhs: &Tensor<T>, rhs: &Tensor<T>, axis: usize) -> Tensor<T> {
         debug_assert!(axis < lhs.ndim());
         debug_assert!(lhs.ndim() == rhs.ndim());

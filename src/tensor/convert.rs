@@ -1,8 +1,8 @@
 use tensor::Tensor;
 use num::traits::cast;
-use Numeric;
+use traits::NumericTrait;
 
-impl<T: Numeric> Tensor<T> {
+impl<T: NumericTrait> Tensor<T> {
     /// Returns a new tensor with the elements converted to the selected type.
     ///
     /// ```
@@ -13,7 +13,7 @@ impl<T: Numeric> Tensor<T> {
     /// let tsingle = tdouble.convert::<f32>();
     /// # }
     /// ```
-    pub fn convert<D: Numeric>(&self) -> Tensor<D> {
+    pub fn convert<D: NumericTrait>(&self) -> Tensor<D> {
         let mut t = Tensor::zeros(&self.shape);
         {
             let n = t.size();

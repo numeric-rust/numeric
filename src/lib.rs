@@ -10,18 +10,7 @@ extern crate rand;
 extern crate hdf5_sys;
 extern crate libc;
 
-use num::traits::{Num, NumCast};
-
-// TODO: Sometimes TensorType is used, sometimes Copy. Make a decision and stick with it.
-/// This is the basic trait that must be satisfied for basic elements used in `Tensor`.
-pub trait TensorType: Copy {}
-impl<T: Copy> TensorType for T {}
-
-/// `Numeric` extends `TensorType` to all the numeric types supported by `Tensor` 
-/// (e.g. `u8` and `f32`).
-pub trait Numeric: TensorType + Num + NumCast + PartialOrd {}
-impl<T: TensorType + Num + NumCast + PartialOrd> Numeric for T {}
-
+pub mod traits;
 pub mod tensor;
 pub mod math;
 pub mod random;

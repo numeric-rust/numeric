@@ -1,13 +1,13 @@
 //! Contains mathematical functions that operate on tensors. These functions are largely modelled
 //! after what is available natively in Rust.
 
-use tensor::Tensor;
-use Numeric;
 use num::traits::Float;
+use tensor::Tensor;
+use traits::NumericTrait;
 
 macro_rules! add_impl {
     ($($f:ident)*) => ($(
-        pub fn $f<T: Numeric + Float>(x: Tensor<T>) -> Tensor<T> {
+        pub fn $f<T: NumericTrait + Float>(x: Tensor<T>) -> Tensor<T> {
             let mut y = x;
             y.canonize_inplace();
             {
@@ -28,7 +28,7 @@ add_impl! { ln log10 log2 sin cos tan asin acos atan exp_m1 exp exp2
 
 macro_rules! add_impl_to_bool {
     ($($f:ident)*) => ($(
-        pub fn $f<T: Numeric + Float>(x: &Tensor<T>) -> Tensor<bool> {
+        pub fn $f<T: NumericTrait + Float>(x: &Tensor<T>) -> Tensor<bool> {
             let mut y: Tensor<bool> = Tensor::empty(&x.shape());
             {
                 let mut data = y.slice_mut();
@@ -43,7 +43,7 @@ macro_rules! add_impl_to_bool {
 
 add_impl_to_bool! { is_nan is_finite is_infinite is_normal is_sign_positive is_sign_negative }
 
-pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
+pub fn log<T: NumericTrait + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
     let mut y = x;
     y.canonize_inplace();
     {
@@ -57,7 +57,7 @@ pub fn log<T: Numeric + Float>(x: Tensor<T>, base: T) -> Tensor<T> {
 }
 
 /// Calculates atan(y/x).
-pub fn atan2<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
+pub fn atan2<T: NumericTrait + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
     assert!(x.shape() == y.shape(), "Shapes must match");
     let mut z = Tensor::empty(&x.shape());
     {
@@ -69,7 +69,7 @@ pub fn atan2<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
     z
 }
 
-pub fn powf<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
+pub fn powf<T: NumericTrait + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
     assert!(x.shape() == y.shape(), "Shapes must match");
     let mut z = Tensor::empty(&x.shape());
     {
@@ -81,7 +81,7 @@ pub fn powf<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<T>) -> Tensor<T> {
     z
 }
 
-pub fn powi<T: Numeric + Float>(y: &Tensor<T>, x: &Tensor<i32>) -> Tensor<T> {
+pub fn powi<T: NumericTrait + Float>(y: &Tensor<T>, x: &Tensor<i32>) -> Tensor<T> {
     assert!(x.shape() == y.shape(), "Shapes must match");
     let mut z = Tensor::empty(&x.shape());
     {

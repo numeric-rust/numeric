@@ -1,10 +1,10 @@
 use tensor::Tensor;
-use TensorType;
+use traits::TensorTrait;
 
 macro_rules! add_impl {
     ($new_fname:ident, $fname:ident) => (
         /// Element-wise comparison.
-        impl<T: TensorType + PartialOrd> Tensor<T> {
+        impl<T: TensorTrait + PartialOrd> Tensor<T> {
             pub fn $new_fname(&self, rhs: &Tensor<T>) -> Tensor<bool> {
                 let mut y = Tensor::empty(&self.shape());
                 {

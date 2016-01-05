@@ -8,9 +8,9 @@
 //! ```
 
 use std::vec::Vec;
-use {TensorType, Numeric};
 use num::traits::cast;
 use std::rc::Rc;
+use traits::{TensorTrait, NumericTrait};
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -54,7 +54,7 @@ pub struct TensorIterator<T> {
     cur_pos: isize,
 }
 
-impl<T: TensorType> Iterator for TensorIterator<T> {
+impl<T: TensorTrait> Iterator for TensorIterator<T> {
     type Item = T;
     fn next(&mut self) -> Option<T> {
         let dims = self.tensor.ndim();
@@ -143,7 +143,7 @@ fn default_strides_old(shape: &[usize]) -> Vec<isize> {
 }
 
 
-impl<T: TensorType> Tensor<T> {
+impl<T: TensorTrait> Tensor<T> {
     pub unsafe fn as_ptr(&self) -> *const T {
         self.data.as_ptr()
     }
@@ -695,7 +695,7 @@ impl<T: TensorType> Tensor<T> {
     }
 }
 
-impl<T: TensorType + Num + NumCast> Tensor<T> {
+impl<T: TensorTrait + Num + NumCast> Tensor<T> {
     /// Creates a zero-filled tensor of the specified shape.
     pub fn zeros(shape: &[usize]) -> Tensor<T> {
         Tensor::filled(shape, T::zero())
@@ -780,7 +780,7 @@ impl<T: TensorType + Num + NumCast> Tensor<T> {
     }
 }
 
-impl<T: Numeric> Tensor<T> {
+impl<T: NumericTrait> Tensor<T> {
     /// Creates a scalar specified as a `f64` and internally casted to `T`
     pub fn fscalar(value: f64) -> Tensor<T> {
         Tensor {
@@ -797,7 +797,7 @@ fn shape_product(shape: &[usize]) -> usize {
    shape.iter().fold(1, |acc, &v| acc * v)
 }
 
-impl<T: Copy> Clone for Tensor<T> {
+impl<T: TensorTrait> Clone for Tensor<T> {
     fn clone(&self) -> Tensor<T> {
         Tensor {
             data: self.data.clone(),

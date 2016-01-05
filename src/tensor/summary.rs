@@ -1,9 +1,8 @@
 use std::ops::{Add, Mul, BitAnd, BitOr, BitXor};
 use tensor::{Tensor, Full, Index};
-use Numeric;
-use TensorType;
+use traits::{NumericTrait, TensorTrait};
 
-impl<T: Numeric> Tensor<T> {
+impl<T: NumericTrait> Tensor<T> {
     pub fn max(&self) -> T {
         assert!(self.size() > 0, "Can't take max of empty tensor");
         let mut m = T::zero();
@@ -51,7 +50,7 @@ impl<T: Numeric> Tensor<T> {
 
 macro_rules! add_impl {
     ($trait_name:ident, $func_name:ident, $new_func_name:ident) => (
-        impl<T: TensorType + $trait_name<Output=T>> Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> Tensor<T> {
             pub fn $new_func_name(&self, axis: usize) -> Tensor<T> {
                 assert!(axis < self.ndim(), "Reduced axis must exist");
                 let mut sel = vec![Full; axis];
