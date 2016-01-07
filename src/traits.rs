@@ -1,3 +1,5 @@
+//! Traits used by Tensor.
+
 use num::traits::{Num, NumCast};
 
 /// This is the basic trait that must be satisfied for basic elements used in `Tensor`.
