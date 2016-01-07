@@ -38,6 +38,7 @@ impl<'b, T: TensorTrait> IndexMut<&'b Vec<usize>> for Tensor<T> {
     }
 }
 
+
 /*
 // Flattened indexing (this will index it as one-dimensional)
 impl<T: TensorTrait> Index<usize> for Tensor<T> {
@@ -79,15 +80,15 @@ impl<T: TensorTrait> Index<(usize, usize)> for Tensor<T> {
     type Output = T;
     fn index<'a>(&'a self, _index: (usize, usize)) -> &'a T {
         assert!(self.ndim() == 2);
-        //&self.data[(_index.1 * self.shape[1] + _index.1)]
-        &self.data[self.mem_offset + (_index.0 as isize * self.strides[0] + _index.1 as isize * self.strides[1]) as usize]
+        &self.data[self.mem_offset + (_index.0 as isize * self.strides[0] +
+                                      _index.1 as isize * self.strides[1]) as usize]
     }
 }
 impl<T: TensorTrait> IndexMut<(usize, usize)> for Tensor<T> {
     fn index_mut<'a>(&'a mut self, _index: (usize, usize)) -> &'a mut T {
         assert!(self.ndim() == 2);
-        //self.harden_inplace();
-        let i = self.mem_offset + (_index.0 as isize * self.strides[0] + _index.1 as isize * self.strides[1]) as usize;
+        let i = self.mem_offset + (_index.0 as isize * self.strides[0] +
+                                   _index.1 as isize * self.strides[1]) as usize;
         &mut self.slice_mut()[i]
     }
 }

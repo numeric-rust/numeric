@@ -167,7 +167,8 @@ macro_rules! add_load {
 
                 let mut shape: Tensor<ffi::hsize_t> = Tensor::zeros(&[ndims as usize]);
 
-                if ffi::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(), 0 as *mut ffi::hsize_t) != ndims {
+                if ffi::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(),
+                                                  0 as *mut ffi::hsize_t) != ndims {
                     let msg = format!("Could not read shape of tesor: {}", filename);
                     let err = std::io::Error::new(std::io::ErrorKind::InvalidData, msg);
                     return Err(err);
