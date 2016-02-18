@@ -4,9 +4,9 @@ use std::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor};
 
 // T <op> &T
 macro_rules! add_impl {
-    ($trait:ident, $func_name:ident, $func_name_with_mul:ident) => (
+    ($trait_name:ident, $func_name:ident, $func_name_with_mul:ident) => (
         // T <op> T
-        impl<T: TensorTrait + $trait<Output=T>> $trait for Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> $trait_name for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
@@ -47,7 +47,7 @@ macro_rules! add_impl {
         }
 
         // T <op> &T
-        impl<'a, T: TensorTrait + $trait<Output=T>> $trait<&'a Tensor<T>> for Tensor<T> {
+        impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: &Self::Output) -> Self::Output {
                 if rhs.is_scalar() {
@@ -88,7 +88,7 @@ macro_rules! add_impl {
         }
 
         // T <op> &T  (with out)
-        impl<T: TensorTrait + $trait<Output=T>> Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> Tensor<T> {
             pub fn $func_name_with_mul(&self, rhs: &Tensor<T>, out: &mut Tensor<T>) -> () {
                 out.canonize_inplace();
                 if rhs.is_scalar() {
@@ -118,7 +118,7 @@ macro_rules! add_impl {
         }
 
         // &T <op> &T
-        impl<'a, T: TensorTrait + $trait<Output=T>> $trait<&'a Tensor<T>> for &'a Tensor<T> {
+        impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for &'a Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(self, rhs: &Self::Output) -> Self::Output {
                 //println!("$fname &T + &T");
@@ -162,7 +162,7 @@ macro_rules! add_impl {
         }
 
         // T <op> S
-        impl<T: TensorTrait + $trait<Output=T>> $trait<T> for Tensor<T> {
+        impl<T: TensorTrait + $trait_name<Output=T>> $trait_name<T> for Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(mut self, rhs: T) -> Self::Output {
                 self.canonize_inplace();
