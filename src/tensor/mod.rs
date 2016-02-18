@@ -731,6 +731,7 @@ impl<T: TensorTrait + Num + NumCast> Tensor<T> {
         t.shape[axis1] = t.shape[axis2];
         t.shape[axis2] = tmp2;
 
+        t.canonical = false;
         t
     }
 
