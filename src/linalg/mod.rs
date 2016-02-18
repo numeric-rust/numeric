@@ -30,7 +30,7 @@ macro_rules! add_impl {
                 assert!(self.shape()[0] == b.size(), "`A` and `b` must match");
 
                 // A must be transposed, since LAPACK is column-major.
-                let mut a_ = self.transpose();
+                let mut a_ = self.transpose().canonize();
                 let mut b_ = b.canonize();
                 let mut info = 0;
 
