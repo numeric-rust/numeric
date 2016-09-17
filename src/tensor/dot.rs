@@ -30,6 +30,25 @@ macro_rules! add_impl {
                         }
                     }
                     t3
+                } else if self.ndim() == 1 && rhs.ndim() == 2 {
+                    // TODO dot(vector, matrix) with blas
+                    assert_eq!(self.shape[0], rhs.shape[0]);
+                    let mut t3 = Tensor::empty(&[rhs.shape[1]]);
+                    {
+                        let mut data = t3.slice_mut();
+                        
+                        // Naive implementation, BLAS will be much faster
+                        for i in 0..rhs.shape[1] {
+                            let mut v = 0.0;
+                            for k in 0..rhs.shape[0] {
+                                v += self.data[k] * rhs.get2(k, i
+                                );
+                            }
+                            data[i] = v;
+                        }
+                    }
+                    t3
+
                 } else if self.ndim() == 2 && rhs.ndim() == 2 {
                     assert_eq!(self.shape[1], rhs.shape[0]);
                     let mut t3 = Tensor::empty(&[self.shape[0], rhs.shape[1]]);
