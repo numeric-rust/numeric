@@ -706,7 +706,7 @@ impl<T: TensorTrait + Num + NumCast> Tensor<T> {
         Tensor::filled(shape, T::one())
     }
 
-    /// Creates an identify 2-D tensor (matrix). That is, all elements are zero except the diagonal
+    /// Creates an identity 2-D tensor (matrix). That is, all elements are zero except the diagonal
     /// which is filled with ones.
     pub fn eye(size: usize) -> Tensor<T> {
         let mut t = Tensor::zeros(&[size, size]);
@@ -716,7 +716,7 @@ impl<T: TensorTrait + Num + NumCast> Tensor<T> {
         t
     }
 
-    /// Swaps two axes. This returns a new Tensor, since the memory needs to be re-arranged.
+    /// Swaps two axes.
     pub fn swapaxes(&self, axis1: usize, axis2: usize) -> Tensor<T> {
         assert!(axis1 < self.ndim());
         assert!(axis2 < self.ndim());
