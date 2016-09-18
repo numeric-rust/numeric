@@ -2,6 +2,80 @@ use tensor::Tensor;
 use traits::TensorTrait;
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor};
 
+fn compatible_shapes_for_elementwise_op(sh1: &[usize], sh2: &[usize]) -> bool {
+    let mut ok = true;
+    if sh1.len() == sh2.len() {
+        for i in 0..sh1.len() {
+            ok = ok && (sh1[i] == sh2[i] || sh1[i] == 1 || sh2[i] == 1);
+        }
+    } else if sh1.len() > sh2.len() {
+        let diff = sh1.len() - sh2.len();
+        for i in 0..sh2.len() {
+            ok = ok && (sh1[i+diff] == sh2[i] || sh1[i+diff] == 1 || sh2[i] == 1);
+        }
+    } else if sh2.len() > sh1.len() {
+        let diff = sh2.len() - sh1.len();
+        for i in 0..sh1.len() {
+            ok = ok && (sh1[i] == sh2[i+diff] || sh1[i] == 1 || sh2[i+diff] == 1);
+        }
+    }
+    ok
+}
+
+/// Help function for test_compatible_shapes_for_elementwise_op, since it is a
+/// symmetric function.
+fn test_compatible_assert_symmetric(sh1: &[usize], sh2: &[usize], expected: bool) -> () {
+    assert!(compatible_shapes_for_elementwise_op(sh1, sh2) == expected);
+    assert!(compatible_shapes_for_elementwise_op(sh2, sh1) == expected);
+}
+
+#[test]
+fn test_compatible_shapes_for_elementwise_op() {
+    // Compatible test cases
+
+    //assert!(compatible_shapes_for_elementwise_op(&[2, 30], &[2, 30]));
+    test_compatible_assert_symmetric(&[2, 30], &[2, 30], true);
+    test_compatible_assert_symmetric(&[2, 3, 4], &[2, 3, 4], true);
+    test_compatible_assert_symmetric(&[1, 1, 1], &[1, 1, 1], true);
+    test_compatible_assert_symmetric(&[2, 3, 4, 5], &[2, 3, 4, 5], true);
+
+    // One broadcasted axis
+    test_compatible_assert_symmetric(&[1, 3, 4], &[2, 3, 4], true);
+    test_compatible_assert_symmetric(&[10, 1, 5], &[10, 2, 5], true);
+    test_compatible_assert_symmetric(&[10, 20, 1], &[10, 20, 100], true);
+    test_compatible_assert_symmetric(&[10, 20, 1, 300, 2], &[10, 20, 100, 300, 2], true);
+
+    // Two broadcasted axes
+    test_compatible_assert_symmetric(&[1, 1, 4], &[2, 3, 4], true);
+    test_compatible_assert_symmetric(&[10, 1, 1], &[10, 2, 5], true);
+    test_compatible_assert_symmetric(&[1, 20, 1], &[10, 20, 100], true);
+    test_compatible_assert_symmetric(&[1, 20, 1, 300, 2], &[10, 20, 100, 300, 2], true);
+
+    // Mixed broadcasting
+    test_compatible_assert_symmetric(&[10, 1, 100, 300, 2], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[1, 5, 100, 1, 1], &[10, 1, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[1, 1, 100, 1, 1], &[10, 1, 1, 300, 2], true);
+
+    // One is lower dimensional
+    test_compatible_assert_symmetric(&[1, 100, 300, 2], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[100, 300, 2], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[300, 2], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[2], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[1], &[10, 20, 1, 300, 2], true);
+
+    // Scalars
+    test_compatible_assert_symmetric(&[], &[10, 20, 1, 300, 2], true);
+    test_compatible_assert_symmetric(&[], &[], true);
+
+    // Incompatible test cases
+    test_compatible_assert_symmetric(&[2, 3, 4], &[3, 2, 4], false);
+    test_compatible_assert_symmetric(&[2, 3], &[3, 3], false);
+    test_compatible_assert_symmetric(&[5], &[3], false);
+    test_compatible_assert_symmetric(&[1, 5], &[3], false);
+    test_compatible_assert_symmetric(&[1, 5], &[1, 3], false);
+    test_compatible_assert_symmetric(&[1, 2, 3, 4], &[5, 4], false);
+}
+
 // T <op> &T
 macro_rules! add_impl {
     ($trait_name:ident, $func_name:ident, $func_name_with_mul:ident) => (
