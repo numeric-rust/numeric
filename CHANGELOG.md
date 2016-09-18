@@ -6,6 +6,10 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
+## 0.1.4
+Released: TBD
+* Added support for vector-matrix multiplication in `dot`
+
 ## 0.1.3
 Released: 2016-02-17
 * Fixed critical bug in `swapaxes` (also affecting `transpose`)
