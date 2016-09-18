@@ -37,6 +37,14 @@ macro_rules! add_impl {
                 let answer = T::fscalar(-2.0);
                 assert!(t1.dot(&t2) == answer);
             }
+
+            #[test]
+            fn vector_matrix_1() {
+                let t1 = T::new(vec![1.0, 2.0]);
+                let t2 = T::new(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).reshape(&[2, 3]);
+                let answer = T::new(vec![9.0, 12.0, 15.0]);
+                assert!(t1.dot(&t2) == answer);
+            }
         }
     )
 }
