@@ -1,6 +1,7 @@
 use tensor::Tensor;
 use traits::TensorTrait;
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor};
+use std::cmp::max;
 
 fn compatible_shapes_for_elementwise_op(sh1: &[usize], sh2: &[usize]) -> bool {
     let mut ok = true;
@@ -22,8 +23,23 @@ fn compatible_shapes_for_elementwise_op(sh1: &[usize], sh2: &[usize]) -> bool {
     ok
 }
 
+fn shape_for_elementwise_op(sh1: &[usize], sh2: &[usize]) -> Vec<usize> {
+    let mut out_sh = vec![0usize; max(sh2.len(), sh1.len())];
+    if sh1.len() == sh2.len() {
+        for i in 0..sh1.len() {
+            out_sh[i] = max(sh1[i], sh2[i]);
+        }
+    } else if sh1.len() > sh2.len() {
+        assert!(false);
+    } else if sh2.len() > sh1.len() {
+        assert!(false);
+    }
+    out_sh
+}
+
 /// Help function for test_compatible_shapes_for_elementwise_op, since it is a
 /// symmetric function.
+#[allow(dead_code)]
 fn test_compatible_assert_symmetric(sh1: &[usize], sh2: &[usize], expected: bool) -> () {
     assert!(compatible_shapes_for_elementwise_op(sh1, sh2) == expected);
     assert!(compatible_shapes_for_elementwise_op(sh2, sh1) == expected);
@@ -32,8 +48,6 @@ fn test_compatible_assert_symmetric(sh1: &[usize], sh2: &[usize], expected: bool
 #[test]
 fn test_compatible_shapes_for_elementwise_op() {
     // Compatible test cases
-
-    //assert!(compatible_shapes_for_elementwise_op(&[2, 30], &[2, 30]));
     test_compatible_assert_symmetric(&[2, 30], &[2, 30], true);
     test_compatible_assert_symmetric(&[2, 3, 4], &[2, 3, 4], true);
     test_compatible_assert_symmetric(&[1, 1, 1], &[1, 1, 1], true);
@@ -76,7 +90,6 @@ fn test_compatible_shapes_for_elementwise_op() {
     test_compatible_assert_symmetric(&[1, 2, 3, 4], &[5, 4], false);
 }
 
-// T <op> &T
 macro_rules! add_impl {
     ($trait_name:ident, $func_name:ident, $func_name_with_mul:ident) => (
         // T <op> T
@@ -147,13 +160,15 @@ macro_rules! add_impl {
                     }
                     t
                 } else {
+                    let rhs0 = rhs.canonize();
+                    assert_eq!(self.shape, rhs0.shape);
                     self.canonize_inplace();
+                    let rhs0 = rhs.canonize();
                     {
                         let n = self.size();
-                        assert_eq!(self.shape, rhs.shape);
                         let mut data = self.slice_mut();
                         for i in 0..n {
-                            data[i] = data[i].$func_name(rhs.data[i]);
+                            data[i] = data[i].$func_name(rhs0.data[i]);
                         }
                     }
                     self
@@ -195,14 +210,11 @@ macro_rules! add_impl {
         impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<&'a Tensor<T>> for &'a Tensor<T> {
             type Output = Tensor<T>;
             fn $func_name(self, rhs: &Self::Output) -> Self::Output {
-                //println!("$fname &T + &T");
                 if rhs.is_scalar() {
-                    //let mut t = self.clone();
-                    //let mut t: Tensor<T> = Tensor::empty(&self.shape);
                     let mut t = self.canonize();
                     {
                         let n = t.size();
-                        let mut data = t.slice_mut();
+                        let mut data = t.mem_slice_mut();
                         let v = rhs.scalar_value();
                         for i in 0..n {
                             data[i] = data[i].$func_name(v);
@@ -213,7 +225,7 @@ macro_rules! add_impl {
                     let mut t = Tensor::empty(&rhs.shape);
                     {
                         let n = t.size();
-                        let mut data = t.slice_mut();
+                        let mut data = t.mem_slice_mut();
                         let v = self.scalar_value();
                         for i in 0..n {
                             data[i] = v.$func_name(rhs.data[i]);
@@ -221,13 +233,56 @@ macro_rules! add_impl {
                     }
                     t
                 } else {
-                    assert_eq!(self.shape, rhs.shape);
-                    //let mut t: Tensor<T> = Tensor::empty(&self.shape);
-                    let mut t = self.canonize();
+                    assert!(compatible_shapes_for_elementwise_op(&self.shape(), &rhs.shape()));
+
+                    let ndim = max(self.ndim(), rhs.ndim());
+                    let t1 = self.with_ndim(ndim);
+                    let t2 = rhs.with_ndim(ndim);
+
+                    let shape = shape_for_elementwise_op(&t1.shape(), &t2.shape());
+                    let mut t: Tensor<T> = Tensor::empty(&shape);
+
+                    let n = t.size();
+
+                    let mut flat_i = t1.mem_offset as isize;
+                    let mut flat_j = t2.mem_offset as isize;
+                    let mut kk = vec![0isize; ndim];
+                    let mut i = 0;
                     {
                         let mut data = t.slice_mut();
-                        for (i, v) in rhs.iter().enumerate() {
-                            data[i] = data[i].$func_name(v);
+                        let t1_data = t1.mem_slice();
+                        let t2_data = t2.mem_slice();
+                        let mut cur_dim = ndim - 1;
+                        while i < n {
+                            data[i] = t1_data[flat_i as usize].$func_name(t2_data[flat_j as usize]);
+                            if t1.shape[ndim - 1] > 1 {
+                                flat_i += t1.strides[ndim - 1];
+                            }
+                            if t2.shape[ndim - 1] > 1 {
+                                flat_j += t2.strides[ndim - 1];
+                            }
+
+                            kk[cur_dim] += 1;
+                            while kk[cur_dim] == shape[cur_dim] as isize && cur_dim > 0 {
+                                kk[cur_dim] = 0;
+                                if t1.shape[cur_dim] > 1 {
+                                    flat_i -= t1.strides[cur_dim] * (t1.shape[cur_dim] as isize);
+                                }
+                                if t2.shape[cur_dim] > 1 {
+                                    flat_j -= t2.strides[cur_dim] * (t2.shape[cur_dim] as isize);
+                                }
+                                cur_dim -= 1;
+                                kk[cur_dim] += 1;
+                                if t1.shape[cur_dim] > 1 {
+                                    flat_i += t1.strides[cur_dim];
+                                }
+                                if t2.shape[cur_dim] > 1 {
+                                    flat_j += t2.strides[cur_dim];
+                                }
+                            }
+
+                            i += 1;
+                            cur_dim = ndim - 1;
                         }
                     }
                     t

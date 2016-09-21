@@ -175,6 +175,14 @@ impl<T: TensorTrait> Tensor<T> {
         Tensor { data: Rc::new(data), shape: sh, strides: strides, mem_offset: 0, canonical: true }
     }
 
+    pub fn mem_slice(&self) -> &[T] {
+        &self.data[..]
+    }
+
+    pub fn mem_slice_mut(&mut self) -> &mut [T] {
+        &mut Rc::make_mut(&mut self.data)[..]
+    }
+
     /// Returns a flat slice of the tensor. Only works for canonical tensors.
     pub fn slice(&self) -> &[T] {
         assert!(self.canonical);
@@ -532,6 +540,17 @@ impl<T: TensorTrait> Tensor<T> {
         }
     }
 
+    /// Returns the underlying memory as a vector.
+    pub fn base(&self) -> Tensor<T> {
+        Tensor {
+            data: self.data.clone(),
+            shape: vec![self.data.len()],
+            strides: vec![1],
+            mem_offset: 0,
+            canonical: true,
+        }
+    }
+
     /// Similar to `index`, except this updates the tensor with `other` instead of returning them.
     pub fn index_set(&mut self, selection: &[AxisIndex], other: &Tensor<T>) {
         // TODO: This is a quick and dirty way and can be made much faster
@@ -648,20 +667,35 @@ impl<T: TensorTrait> Tensor<T> {
 
     fn reshape_proper(self, proper_shape: &[usize]) -> Tensor<T> {
         // TODO: Are there cases where we do not need to canonize?
-        //self.canonize_inplace();
         let t = self.canonize();
-
         let s = proper_shape.iter().fold(1, |acc, &item| acc * item);
-        assert_eq!(t.size(), s);
+        assert_eq!(t.size(), s, "Reshape must preserve size (source: {}, target: {})", t.size(), s);
         let strides = default_strides_old(&proper_shape);
         Tensor { data: t.data, shape: proper_shape.to_vec(),
                strides: strides, mem_offset: t.mem_offset, canonical: t.canonical}
     }
 
-    /// Reshapes the data. This moves the data, so no memory is allocate.
+    /// Reshapes the data. This moves the data, so no memory is allocated.
     pub fn reshape(self, shape: &[isize]) -> Tensor<T> {
         let proper_shape = self.convert_shape(shape);
         self.reshape_proper(&proper_shape)
+    }
+
+    fn with_ndim(&self, ndim: usize) -> Tensor<T> {
+        let mut shape = vec![1usize; ndim];
+        let mut strides = vec![0isize; ndim];
+        for i in 0..self.ndim() {
+            shape[ndim + i - self.ndim()] = self.shape[i];
+            strides[ndim + i - self.ndim()] = self.strides[i];
+        }
+
+        Tensor {
+            data: self.data.clone(),
+            shape: shape,
+            strides: strides,
+            mem_offset: self.mem_offset,
+            canonical: self.canonical,
+        }
     }
 
     #[inline]
