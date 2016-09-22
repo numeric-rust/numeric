@@ -24,7 +24,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            #[should_panic]
+            #[should_panic(expected = "assertion failed")]
             fn tensor_tensor_mismatched_1() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t2 = T::new(vec![-2.0, 1.0, 8.0,  0.0]).reshape(&[2, 2]);
