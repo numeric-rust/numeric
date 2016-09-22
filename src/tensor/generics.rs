@@ -305,6 +305,22 @@ macro_rules! add_impl {
                 self
             }
         }
+
+        // &T <op> S
+        impl<'a, T: TensorTrait + $trait_name<Output=T>> $trait_name<T> for &'a Tensor<T> {
+            type Output = Tensor<T>;
+            fn $func_name(self, rhs: T) -> Self::Output {
+                let mut t = self.canonize();
+                {
+                    let n = t.size();
+                    let mut data = t.mem_slice_mut();
+                    for i in 0..n {
+                        data[i] = data[i].$func_name(rhs);
+                    }
+                }
+                t
+            }
+        }
     )
 }
 
