@@ -13,3 +13,9 @@ fn tensor_2d() {
     assert!(x == tensor![1, 2; 3, 4; 5, 6]);
     assert!(x == tensor![1, 2; 3, 4; 5, 6;]);
 }
+
+#[test]
+fn tensor_filled_1d() {
+    let x = Tensor::new(vec![3, 3, 3, 3, 3]);
+    assert!(x == tensor![3; 5]);
+}
