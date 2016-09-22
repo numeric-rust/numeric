@@ -1,4 +1,3 @@
-
 macro_rules! add_impl {
     ($t:ty, $m:ident) => (
         mod $m {
@@ -6,7 +5,7 @@ macro_rules! add_impl {
             type T = Tensor<$t>;
 
             #[test]
-            fn tensor_tensor_2() {
+            fn mv_tensor_rf_tensor_2() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t2 = T::new(vec![-2.0, 1.0, 8.0,  0.0, -1.0, 2.0]).reshape(&[2, 3]);
                 let answer = T::new(vec![-2.0, 4.0, 10.0, 10.0, -4.0, 2.0]).reshape(&[2, 3]);
@@ -15,7 +14,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_tensor_3() {
+            fn rf_tensor_rf_tensor_3() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t2 = T::new(vec![-2.0, 1.0, 8.0,  0.0, -1.0, 2.0]).reshape(&[2, 3]);
                 let answer = T::new(vec![-2.0, 4.0, 10.0, 10.0, -4.0, 2.0]).reshape(&[2, 3]);
@@ -25,14 +24,14 @@ macro_rules! add_impl {
 
             #[test]
             #[should_panic(expected = "assertion failed")]
-            fn tensor_tensor_mismatched_1() {
+            fn mv_tensor_rf_tensor_mismatched_1() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t2 = T::new(vec![-2.0, 1.0, 8.0,  0.0]).reshape(&[2, 2]);
                 t1 + &t2; // mis-matched shape
             }
 
             #[test]
-            fn tensor_slices_reverse_ref_1() {
+            fn rf_tensor_rf_tensor_slices_reverse_1() {
                 let t1 = T::range(3 * 7 * 2).reshape(&[3, 7, 2]);
                 let t2 = T::range(3 * 7 * 2).reshape(&[3, 7, 2]).index(&[AxisIndex::StridedSlice(None, None, -1)]);
                 let answer = T::new(vec![28., 30., 32., 34., 36., 38., 40., 42., 44., 46., 48., 50., 52., 54.,
@@ -44,7 +43,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_reverse_move_1() {
+            fn mv_tensor_rf_tensor_slices_reverse_1() {
                 let t1 = T::range(3 * 7 * 2).reshape(&[3, 7, 2]);
                 let t2 = T::range(3 * 7 * 2).reshape(&[3, 7, 2]).index(&[AxisIndex::StridedSlice(None, None, -1)]);
                 let answer = T::new(vec![28., 30., 32., 34., 36., 38., 40., 42., 44., 46., 48., 50., 52., 54.,
@@ -56,7 +55,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_reverse_ref_2() {
+            fn rf_tensor_rf_tensor_slices_reverse_2() {
                 let t1 = T::range(3 * 5 * 2).reshape(&[3, 5, 2]);
                 let t2 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
                     .index(&[AxisIndex::Full, AxisIndex::StridedSlice(None, None, -1)]);
@@ -69,7 +68,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_reverse_move_2() {
+            fn mv_tensor_rf_tensor_slices_reverse_2() {
                 let t1 = T::range(3 * 5 * 2).reshape(&[3, 5, 2]);
                 let t2 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
                     .index(&[AxisIndex::Full, AxisIndex::StridedSlice(None, None, -1)]);
@@ -82,7 +81,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_reverse_ref_3() {
+            fn rf_tensor_rf_tensor_slices_reverse_3() {
                 let t1 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
                     .index(&[AxisIndex::Ellipsis, AxisIndex::StridedSlice(None, None, -1)]);
                 let t2 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
@@ -93,18 +92,18 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_reverse_move_3() {
+            fn mv_tensor_rf_tensor_slices_reverse_3() {
                 let t1 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
                     .index(&[AxisIndex::Ellipsis, AxisIndex::StridedSlice(None, None, -1)]);
                 let t2 = T::range(3 * 5 * 2).reshape(&[3, 5, 2])
                     .index(&[AxisIndex::StridedSlice(None, None, -1), AxisIndex::StridedSlice(None, None, -1)]);
                 let answer = T::filled(&[3, 5, 2], 29.);
-                assert!(&t1 + &t2 == answer);
-                assert!(&t2 + &t1 == answer);
+                assert!(t1.clone() + &t2 == answer);
+                assert!(t2.clone() + &t1 == answer);
             }
 
             #[test]
-            fn tensor_slices_subset_ref_1() {
+            fn rf_tensor_rf_tensor_slices_subset_1() {
                 let t1 = T::range(3 * 5 * 2).reshape(&[5, 2, 3])
                     .index(&[AxisIndex::StridedSlice(None, Some(3), 1)]);
                 let t2 = T::range(3 * 5 * 2).reshape(&[5, 2, 3])
@@ -118,7 +117,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_subset_ref_2() {
+            fn rf_tensor_rf_tensor_slices_subset_2() {
                 let t1 = T::range(3 * 7 * 2).reshape(&[3, 7, 2])
                     .index(&[AxisIndex::StridedSlice(None, Some(2), 1),
                              AxisIndex::StridedSlice(Some(2), Some(5), 1)]);
@@ -132,7 +131,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_slices_subset_ref_3() {
+            fn rf_tensor_rf_tensor_slices_subset_3() {
                 let t1 = T::range(5 * 7 * 2).reshape(&[5, 7, 2])
                     .index(&[AxisIndex::StridedSlice(None, None, 2),
                              AxisIndex::StridedSlice(None, Some(4), -2)]);
@@ -147,19 +146,19 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_1() {
+            fn rf_tensor_rf_tensor_broadcast_1() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(3 * 2).reshape(&[1, 3, 2]);
                 let answer = T::new(vec![
                     0., 2., 4., 6., 8., 10., 6., 8., 10., 12., 14., 16., 12.,
                     14., 16., 18., 20., 22., 18., 20., 22., 24., 26., 28., 24.,
-                    26., 28., 30., 32., 34.]).reshape(&[5, 3, 2]); assert!(&t1 + &t2 == answer);
+                    26., 28., 30., 32., 34.]).reshape(&[5, 3, 2]);
                 assert!(&t1 + &t2 == answer);
                 assert!(&t2 + &t1 == answer);
             }
 
             #[test]
-            fn tensor_broadcast_ref_2() {
+            fn rf_tensor_rf_tensor_broadcast_2() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(5 * 2).reshape(&[5, 1, 2]);
                 let answer = T::new(vec![
@@ -171,7 +170,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_3() {
+            fn rf_tensor_rf_tensor_broadcast_3() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(5 * 3).reshape(&[5, 3, 1]);
                 let answer = T::new(vec![
@@ -183,7 +182,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_4() {
+            fn rf_tensor_rf_tensor_broadcast_4() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(5).reshape(&[5, 1, 1]);
                 let answer = T::new(vec![
@@ -195,7 +194,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_5() {
+            fn rf_tensor_rf_tensor_broadcast_5() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(3).reshape(&[1, 3, 1]);
                 let answer = T::new(vec![
@@ -207,7 +206,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_6() {
+            fn rf_tensor_rf_tensor_broadcast_6() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(2).reshape(&[1, 1, 2]);
                 let answer = T::new(vec![
@@ -219,7 +218,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_7() {
+            fn rf_tensor_rf_tensor_broadcast_7() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::ones(&[1, 1, 1]);
                 let answer = T::new(vec![
@@ -231,7 +230,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_8() {
+            fn rf_tensor_rf_tensor_broadcast_8() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(3 * 2).reshape(&[3, 2]);
                 let answer = T::new(vec![
@@ -243,7 +242,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_broadcast_ref_9() {
+            fn rf_tensor_rf_tensor_broadcast_9() {
                 let t1 = T::range(5 * 3 * 2).reshape(&[5, 3, 2]);
                 let t2 = T::range(2);
                 let answer = T::new(vec![
@@ -255,7 +254,7 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_tscalar_ref_1() {
+            fn rf_tensor_rf_tscalar_1() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t2 = T::scalar(-2.0);
                 let answer = T::new(vec![-2.0, 1.0, 0.0, 8.0, -5.0, -2.0]).reshape(&[2, 3]);
@@ -264,15 +263,14 @@ macro_rules! add_impl {
             }
 
             #[test]
-            fn tensor_scalar_ref_1() {
+            fn rf_tensor_scalar_1() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
-                let t = &t1 + 3.0;
                 let answer = T::new(vec![3.0, 6.0, 5.0, 13.0, 0.0, 3.0]).reshape(&[2, 3]);
-                assert!(t == answer);
+                assert!(&t1 + 3.0 == answer);
             }
 
             #[test]
-            fn tensor_scalar_move_1() {
+            fn mv_tensor_scalar_1() {
                 let t1 = T::new(vec![ 0.0, 3.0, 2.0, 10.0, -3.0, 0.0]).reshape(&[2, 3]);
                 let t = t1 + 3.0;
                 let answer = T::new(vec![3.0, 6.0, 5.0, 13.0, 0.0, 3.0]).reshape(&[2, 3]);
