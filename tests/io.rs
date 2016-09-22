@@ -6,8 +6,8 @@ use std::fs;
 fn hdf5() {
     // We can't have multiple HDF5 tests, since these functions are not thread-safe! 
     // This is why we have to string all of this together in serial, since otherwise the tests
-    // might run concurrently. This is in other words the only test that is allowed to interract
-    // with with libhdf5.
+    // might run concurrently. This is in other words the only test that is allowed to interact
+    // with libhdf5.
 
     let mut path = env::temp_dir();
     path.push("numeric.h5");
