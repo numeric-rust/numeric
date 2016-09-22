@@ -1,7 +1,8 @@
 use tensor::Tensor;
 use std::fmt;
+use num::complex::{Complex32, Complex64};
 
-// Display for floats
+// General display
 macro_rules! add_impl {
     ($t:ty, $name:tt) => (
         impl fmt::Display for Tensor<$t> {
@@ -81,16 +82,18 @@ macro_rules! add_impl {
 
 }
 
-add_impl!(f32,   "f32");
-add_impl!(f64,   "f64");
+add_impl!(f32, "f32");
+add_impl!(f64, "f64");
 add_impl!(usize, "usize");
-add_impl!(u8,    "u8");
-add_impl!(u16,   "u16");
-add_impl!(u32,   "u32");
-add_impl!(u64,   "u64");
+add_impl!(u8, "u8");
+add_impl!(u16, "u16");
+add_impl!(u32, "u32");
+add_impl!(u64, "u64");
 add_impl!(isize, "isize");
-add_impl!(i8,    "i8");
-add_impl!(i16,   "i16");
-add_impl!(i32,   "i32");
-add_impl!(i64,   "i64");
-add_impl!(bool,  "bool");
+add_impl!(i8, "i8");
+add_impl!(i16, "i16");
+add_impl!(i32, "i32");
+add_impl!(i64, "i64");
+add_impl!(bool, "bool");
+add_impl!(Complex32, "Complex32");
+add_impl!(Complex64, "Complex64");

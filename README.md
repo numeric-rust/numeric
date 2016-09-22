@@ -28,6 +28,7 @@ Some of the completed and planned features:
 * [x] Saving/loading HDF5
 * [x] Strided slices
 * [x] Broadcasted axes
+* [x] Basic support for complex numbers
 * [ ] Matrix inverse and SVD
 
 Recent progress is summarized in [CHANGELOG.md](CHANGELOG.md).
@@ -45,7 +46,7 @@ fn main() {
     let b = tensor![7.0, 3.0, 2.0; -3.0, 2.0, -5.0];
     let c = tensor![7.0, 3.0, 2.0];
 
-    let d = &a + &b;         // a copy is made
+    let d = &a + &b;         // a new tensor is returned
     println!("d = {}", d);
 
     let e = a.dot(&c);       // matrix multiplication (returns a new tensor)

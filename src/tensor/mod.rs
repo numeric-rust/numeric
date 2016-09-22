@@ -11,6 +11,8 @@ use std::vec::Vec;
 use num::traits::cast;
 use std::rc::Rc;
 use traits::{TensorTrait, NumericTrait};
+use num::traits::{Zero, One};
+use std::ops::Add;
 
 /// An implementation of an N-dimensional matrix.
 /// A quick example:
@@ -727,28 +729,6 @@ impl<T: TensorTrait> Tensor<T> {
             data[i] = v;
         }
     }
-}
-
-impl<T: TensorTrait + Num + NumCast> Tensor<T> {
-    /// Creates a zero-filled tensor of the specified shape.
-    pub fn zeros(shape: &[usize]) -> Tensor<T> {
-        Tensor::filled(shape, T::zero())
-    }
-
-    /// Creates a one-filled tensor of the specified shape.
-    pub fn ones(shape: &[usize]) -> Tensor<T> {
-        Tensor::filled(shape, T::one())
-    }
-
-    /// Creates an identity 2-D tensor (matrix). That is, all elements are zero except the diagonal
-    /// which is filled with ones.
-    pub fn eye(size: usize) -> Tensor<T> {
-        let mut t = Tensor::zeros(&[size, size]);
-        for k in 0..size {
-            t.set2(k, k, T::one());
-        }
-        t
-    }
 
     /// Swaps two axes.
     pub fn swapaxes(&self, axis1: usize, axis2: usize) -> Tensor<T> {
@@ -774,7 +754,36 @@ impl<T: TensorTrait + Num + NumCast> Tensor<T> {
         assert!(self.ndim() == 2, "Can only transpose a matrix (2D tensor)");
         self.swapaxes(0, 1)
     }
+}
 
+impl<T: Copy + Zero> Tensor<T> {
+    /// Creates a zero-filled tensor of the specified shape.
+    pub fn zeros(shape: &[usize]) -> Tensor<T> {
+        Tensor::filled(shape, T::zero())
+    }
+}
+
+impl<T: Copy + One> Tensor<T> {
+    /// Creates a one-filled tensor of the specified shape.
+    pub fn ones(shape: &[usize]) -> Tensor<T> {
+        Tensor::filled(shape, T::one())
+    }
+
+}
+
+impl<T: Copy + Zero + One> Tensor<T> {
+    /// Creates an identity 2-D tensor (matrix). That is, all elements are zero except the diagonal
+    /// which is filled with ones.
+    pub fn eye(size: usize) -> Tensor<T> {
+        let mut t = Tensor::zeros(&[size, size]);
+        for k in 0..size {
+            t.set2(k, k, T::one());
+        }
+        t
+    }
+}
+
+impl<T: Copy + Add + Zero + One> Tensor<T> {
     /// Creates a new vector with integer values starting at 0 and counting up:
     /// 
     /// ```
@@ -797,7 +806,9 @@ impl<T: TensorTrait + Num + NumCast> Tensor<T> {
             canonical: true,
         }
     }
+}
 
+impl<T: TensorTrait + Num + NumCast> Tensor<T> {
     /// Creates a new vector between two values at constant increments. The number of elements is
     /// specified.
     pub fn linspace(start: T, stop: T, num: usize) -> Tensor<T> {
