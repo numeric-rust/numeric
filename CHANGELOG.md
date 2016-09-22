@@ -9,6 +9,7 @@ despite these frequent breaking changes.
 ## 0.1.4
 Released: TBD
 * Added support for vector-matrix multiplication in `dot`
+* Added support for `&T <op> S`
 * Added broadcasting support for `&T <op> &T`
 
 ## 0.1.3

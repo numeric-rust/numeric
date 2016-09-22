@@ -27,7 +27,7 @@ Some of the completed and planned features:
 * [x] Updating slices
 * [x] Saving/loading HDF5
 * [x] Strided slices
-* [ ] Broadcasted axes
+* [x] Broadcasted axes
 * [ ] Matrix inverse and SVD
 
 Recent progress is summarized in [CHANGELOG.md](CHANGELOG.md).
