@@ -18,8 +18,8 @@ use std::ops::Add;
 /// A quick example:
 ///
 /// ```
-/// use numeric::Tensor;
-/// let t = Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshape(&[2, 2]);
+/// use numeric as nr;
+/// let t = nr::Tensor::new(vec![1.0f64, 3.0, 2.0, 2.0]).reshape(&[2, 2]);
 /// println!("t = {}", t);
 /// ```
 ///
@@ -435,13 +435,13 @@ impl<T: TensorTrait> Tensor<T> {
     /// `AxisIndex` enum to specify indexing for each axis.
     ///
     /// ```
-    /// use numeric::{DoubleTensor, Ellipsis, StridedSlice, Index, Full};
+    /// use numeric as nr;
     ///
-    /// let t = DoubleTensor::ones(&[2, 3, 4]);
+    /// let t: nr::Tensor<f64> = nr::Tensor::ones(&[2, 3, 4]);
     ///
-    /// t.index(&[Ellipsis, StridedSlice(Some(1), Some(3), 1)]); // shape [2, 3, 2]
-    /// t.index(&[Index(-1)]); // shape [3, 4]
-    /// t.index(&[Full, StridedSlice(Some(1), None, 1), Index(1)]); // shape [2, 2]
+    /// t.index(&[nr::Ellipsis, nr::StridedSlice(Some(1), Some(3), 1)]); // shape [2, 3, 2]
+    /// t.index(&[nr::Index(-1)]); // shape [3, 4]
+    /// t.index(&[nr::Full, nr::StridedSlice(Some(1), None, 1), nr::Index(1)]); // shape [2, 2]
     /// ```
     pub fn index(&self, selection: &[AxisIndex]) -> Tensor<T> {
         let (sel, mut newaxes) = self.expand_indices(selection);
@@ -789,9 +789,9 @@ impl<T: Copy + Add + Zero + One> Tensor<T> {
     /// Creates a new vector with integer values starting at 0 and counting up:
     /// 
     /// ```
-    /// use numeric::DoubleTensor;
+    /// use numeric as nr;
     ///
-    /// let t = DoubleTensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
+    /// let t: nr::Tensor<f64> = nr::Tensor::range(5); // [  0.00   1.00   2.00   3.00   4.00]
     /// ```
     pub fn range(size: usize) -> Tensor<T> {
         let mut data = Vec::with_capacity(size);

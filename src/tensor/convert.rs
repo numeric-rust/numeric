@@ -7,8 +7,6 @@ impl<T: NumericTrait> Tensor<T> {
     ///
     /// ```
     /// # #[macro_use] extern crate numeric; fn main() {
-    /// use numeric::Tensor;
-    ///
     /// let tdouble = tensor![1.0f64, 2.0, 3.0];
     /// let tsingle = tdouble.convert::<f32>();
     /// # }
