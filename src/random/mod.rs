@@ -21,7 +21,7 @@ use rand::distributions::range::SampleRange;
 use num::traits::Float;
 use std::f64;
 
-use tensor::Tensor;
+use tensor::{Tensor, AxisIndex};
 use traits::NumericTrait;
 use math;
 
@@ -62,5 +62,43 @@ impl RandomState {
         let twopi = Tensor::fscalar(2.0 * f64::consts::PI);
 
         math::sqrt(math::ln(u1) * &minustwo) * &math::cos(u2 * &twopi)
+    }
+
+    /// Shuffle tensor in-place along its first axis. This uses the modern version of the
+    /// Fisher-Yates algorithm.
+    pub fn shuffle<T>(&mut self, a: &mut Tensor<T>) -> ()
+            where T: Copy {
+        if a.ndim() == 1 && a.size() > 0 {
+            a.canonize_inplace();
+            let n = a.dim(0);
+            {
+                let mut data = a.mem_slice_mut();
+                for i in (1..n).rev() {
+                    let j = self.rng.gen_range::<usize>(0, i + 1);
+                    data.swap(i, j);
+                }
+            }
+        } else if a.ndim() >= 2 && a.size() > 0 {
+            a.canonize_inplace();
+            let mut row_shape: Vec<usize> = Vec::with_capacity(a.ndim() - 1);
+            for i in 1..a.ndim() {
+                row_shape.push(a.shape()[i]);
+            }
+            let n = a.dim(0);
+            let mut row1: Tensor<T> = Tensor::empty(&row_shape[..]);
+            let mut row2: Tensor<T> = Tensor::empty(&row_shape[..]);
+            for i in (1..n).rev() {
+                let j: usize = self.rng.gen_range::<usize>(0, i + 1);
+                // TODO: Can be made faster.
+                // Rust requires us to have two buffers instead of just one, but
+                // we can probably make it even faster by shuffling indices first
+                // and then move memory around. A specialized swap rows function
+                // could also make things faster.
+                row1.set(&a.index(&[AxisIndex::Index(i as isize)]));
+                row2.set(&a.index(&[AxisIndex::Index(j as isize)]));
+                a.index_set(&[AxisIndex::Index(i as isize)], &row2);
+                a.index_set(&[AxisIndex::Index(j as isize)], &row1);
+            }
+        }
     }
 }
