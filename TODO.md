@@ -17,8 +17,6 @@ more immediately useful things. Feel free to pick one and start working on a PR.
 
 ## Tensor functions
 
-* Sort
-* Arg-sort
 * Make math functions broadcastable
 
 ## Sorting and searching
