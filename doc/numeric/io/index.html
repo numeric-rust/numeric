@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>numeric</a>::<wbr><a class='mod' href=''>io</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-3085' class='srclink' href='../../src/numeric/io/mod.rs.html#1-270' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2837' class='srclink' href='../../src/numeric/src/io/mod.rs.html#1-271' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Saving and loading data to and from disk.</p>
 
 <h1 id='hdf5' class='section-header'><a href='#hdf5'>HDF5</a></h1>
@@ -55,7 +56,8 @@
 <p><strong>Note:</strong> The HDF5 library will by default not be thread-safe (it depends on how you compiled
 it), so do not call either of these functions concurrently.</p>
 
-<h2 id='saving-to-hdf5-file' class='section-header'><a href='#saving-to-hdf5-file'>Saving to HDF5 file:</a></h2><pre class='rust rust-example-rendered'>
+<h2 id='saving-to-hdf5-file' class='section-header'><a href='#saving-to-hdf5-file'>Saving to HDF5 file:</a></h2>
+<pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>numeric</span>::<span class='ident'>Tensor</span>;
 
@@ -67,6 +69,7 @@ it), so do not call either of these functions concurrently.</p>
 
 <h2 id='loading-from-hdf5-file' class='section-header'><a href='#loading-from-hdf5-file'>Loading from HDF5 file</a></h2>
 <p>Now, we can load this file:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>numeric</span>::<span class='ident'>Tensor</span>;
@@ -83,114 +86,90 @@ will load the <code>i32</code> natively and then convert it to <code>f64</code>.
 have to load it as the same type as you know is in the file.</p>
 </div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_f32.html'
-                               title='numeric::io::load_hdf5_as_f32'>load_hdf5_as_f32</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_f64.html'
-                               title='numeric::io::load_hdf5_as_f64'>load_hdf5_as_f64</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_i16.html'
-                               title='numeric::io::load_hdf5_as_i16'>load_hdf5_as_i16</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_i32.html'
-                               title='numeric::io::load_hdf5_as_i32'>load_hdf5_as_i32</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_i64.html'
-                               title='numeric::io::load_hdf5_as_i64'>load_hdf5_as_i64</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_i8.html'
-                               title='numeric::io::load_hdf5_as_i8'>load_hdf5_as_i8</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_isize.html'
-                               title='numeric::io::load_hdf5_as_isize'>load_hdf5_as_isize</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_u16.html'
-                               title='numeric::io::load_hdf5_as_u16'>load_hdf5_as_u16</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_u32.html'
-                               title='numeric::io::load_hdf5_as_u32'>load_hdf5_as_u32</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_u64.html'
-                               title='numeric::io::load_hdf5_as_u64'>load_hdf5_as_u64</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_u8.html'
-                               title='numeric::io::load_hdf5_as_u8'>load_hdf5_as_u8</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.load_hdf5_as_usize.html'
-                               title='numeric::io::load_hdf5_as_usize'>load_hdf5_as_usize</a></td>
-                        <td class='docblock short'>
-                             <p>Load HDF5 file and convert to specified type.</p>
-
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_f32.html'
+                                  title='numeric::io::load_hdf5_as_f32'>load_hdf5_as_f32</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_f64.html'
+                                  title='numeric::io::load_hdf5_as_f64'>load_hdf5_as_f64</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_i16.html'
+                                  title='numeric::io::load_hdf5_as_i16'>load_hdf5_as_i16</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_i32.html'
+                                  title='numeric::io::load_hdf5_as_i32'>load_hdf5_as_i32</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_i64.html'
+                                  title='numeric::io::load_hdf5_as_i64'>load_hdf5_as_i64</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_i8.html'
+                                  title='numeric::io::load_hdf5_as_i8'>load_hdf5_as_i8</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_isize.html'
+                                  title='numeric::io::load_hdf5_as_isize'>load_hdf5_as_isize</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_u16.html'
+                                  title='numeric::io::load_hdf5_as_u16'>load_hdf5_as_u16</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_u32.html'
+                                  title='numeric::io::load_hdf5_as_u32'>load_hdf5_as_u32</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_u64.html'
+                                  title='numeric::io::load_hdf5_as_u64'>load_hdf5_as_u64</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_u8.html'
+                                  title='numeric::io::load_hdf5_as_u8'>load_hdf5_as_u8</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.load_hdf5_as_usize.html'
+                                  title='numeric::io::load_hdf5_as_usize'>load_hdf5_as_usize</a></td>
+                           <td class='docblock short'>
+                                <p>Load HDF5 file and convert to specified type.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -213,6 +192,8 @@ have to load it as the same type as you know is in the file.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -233,7 +214,7 @@ have to load it as the same type as you know is in the file.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>numeric</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-0' class='srclink' href='../src/numeric/lib.rs.html#1-29' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/numeric/src/lib.rs.html#1-29' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Numeric Rust provides a foundation for doing scientific computing with Rust. It aims to be for
 Rust what Numpy is for Python.</p>
 
@@ -55,70 +56,57 @@ fast.</p>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
 <table><tr><td><code>pub use tensor::{<a class='struct' href='../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>AxisIndex</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>Ellipsis</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>StridedSlice</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>Index</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>Full</a>, <a class='enum' href='../numeric/tensor/enum.AxisIndex.html' title='numeric::tensor::AxisIndex'>NewAxis</a>};</code></td></tr><tr><td><code>pub use tensor::{<a class='type' href='../numeric/tensor/type.SingleTensor.html' title='numeric::tensor::SingleTensor'>SingleTensor</a>, <a class='type' href='../numeric/tensor/type.DoubleTensor.html' title='numeric::tensor::DoubleTensor'>DoubleTensor</a>};</code></td></tr><tr><td><code>pub use math::{<a class='fn' href='../numeric/math/fn.log.html' title='numeric::math::log'>log</a>, <a class='fn' href='../numeric/math/fn.ln.html' title='numeric::math::ln'>ln</a>, <a class='fn' href='../numeric/math/fn.log10.html' title='numeric::math::log10'>log10</a>, <a class='fn' href='../numeric/math/fn.log2.html' title='numeric::math::log2'>log2</a>, <a class='fn' href='../numeric/math/fn.sin.html' title='numeric::math::sin'>sin</a>, <a class='fn' href='../numeric/math/fn.cos.html' title='numeric::math::cos'>cos</a>, <a class='fn' href='../numeric/math/fn.tan.html' title='numeric::math::tan'>tan</a>, <a class='fn' href='../numeric/math/fn.asin.html' title='numeric::math::asin'>asin</a>, <a class='fn' href='../numeric/math/fn.acos.html' title='numeric::math::acos'>acos</a>, <a class='fn' href='../numeric/math/fn.atan.html' title='numeric::math::atan'>atan</a>, <a class='fn' href='../numeric/math/fn.exp_m1.html' title='numeric::math::exp_m1'>exp_m1</a>, <a class='fn' href='../numeric/math/fn.exp.html' title='numeric::math::exp'>exp</a>, <a class='fn' href='../numeric/math/fn.exp2.html' title='numeric::math::exp2'>exp2</a>, <a class='fn' href='../numeric/math/fn.ln_1p.html' title='numeric::math::ln_1p'>ln_1p</a>, <a class='fn' href='../numeric/math/fn.sinh.html' title='numeric::math::sinh'>sinh</a>, <a class='fn' href='../numeric/math/fn.cosh.html' title='numeric::math::cosh'>cosh</a>, <a class='fn' href='../numeric/math/fn.tanh.html' title='numeric::math::tanh'>tanh</a>, <a class='fn' href='../numeric/math/fn.asinh.html' title='numeric::math::asinh'>asinh</a>, <a class='fn' href='../numeric/math/fn.acosh.html' title='numeric::math::acosh'>acosh</a>, <a class='fn' href='../numeric/math/fn.atanh.html' title='numeric::math::atanh'>atanh</a>, <a class='fn' href='../numeric/math/fn.atan2.html' title='numeric::math::atan2'>atan2</a>, <a class='fn' href='../numeric/math/fn.sqrt.html' title='numeric::math::sqrt'>sqrt</a>, <a class='fn' href='../numeric/math/fn.floor.html' title='numeric::math::floor'>floor</a>, <a class='fn' href='../numeric/math/fn.ceil.html' title='numeric::math::ceil'>ceil</a>, <a class='fn' href='../numeric/math/fn.round.html' title='numeric::math::round'>round</a>, <a class='fn' href='../numeric/math/fn.trunc.html' title='numeric::math::trunc'>trunc</a>, <a class='fn' href='../numeric/math/fn.fract.html' title='numeric::math::fract'>fract</a>, <a class='fn' href='../numeric/math/fn.abs.html' title='numeric::math::abs'>abs</a>, <a class='fn' href='../numeric/math/fn.signum.html' title='numeric::math::signum'>signum</a>, <a class='fn' href='../numeric/math/fn.powf.html' title='numeric::math::powf'>powf</a>, <a class='fn' href='../numeric/math/fn.powi.html' title='numeric::math::powi'>powi</a>, <a class='fn' href='../numeric/math/fn.is_nan.html' title='numeric::math::is_nan'>is_nan</a>, <a class='fn' href='../numeric/math/fn.is_finite.html' title='numeric::math::is_finite'>is_finite</a>, <a class='fn' href='../numeric/math/fn.is_infinite.html' title='numeric::math::is_infinite'>is_infinite</a>, <a class='fn' href='../numeric/math/fn.is_normal.html' title='numeric::math::is_normal'>is_normal</a>, <a class='fn' href='../numeric/math/fn.is_sign_positive.html' title='numeric::math::is_sign_positive'>is_sign_positive</a>, <a class='fn' href='../numeric/math/fn.is_sign_negative.html' title='numeric::math::is_sign_negative'>is_sign_negative</a>};</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='io/index.html'
-                               title='numeric::io'>io</a></td>
-                        <td class='docblock short'>
-                             <p>Saving and loading data to and from disk.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='linalg/index.html'
-                               title='numeric::linalg'>linalg</a></td>
-                        <td class='docblock short'>
-                             <p>Linear algebra functions.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='math/index.html'
-                               title='numeric::math'>math</a></td>
-                        <td class='docblock short'>
-                             <p>Contains mathematical functions that operate on tensors. These functions are largely modelled
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='io/index.html'
+                                  title='numeric::io'>io</a></td>
+                           <td class='docblock short'>
+                                <p>Saving and loading data to and from disk.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='linalg/index.html'
+                                  title='numeric::linalg'>linalg</a></td>
+                           <td class='docblock short'>
+                                <p>Linear algebra functions.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='math/index.html'
+                                  title='numeric::math'>math</a></td>
+                           <td class='docblock short'>
+                                <p>Contains mathematical functions that operate on tensors. These functions are largely modelled
 after what is available natively in Rust.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='random/index.html'
-                               title='numeric::random'>random</a></td>
-                        <td class='docblock short'>
-                             <p>The random module provides methods of randomizing tensors.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='tensor/index.html'
-                               title='numeric::tensor'>tensor</a></td>
-                        <td class='docblock short'>
-                             <p>The tensor module defines an N-dimensional matrix for use in scientific computing.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='traits/index.html'
-                               title='numeric::traits'>traits</a></td>
-                        <td class='docblock short'>
-                             
-                        </td>
-                    </tr>
-                </table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='random/index.html'
+                                  title='numeric::random'>random</a></td>
+                           <td class='docblock short'>
+                                <p>The random module provides methods of randomizing tensors.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='tensor/index.html'
+                                  title='numeric::tensor'>tensor</a></td>
+                           <td class='docblock short'>
+                                <p>The tensor module defines an N-dimensional matrix for use in scientific computing.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='traits/index.html'
+                                  title='numeric::traits'>traits</a></td>
+                           <td class='docblock short'>
+                                <p>Traits used by Tensor.</p>
+                           </td>
+                       </tr></table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='macro' href='macro.tensor!.html'
-                               title='numeric::tensor!'>tensor!</a></td>
-                        <td class='docblock short'>
-                             <p>Macro for creating vectors and matrices.</p>
-
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='macro' href='macro.tensor!.html'
+                                  title='numeric::tensor!'>tensor!</a></td>
+                           <td class='docblock short'>
+                                <p>Macro for creating vectors and matrices.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -141,6 +129,8 @@ after what is available natively in Rust.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -161,7 +151,7 @@ after what is available natively in Rust.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"fn":[["diag","If passed a vector, creates a diagonal matrix with the vector as its diagonal. If passed a matrix, the diagonal is extracted and returned."]]});

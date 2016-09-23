@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,19 +44,20 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>numeric</a>::<wbr><a href='index.html'>random</a>::<wbr><a class='struct' href=''>RandomState</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-3025' class='srclink' href='../../src/numeric/random/mod.rs.html#28-30' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2711' class='srclink' href='../../src/numeric/src/random/mod.rs.html#28-30' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct RandomState {
     // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../numeric/random/struct.RandomState.html' title='numeric::random::RandomState'>RandomState</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(seed: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../numeric/random/struct.RandomState.html' title='numeric::random::RandomState'>RandomState</a></code></h4>
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../numeric/random/struct.RandomState.html' title='numeric::random::RandomState'>RandomState</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2713' class='srclink' href='../../src/numeric/src/random/mod.rs.html#32-66' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(seed: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../numeric/random/struct.RandomState.html' title='numeric::random::RandomState'>RandomState</a></code></h4>
 <div class='docblock'><p>Creates a new <code>RandomState</code> object with the given seed. The object needs to be captured
 as mutable in order to draw samples from it (since its internal state changes).</p>
 </div><h4 id='method.uniform' class='method'><code>fn <a href='#method.uniform' class='fnname'>uniform</a>&lt;T&gt;(&amp;mut self, low: T, high: T, shape: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../numeric/traits/trait.NumericTrait.html' title='numeric::traits::NumericTrait'>NumericTrait</a> + <a class='trait' href='https://doc.rust-lang.org/rand/rand/distributions/range/trait.SampleRange.html' title='rand::distributions::range::SampleRange'>SampleRange</a></span></code></h4>
 <div class='docblock'><p>Generates a tensor by independently drawing samples from a uniform distribution in the
 range [<code>low</code>, <code>high</code>). This is appropriate for integer types as well.</p>
-</div><h4 id='method.normal' class='method'><code>fn <a href='#method.normal' class='fnname'>normal</a>&lt;T&gt;(&amp;mut self, shape: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../numeric/traits/trait.NumericTrait.html' title='numeric::traits::NumericTrait'>NumericTrait</a> + <a class='trait' href='https://doc.rust-lang.org/rand/rand/distributions/range/trait.SampleRange.html' title='rand::distributions::range::SampleRange'>SampleRange</a> + <a class='trait' href='http://rust-num.github.io/num/num/traits/trait.Float.html' title='num::traits::Float'>Float</a></span></code></h4>
+</div><h4 id='method.normal' class='method'><code>fn <a href='#method.normal' class='fnname'>normal</a>&lt;T&gt;(&amp;mut self, shape: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../numeric/tensor/struct.Tensor.html' title='numeric::tensor::Tensor'>Tensor</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../numeric/traits/trait.NumericTrait.html' title='numeric::traits::NumericTrait'>NumericTrait</a> + <a class='trait' href='https://doc.rust-lang.org/rand/rand/distributions/range/trait.SampleRange.html' title='rand::distributions::range::SampleRange'>SampleRange</a> + Float</span></code></h4>
 <div class='docblock'><p>Generates a tensor by independently drawing samples from a standard normal.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -80,6 +82,8 @@ range [<code>low</code>, <code>high</code>). This is appropriate for integer typ
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -100,7 +104,7 @@ range [<code>low</code>, <code>high</code>). This is appropriate for integer typ
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

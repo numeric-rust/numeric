@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,14 +44,14 @@
 
     <section id='main' class="content macro">
 <h1 class='fqn'><span class='in-band'><a href='index.html'>numeric</a>::<wbr><a class='macro' href=''>tensor!</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-4054' class='srclink' href='../src/numeric/tensor/macros.rs.html#43-61' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-3785' class='srclink' href='../src/numeric/src/tensor/macros.rs.html#39-57' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>tensor</span> {
-    (<span class='kw-2'>@</span><span class='ident'>count</span>) <span class='op'>=&gt;</span> { ... };
-    (<span class='kw-2'>@</span><span class='ident'>count</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>tt</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
+    (@<span class='ident'>count</span>) <span class='op'>=&gt;</span> { ... };
+    (@<span class='ident'>count</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>tt</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>elem</span>:<span class='ident'>expr</span>; <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>n</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> { ... };
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>),<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>,)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
@@ -67,14 +68,17 @@ extern crate numeric;
 
 <h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
 <p>1D tensor (vector):</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='macro'>tensor</span><span class='macro'>!</span>[<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>];</pre>
 
 <p>2D tensor (matrix):</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='macro'>tensor</span><span class='macro'>!</span>[<span class='number'>1</span>, <span class='number'>0</span>; <span class='number'>3</span>, <span class='number'>2</span>; <span class='number'>5</span>, <span class='number'>4</span>];</pre>
 
 <p>1D tensor filled with a single value:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='macro'>tensor</span><span class='macro'>!</span>[<span class='number'>2.0</span>; <span class='number'>5</span>];</pre>
 </div></section>
@@ -100,6 +104,8 @@ extern crate numeric;
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -120,7 +126,7 @@ extern crate numeric;
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
