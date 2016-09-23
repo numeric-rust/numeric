@@ -7,7 +7,7 @@ The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
 ## 0.1.4
-Released: TBD
+Released: 2016-09-22
 * Added support for vector-matrix multiplication in `dot`
 * Added support for `&T <op> S`
 * Added support for `&T <op> &T` without canonizing
