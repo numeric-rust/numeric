@@ -36,8 +36,8 @@
 //!
 //! Note that since we need to know the type of `t` at compile time, it doesn't matter that we
 //! saved the file as `i32`, we have to specify how to load it. The way this is done is that it
-//! will load the `i32` natively and then convert it to `f64`. If your data converted, you simply
-//! have to load it as the same type as you know is in the file.
+//! will load the `i32` natively and then convert it to `f64`. If you do not want your data to be
+//! converted, you simply have to load it as the same type as you know is in the file.
 
 extern crate std;
 
