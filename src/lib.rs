@@ -17,11 +17,10 @@ pub mod random;
 pub mod linalg;
 pub mod io;
 
-/// Many of the things in tensor is lifted into numeric since they are so common.
+// Lift commonly used functions into the numeric namespace
 pub use tensor::{Tensor, AxisIndex, Ellipsis, StridedSlice, Index, Full, NewAxis};
 pub use tensor::{SingleTensor, DoubleTensor};
 
-/// Many of the functions in math are lifted into numeric since they are so common.
 pub use math::{log, ln, log10, log2, sin, cos, tan, asin, acos, atan, exp_m1, exp, exp2,
                ln_1p, sinh, cosh, tanh, asinh, acosh, atanh, atan2, sqrt,
                floor, ceil, round, trunc, fract, abs, signum, powf, powi,
@@ -29,3 +28,5 @@ pub use math::{log, ln, log10, log2, sin, cos, tan, asin, acos, atan, exp_m1, ex
                is_sign_positive, is_sign_negative};
 
 pub use random::RandomState;
+
+pub use linalg::diag;
