@@ -15,3 +15,4 @@
 //! ```
 
 mod solve;
+mod svd;
