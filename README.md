@@ -29,9 +29,11 @@ Some of the completed and planned features:
 * [x] Strided slices
 * [x] Broadcasted axes
 * [x] Basic support for complex numbers
-* [ ] Matrix inverse and SVD
+* [x] Singular Value Decomposition
+* [ ] Matrix inverse
 
-Recent progress is summarized in [CHANGELOG.md](CHANGELOG.md).
+Recent progress is summarized in [CHANGELOG.md](CHANGELOG.md). For planned
+features, take a look at [TODO.md](TODO.md).
 
 ## Example
 
@@ -83,10 +85,13 @@ g =
 ## Contribute
 
 We love pull requests and there are tons of things to work on for this project.
-Don't hesitate to ask if you want suggestions for contributions (big or small).
-Add your name to the [CONTRIBUTORS.md](CONTRIBUTORS.md) file as part of your PR, no matter how small
+If you want suggestions for contributions, check out [TODO.md](TODO.md) (a
+non-exhaustive list of what would be useful additions). Add your name to the
+[CONTRIBUTORS.md](CONTRIBUTORS.md) file as part of your PR, no matter how small
 it may seem.
 
 ## Acknowledgements
 
-Numeric Rust is primarily inspired by Numpy and borrows heavily from that project. Even the name is a play on **Num**eric **Py**thon. Another source of some inspiration is Torch7.
+Numeric Rust is primarily inspired by Numpy and borrows heavily from that
+project. Even the name is a play on **Num**eric **Py**thon. Another source of
+some inspiration is Torch7.
