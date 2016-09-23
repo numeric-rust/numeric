@@ -6,6 +6,11 @@ more things than usual, I will try to bump the minor (x).
 The goal of this changelog is to facilitate upgrading the version of Numeric,
 despite these frequent breaking changes.
 
+## 0.1.5
+Released: TBD
+* Added `RandomState::shuffle`
+* Re-exports more functions to global namespace
+
 ## 0.1.4
 Released: 2016-09-22
 * Added support for vector-matrix multiplication in `dot`

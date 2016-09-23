@@ -36,7 +36,6 @@ more immediately useful things. Feel free to pick one and start working on a PR.
 ## Random number generation
 
 * Multivariate normal
-* Shuffle
 
 ## Interop
 
