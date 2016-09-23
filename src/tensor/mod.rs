@@ -93,9 +93,11 @@ impl<T: TensorTrait> Iterator for TensorIterator<T> {
 // Common type-specific tensors
 
 /// Type alias for `Tensor<f64>`
+#[deprecated(since="0.1.5", note="please use Tensor<f64> instead")]
 pub type DoubleTensor = Tensor<f64>;
 
 /// Type alias for `Tensor<f32>`
+#[deprecated(since="0.1.5", note="please use Tensor<f32> instead")]
 pub type SingleTensor = Tensor<f32>;
 
 /// Used for advanced slicing of a `Tensor`.

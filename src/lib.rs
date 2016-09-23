@@ -19,7 +19,6 @@ pub mod io;
 
 // Lift commonly used functions into the numeric namespace
 pub use tensor::{Tensor, AxisIndex, Ellipsis, StridedSlice, Index, Full, NewAxis};
-pub use tensor::{SingleTensor, DoubleTensor};
 
 pub use math::{log, ln, log10, log2, sin, cos, tan, asin, acos, atan, exp_m1, exp, exp2,
                ln_1p, sinh, cosh, tanh, asinh, acosh, atanh, atan2, sqrt,

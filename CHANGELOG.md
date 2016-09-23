@@ -10,6 +10,7 @@ despite these frequent breaking changes.
 Released: TBD
 * Added `RandomState::shuffle`
 * Re-exports more functions to global namespace
+* Deprecated `SingleTensor` and `DoubleTensor` (they will be removed)
 
 ## 0.1.4
 Released: 2016-09-22
