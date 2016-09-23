@@ -10,6 +10,8 @@ mod sub;
 mod mul;
 mod div;
 
+mod linalg;
+
 mod indexing;
 mod summary;
 
