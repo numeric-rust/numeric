@@ -12,6 +12,9 @@ Released: TBD
 * Added support for `&T <op> S`
 * Added support for `&T <op> &T` without canonizing
 * Added broadcasting support for `&T <op> &T`
+* Added `linalg::svd`
+* Added `linalg::diag`
+* Basic complex number support through `num::complex::{Complex32, Complex64}`
 
 ## 0.1.3
 Released: 2016-02-17
