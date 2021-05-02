@@ -16,8 +16,9 @@
 //! //  0.702227 0.346673 0.737954
 //! // [Tensor<f64> of shape 3x3]
 //! ```
-use rand::{Rng, SeedableRng, StdRng};
-use rand::distributions::range::SampleRange;
+use rand::{Rng, SeedableRng};
+use rand::rngs::StdRng;
+use rand::distributions::uniform::SampleRange;
 use num::traits::Float;
 use std::f64;
 
@@ -40,7 +41,7 @@ impl RandomState {
     /// Generates a tensor by independently drawing samples from a uniform distribution in the 
     /// range [`low`, `high`). This is appropriate for integer types as well.
     pub fn uniform<T>(&mut self, low: T, high: T, shape: &[usize]) -> Tensor<T>
-            where T: NumericTrait + SampleRange {
+            where T: NumericTrait + SampleRange<T> {
         let mut t = Tensor::zeros(shape);
         {
             let n = t.size();
@@ -54,7 +55,7 @@ impl RandomState {
 
     /// Generates a tensor by independently drawing samples from a standard normal.
     pub fn normal<T>(&mut self, shape: &[usize]) -> Tensor<T>
-            where T: NumericTrait + SampleRange + Float {
+            where T: NumericTrait + SampleRange<T> + Float {
         let u1 = self.uniform(T::zero(), T::one(), shape);
         let u2 = self.uniform(T::zero(), T::one(), shape);
 

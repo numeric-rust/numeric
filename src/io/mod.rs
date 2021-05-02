@@ -43,11 +43,18 @@ extern crate std;
 
 use libc::{c_char, c_void};
 use std::path::Path;
-use hdf5_sys as ffi;
+// use hdf5_sys as ffi;
+use hdf5_sys::h5d;
+use hdf5_sys::h5t;
+use hdf5_sys::h5p;
+use hdf5_sys::h5f;
+use hdf5_sys::h5e;
+use hdf5_sys::h5s;
+use hdf5_sys::h5i;
 
 use tensor::Tensor;
 
-extern fn error_handler(_: ffi::hid_t, _: *const c_void) {
+extern fn error_handler(_: h5i::hid_t, _: *const c_void) {
     // Suppress errors. We will rely on return statuses alone.
 }
 
@@ -71,30 +78,30 @@ macro_rules! add_save {
                 let group = "data";
 
                 unsafe {
-                    let filename_cstr = try!(::std::ffi::CString::new(filename));
-                    let group_cstr = try!(::std::ffi::CString::new(group));
+                    let filename_cstr = ::std::ffi::CString::new(filename)?;
+                    let group_cstr = ::std::ffi::CString::new(group)?;
 
-                    //ffi::H5Eset_auto2(0, error_handler, 0 as *const c_void);
+                    //h5e::H5Eset_auto2(0, error_handler, 0 as *const c_void);
 
-                    let file = ffi::H5Fcreate(filename_cstr.as_ptr() as *const c_char,
-                                   ffi::H5F_ACC_TRUNC, ffi::H5P_DEFAULT, ffi::H5P_DEFAULT);
+                    let file = h5f::H5Fcreate(filename_cstr.as_ptr() as *const c_char,
+                                   h5f::H5F_ACC_TRUNC, h5p::H5P_DEFAULT, h5p::H5P_DEFAULT);
 
                     let mut shape: Vec<u64> = Vec::new();
                     for s in self.shape().iter() {
                         shape.push(*s as u64);
                     }
 
-                    let space = ffi::H5Screate_simple(shape.len() as i32, shape.as_ptr(),
+                    let space = h5s::H5Screate_simple(shape.len() as i32, shape.as_ptr(),
                                                       std::ptr::null());
 
-                    let dset = ffi::H5Dcreate2(file, group_cstr.as_ptr() as *const c_char,
+                    let dset = h5d::H5Dcreate2(file, group_cstr.as_ptr() as *const c_char,
                                                $h5type, space,
-                                               ffi::H5P_DEFAULT,
-                                               ffi::H5P_DEFAULT,
-                                               ffi::H5P_DEFAULT);
+                                               h5p::H5P_DEFAULT,
+                                               h5p::H5P_DEFAULT,
+                                               h5p::H5P_DEFAULT);
 
-                    let status = ffi::H5Dwrite(dset, $h5type, ffi::H5S_ALL, ffi::H5S_ALL,
-                                               ffi::H5P_DEFAULT, self.as_ptr() as * const c_void);
+                    let status = h5d::H5Dwrite(dset, $h5type, h5s::H5S_ALL, h5s::H5S_ALL,
+                                               h5p::H5P_DEFAULT, self.as_ptr() as * const c_void);
 
                     if status < 0 {
                         let msg = format!("Failed to write '{}': {:?}", group, path);
@@ -103,8 +110,8 @@ macro_rules! add_save {
                     }
 
 
-                    ffi::H5Dclose(dset);
-                    ffi::H5Fclose(file);
+                    h5d::H5Dclose(dset);
+                    h5f::H5Fclose(file);
                 }
                 Ok(())
             }
@@ -112,16 +119,16 @@ macro_rules! add_save {
     )
 }
 
-add_save!(u8, ffi::H5T_NATIVE_UINT8);
-add_save!(u16, ffi::H5T_NATIVE_UINT16);
-add_save!(u32, ffi::H5T_NATIVE_UINT32);
-add_save!(u64, ffi::H5T_NATIVE_UINT64);
-add_save!(i8, ffi::H5T_NATIVE_INT8);
-add_save!(i16, ffi::H5T_NATIVE_INT16);
-add_save!(i32, ffi::H5T_NATIVE_INT32);
-add_save!(i64, ffi::H5T_NATIVE_INT64);
-add_save!(f32, ffi::H5T_NATIVE_FLOAT);
-add_save!(f64, ffi::H5T_NATIVE_DOUBLE);
+add_save!(u8, h5t::H5T_NATIVE_UINT8);
+add_save!(u16, h5t::H5T_NATIVE_UINT16);
+add_save!(u32, h5t::H5T_NATIVE_UINT32);
+add_save!(u64, h5t::H5T_NATIVE_UINT64);
+add_save!(i8, h5t::H5T_NATIVE_INT8);
+add_save!(i16, h5t::H5T_NATIVE_INT16);
+add_save!(i32, h5t::H5T_NATIVE_INT32);
+add_save!(i64, h5t::H5T_NATIVE_INT64);
+add_save!(f32, h5t::H5T_NATIVE_FLOAT);
+add_save!(f64, h5t::H5T_NATIVE_DOUBLE);
 
 
 macro_rules! add_load {
@@ -137,13 +144,13 @@ macro_rules! add_load {
                 },
             };
             unsafe {
-                let filename_cstr = try!(::std::ffi::CString::new(filename));
-                let group_cstr = try!(::std::ffi::CString::new(group));
+                let filename_cstr = ::std::ffi::CString::new(filename)?;
+                let group_cstr = ::std::ffi::CString::new(group)?;
 
-                ffi::H5Eset_auto2(0, error_handler, 0 as *const c_void);
+                h5e::H5Eset_auto2(0, error_handler, 0 as *const c_void);
 
-                let file = ffi::H5Fopen(filename_cstr.as_ptr() as *const c_char,
-                               ffi::H5F_ACC_RDONLY, ffi::H5P_DEFAULT);
+                let file = h5f::H5Fopen(filename_cstr.as_ptr() as *const c_char,
+                               h5f::H5F_ACC_RDONLY, h5p::H5P_DEFAULT);
 
                 if file < 0 {
                     let msg = format!("File not found: {:?}", path);
@@ -151,8 +158,8 @@ macro_rules! add_load {
                     return Err(err);
                 }
 
-                let dset = ffi::H5Dopen2(file, group_cstr.as_ptr() as *const c_char,
-                                        ffi::H5P_DEFAULT);
+                let dset = h5d::H5Dopen2(file, group_cstr.as_ptr() as *const c_char,
+                                        h5p::H5P_DEFAULT);
 
                 if dset < 0 {
                     let msg = format!("Group '{}' not found: {}", group, filename);
@@ -160,15 +167,15 @@ macro_rules! add_load {
                     return Err(err);
                 }
 
-                let datatype = ffi::H5Dget_type(dset);
+                let datatype = h5d::H5Dget_type(dset);
 
-                let space = ffi::H5Dget_space(dset);
-                let ndims = ffi::H5Sget_simple_extent_ndims(space);
+                let space = h5d::H5Dget_space(dset);
+                let ndims = h5s::H5Sget_simple_extent_ndims(space);
 
-                let mut shape: Tensor<ffi::hsize_t> = Tensor::zeros(&[ndims as usize]);
+                let mut shape: Tensor<h5d::hsize_t> = Tensor::zeros(&[ndims as usize]);
 
-                if ffi::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(),
-                                                  0 as *mut ffi::hsize_t) != ndims {
+                if h5s::H5Sget_simple_extent_dims(space, shape.as_mut_ptr(),
+                                                  0 as *mut h5d::hsize_t) != ndims {
                     let msg = format!("Could not read shape of tesor: {}", filename);
                     let err = std::io::Error::new(std::io::ErrorKind::InvalidData, msg);
                     return Err(err);
@@ -179,65 +186,65 @@ macro_rules! add_load {
                 let unsigned_shape = &unsigned_tensor.data();
 
                 let data: Tensor<$t> = {
-                    if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_UINT8) == 1 {
+                    if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_UINT8) == 1 {
                         let mut native_data: Tensor<u8> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_UINT8, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_UINT8, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_INT8) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_INT8) == 1 {
                         let mut native_data: Tensor<i8> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_INT8, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_INT8, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_UINT16) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_UINT16) == 1 {
                         let mut native_data: Tensor<u16> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_UINT16, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_UINT16, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_INT16) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_INT16) == 1 {
                         let mut native_data: Tensor<i16> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_INT16, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_INT16, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_UINT32) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_UINT32) == 1 {
                         let mut native_data: Tensor<u32> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_UINT32, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_UINT32, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_INT32) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_INT32) == 1 {
                         let mut native_data: Tensor<i32> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_INT32, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_INT32, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_UINT64) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_UINT64) == 1 {
                         let mut native_data: Tensor<u64> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_UINT64, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_UINT64, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_INT64) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_INT64) == 1 {
                         let mut native_data: Tensor<i64> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_INT64, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_INT64, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_FLOAT) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_FLOAT) == 1 {
                         let mut native_data: Tensor<f32> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_FLOAT, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_FLOAT, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
-                    } else if ffi::H5Tequal(datatype, ffi::H5T_NATIVE_DOUBLE) == 1 {
+                    } else if h5t::H5Tequal(datatype, h5t::H5T_NATIVE_DOUBLE) == 1 {
                         let mut native_data: Tensor<f64> = Tensor::empty(&unsigned_shape[..]);
                         // Finally load the actual data
-                        ffi::H5Dread(dset, ffi::H5T_NATIVE_DOUBLE, ffi::H5S_ALL, ffi::H5S_ALL,
-                                     ffi::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
+                        h5d::H5Dread(dset, h5t::H5T_NATIVE_DOUBLE, h5s::H5S_ALL, h5s::H5S_ALL,
+                                     h5p::H5P_DEFAULT, native_data.as_mut_ptr() as *mut c_void);
                         native_data.convert::<$t>()
                     } else {
                         let msg = format!("Unable to convert '{}' to {}: {}",
@@ -247,9 +254,9 @@ macro_rules! add_load {
                     }
                 };
 
-                ffi::H5Tclose(datatype);
-                ffi::H5Dclose(dset);
-                ffi::H5Fclose(file);
+                h5t::H5Tclose(datatype);
+                h5d::H5Dclose(dset);
+                h5f::H5Fclose(file);
 
                 Ok(data)
             }

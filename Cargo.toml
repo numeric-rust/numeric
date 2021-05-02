@@ -1,6 +1,6 @@
 [package]
 name = "numeric"
-version = "0.1.4"
+version = "0.2.0"
 authors = ["Gustav Larsson <gustav.m.larsson@gmail.com>"]
 description = "N-dimensional matrix class for Rust"
 repository = "https://github.com/numeric-rust/numeric"
@@ -11,12 +11,12 @@ keywords = ["numeric", "tensor", "matrix", "vector", "hdf5"]
 license = "MIT"
 
 [dependencies]
-blas = "0.9.1"
-lapack = "0.8.1"
-num = "0.1.29"
-rand = "0.3.12"
-libc = "0.2.4"
-hdf5-sys = "0.3.2"
+blas = "0.22.0"
+lapack = "0.19.0"
+num = "0.4.0"
+rand = "0.8.3"
+libc = "0.2.94"
+hdf5-sys = "0.7.1"
 
 [[test]]
 name = "numeric"
