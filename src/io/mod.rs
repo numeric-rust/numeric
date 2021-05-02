@@ -44,14 +44,7 @@ extern crate std;
 use libc::{c_char, c_void};
 use std::path::Path;
 // use hdf5_sys as ffi;
-use hdf5_sys::h5d;
-use hdf5_sys::h5t;
-use hdf5_sys::h5p;
-use hdf5_sys::h5f;
-use hdf5_sys::h5e;
-use hdf5_sys::h5s;
-use hdf5_sys::h5i;
-
+use hdf5_sys::{h5d, h5t, h5p, h5f, h5e, h5s, h5i};
 use tensor::Tensor;
 
 extern fn error_handler(_: h5i::hid_t, _: *const c_void) {

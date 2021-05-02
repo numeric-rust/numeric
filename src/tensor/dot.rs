@@ -25,8 +25,8 @@ macro_rules! add_impl {
                         } else {
                             let t1 = self.canonize();
                             let t2 = rhs.canonize();
-                            blas::$gemv(b'T', t1.shape[1], t1.shape[0], 1.0, &t1.data,
-                                        t1.shape[1], &t2.data, 1, 0.0, data, 1);
+                            blas::$gemv(b'T', t1.shape[1] as i32, t1.shape[0] as i32, 1.0, &t1.data,
+                                        t1.shape[1] as i32, &t2.data, 1, 0.0, data, 1);
                         }
                     }
                     t3
@@ -47,8 +47,8 @@ macro_rules! add_impl {
                         } else {
                             let t1 = self.canonize();
                             let t2 = rhs.canonize();
-                            blas::$gemv(b'N', t2.shape[1], t2.shape[0], 1.0, &t2.data,
-                                        t2.shape[1], &t1.data, 1, 0.0, data, 1);
+                            blas::$gemv(b'N', t2.shape[1] as i32, t2.shape[0] as i32, 1.0, &t2.data,
+                                        t2.shape[1] as i32, &t1.data, 1, 0.0, data, 1);
                         }
                     }
                     t3
@@ -72,9 +72,9 @@ macro_rules! add_impl {
                         let t1 = self.canonize();
                         let t2 = rhs.canonize();
                         let mut data = t3.slice_mut();
-                        blas::$gemm(b'N', b'N', t2.shape[1], t1.shape[0], t2.shape[0], 1.0,
-                                    &t2.data, t2.shape[1], &t1.data, t2.shape[0], 0.0,
-                                    data, t2.shape[1]);
+                        blas::$gemm(b'N', b'N', t2.shape[1] as i32, t1.shape[0] as i32, t2.shape[0] as i32, 1.0,
+                                    &t2.data, t2.shape[1] as i32, &t1.data, t2.shape[0] as i32, 0.0,
+                                    data, t2.shape[1] as i32);
                     }
                     t3
                 } else if self.ndim() == 1 && rhs.ndim() == 1 { // scalar product
@@ -88,7 +88,7 @@ macro_rules! add_impl {
                     } else {
                         let t1 = self.canonize();
                         let t2 = rhs.canonize();
-                        v = blas::$dot(t1.size(), &t1.data, 1, &t2.data, 1);
+                        v = blas::$dot(t1.size() as i32, &t1.data, 1, &t2.data, 1);
                     }
                     Tensor::scalar(v)
                 } else {
